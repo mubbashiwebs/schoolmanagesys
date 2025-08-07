@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard- User form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row flex-nowrap">
+            <!-- Sidebar -->
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar sticky-top">
+                <h4>Admin Panel</h4>
+                <nav id="sidebar" class="nav flex-column">
+                 
+                </nav>
+            </div>
+
+            <div class="col main-content">
+                <div class="row main-content-area d-flex justify-content-center align-items-center min-vh-100">
+                    <div class="col-10 bg-white p-5 mb-5 border rounded-3">
+                        <h2 class="mb-4">Add User</h2>
+                        <form id="classForm" class="row">
+                            <div class="mb-3 col-6">
+                                <label for="className" class="form-label">first Name</label>
+                                <input type="text" class="form-control" id="firstname" placeholder="Enter First Name"
+                                    required>
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label for="className" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastname" placeholder="Enter Last Name"
+                                    required>
+                            </div>
+
+                            <div class="mb-3 col-6">
+                                <label for="className" class="form-label">CNIC</label>
+                                <input type="number" class="form-control" id="cnic" placeholder="Enter CNIC N0."
+                                    required>
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label for="className" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" placeholder="Enter Email" required>
+                            </div>
+
+                            <div class="mb-3 col-6">
+                                <label for="className" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="Username" placeholder="Enter Username"
+                                    required>
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label for="className" class="form-label">Password</label>
+                                <input type="text" class="form-control" id="password" placeholder="Enter Password"
+                                    required>
+                            </div>
+
+                            <div class="mb-3 col-6">
+                                <label for="className" class="form-label">Designation</label>
+                                <input type="text" class="form-control" id="designation" placeholder="Enter designation"
+                                    required>
+                            </div>
+                            <div class=" mb-3 col-6" id="schoolslectionbox">
+                                <label>School</label>
+                                <select name="school" id="schoolSelect" class="form-select">
+
+                                </select>
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label for="className" class="form-label">Contact No</label>
+                                <input type="text" class="form-control" id="contactNo" placeholder="Enter Contact No"
+                                    required>
+                            </div>
+
+                            <div class="mb-3 col-6">
+                                <label for="">Select Allow Pages</label>
+                                <br>
+                                <label><input type="checkbox" name="pages" value="addclass"> Add Class</label>
+                                <label><input type="checkbox" name="pages" value="addsection"> Add Section</label>
+                                <label><input type="checkbox" name="pages" value="addcomputercourse"> Add Computer Course</label>
+                                <label><input type="checkbox" name="pages" value="addstudent"> Add Student</label>
+                                <label><input type="checkbox" name="pages" value="studentlist"> Student List</label>
+                                <label><input type="checkbox" name="pages" value="addteacher"> Add Teacher</label>
+                                <label><input type="checkbox" name="pages" value="teacherlist"> Teacher List</label>
+                                <label><input type="checkbox" name="pages" value="adduser"> Add User</label>
+
+
+                            </div>
+
+                            <div class="mb-3 col-12">
+  <label for="">Select Page Permissions</label>
+  <table class="table table-bordered mt-2">
+    <thead class="table-light">
+      <tr>
+        <th>Page</th>
+        <th>Read</th>
+        <th>Add</th>
+        <th>Edit</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody id="permissionsTable">
+      <!-- Dynamic Rows will go here -->
+    </tbody>
+  </table>
+</div>
+
+
+                        </form>
+                        <button type="submit" id="submit" class="btn btn-primary  mt-2">Add User</button>
+
+                        <hr class="my-4" />
+
+                        <h4>All User</h4>
+                        <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                            <table class="table table-bordered table-hover mt-3 w-100 text-nowrap" id="classTable">
+                                <thead class="table-light sticky-top bg-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Full Name</th>
+                                        <th>Contact No</th>
+                                        <th>Designation</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Password</th>
+                                        <th>School</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic Rows Here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+        
+  const user = JSON.parse(localStorage.getItem("userData")) || [];
+  const isSuperAdmin = user[0]?.designation === "superadmin";
+  const sidebar = document.getElementById("sidebar");
+
+const allLinks = {
+  // dashboard: { name: "Dashboard", file: "Dashboard.html" },
+  addclass: { name: "Add Class", file: "classform.html", active:false },
+  addsection: { name: "Add Section", file: "section.html", active:false },
+  addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active:false },
+  addstudent: { name: "Student Form", file: "student.html", active:false },
+  studentlist: { name: "Student List", file: "studentlist.html" , active:false},
+  addteacher: { name: "Teacher Form", file: "teacher.html",  active:false },
+  teacherlist: { name: "Teacher List", file: "teacherlist.html" , active:false},
+  teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" , active:false},
+
+  adduser: { name: "Add User", file: "userform.html" , active:true}
+};
+
+const pages = [
+  { key: "addclass", name: "Add Class" },
+  { key: "addsection", name: "Add Section" },
+  { key: "addcomputercourse", name: "Add Computer Course" },
+  { key: "addstudent", name: "Add Student" },
+  { key: "studentlist", name: "Student List" },
+  { key: "addteacher", name: "Add Teacher" },
+  { key: "teacherlist", name: "Teacher List" },
+  { key: "adduser", name: "Add User" }
+];
+
+function renderPermissionsTable() {
+  const tbody = document.getElementById("permissionsTable");
+  pages.forEach(page => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${page.name}</td>
+        <td><input type="checkbox" name="${page.key}-read"></td>
+        <td><input type="checkbox" name="${page.key}-add"></td>
+        <td><input type="checkbox" name="${page.key}-edit"></td>
+        <td><input type="checkbox" name="${page.key}-delete"></td>
+      </tr>
+    `;
+  });
+}
+renderPermissionsTable();
+
+ if(user.length <= 0){
+     window.location.href= 'Dashboard.html'
+        
+  }
+function renderSidebar(user) {
+  console.log(user[0].allowedPages)
+  // Always show Dashboard and Logout
+  sidebar.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
+   if(isSuperAdmin){
+  sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
+
+  }
+
+  for (const key in allLinks) {
+    console.log(key)
+    if(isSuperAdmin){
+      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
+
+    }
+    
+   else{
+    console.log('here')
+   if (user[0].allowedPages.includes(key)) {
+      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
+    }
+     else{
+        if(allLinks[key].active){
+            // window.location.href='Dashboard.html'
+        }
+      }
+    }
+  }
+
+  sidebar.innerHTML += `<a href="#">Logout</a>`;
+}
+renderSidebar(user)
+        var schoolslectionbox = document.getElementById('schoolslectionbox')
+        var schoolSelect = document.getElementById('schoolSelect')
+        async function getSchoolData() {
+            if(isSuperAdmin){
+            try {
+                const response = await axios.get("http://localhost:3000/api/school/get");
+                const schools = response.data.data;
+                console.log(schools)
+                
+                var options = []
+                options.push(`<option value='select school'>Select School</option>`)
+
+                schools.forEach(element => {
+                    options.push(`<option value='${element._id}'>${element.name}</option>`)
+                });
+                schoolSelect.innerHTML = options
+
+            }
+            catch (error) {
+                console.error("Error fetching schools:", error);
+            }
+        }
+        else{
+            schoolslectionbox.style.display= 'none'
+        }
+        }
+        getSchoolData()
+
+        document.getElementById("submit").addEventListener("click", async function () {
+            var checkboxes = document.getElementsByName('pages')
+            const allowedPages = Array.from(checkboxes).filter(cb => cb.checked).map(cb=>cb.value)
+            // console.log(allowPages)
+            const firstname = document.getElementById("firstname").value;
+            const lastname = document.getElementById("lastname").value;
+            const cnic = document.getElementById("cnic").value;
+            const email = document.getElementById("email").value;
+            const username = document.getElementById("Username").value;
+            const password = document.getElementById("password").value;
+            const designation = document.getElementById("designation").value;
+            const contactNo = document.getElementById("contactNo").value;
+         let school; // Declare outside
+
+if (isSuperAdmin) {
+  school = document.getElementById("schoolSelect").value;
+} else {
+  school = user[0].school._id;
+}
+if(!cnic || !email || !username || !password || !designation || !contactNo) return alert('please fill the required information')
+if(allowedPages.length <=0) return alert('please select allowed pages')
+if(designation == 'superadmin' && !isSuperAdmin) alert('you are not allowed to add superadmin')
+
+            try {
+                const res = await axios.post("http://localhost:3000/api/user/add", {
+                    firstname,
+                    lastname,
+                    cnic,
+                    email,
+                    username,
+                    password,
+                    designation,
+                    allowedPages,
+                    school,
+                    contactNo
+                });
+
+                alert(res.data.message || "User added!");
+                console.log(res.data.data)
+                getUsers(); // Refresh user list
+            } catch (error) {
+                console.error("Error adding user:", error);
+                alert("Failed to add user");
+            }
+        });
+
+        async function getUsers() {
+            try {
+                const res = await axios.get("http://localhost:3000/api/user/get");
+                const users = res.data.data;
+
+                const tableBody = document.querySelector("#classTable tbody");
+                tableBody.innerHTML = "";
+
+                users.forEach((user, index) => {
+                    const row = `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${user.firstname} ${user.lastname}</td>
+                    <td>${user.contactNo}</td>
+                    <td>${user.designation}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${user.password}</td>
+                    <td>${user.school?.name || "N/A"}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteUser('${user._id}')">Delete</button></td>
+                </tr>
+            `;
+                    tableBody.innerHTML += row;
+                });
+
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        }
+
+        // Call this once when page loads
+        getUsers();
+        async function deleteUser(id) {
+            if (!confirm("Are you sure you want to delete this user?")) return;
+
+            try {
+                const res = await axios.delete(`http://localhost:3000/api/user/delete/${id}`);
+                alert(res.data.message || "User deleted");
+                getUsers(); // Refresh list
+            } catch (error) {
+                console.error("Error deleting user:", error);
+                alert("Failed to delete user");
+            }
+        }
+
+
+    </script>
+</body>
+
+</html>

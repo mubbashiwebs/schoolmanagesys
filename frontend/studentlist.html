@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student List</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row flex-nowrap">
+      <!-- Sidebar -->
+      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar">
+        <h4>Admin Panel</h4>
+        <nav id="sidebar" class="nav flex-column">
+        
+        </nav>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col main-content ">
+        <div class="container bg-white mt-4 p-5">
+          <h2>Student Data List</h2>
+        <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+  <table class="table table-bordered table-hover table-striped align-middle">
+    <thead class="table-light sticky-top">
+      <tr>
+        <th>Name</th>
+        <th>Class</th>
+        <th>Section</th>
+        <th>admissionType</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="studentTableBody">
+      <!-- Dynamic rows -->
+    </tbody>
+  </table>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+//     const students = [
+//       {
+//         id: 1,
+//         name: "Ali Khan",
+//         fatherName: "Aslam Khan",
+//         dob: "2007-05-20",
+//         cnic: "12345-1234567-1",
+//         email: "ali@example.com",
+//         phone: "03001234567",
+//         gender: "Male",
+//         address: "Lahore",
+//         lastQualification: "9th",
+//         lastSchool: "Govt High School",
+//         admissionDate: "2023-03-15",
+//         admissionType: ["school"],
+//         class: "10th",
+//         section: "A",
+//         computerCourse: "",
+//         fee: "3000",
+//         discount: "500",
+//         feepayable: "2500"
+//       },
+//       {
+//         id: 2,
+//         name: "Sara Ahmed",
+//         fatherName: "Ahmed Ali",
+//         dob: "2008-08-15",
+//         cnic: "23456-2345678-2",
+//         email: "sara@example.com",
+//         phone: "03111234567",
+//         gender: "Female",
+//         address: "Karachi",
+//         lastQualification: "8th",
+//         lastSchool: "Allied School",
+//         admissionDate: "2023-06-01",
+//         admissionType: ["school", "computer"],
+//         class: "9th",
+//         section: "B",
+//         computerCourse: "web_dev",
+//         fee: "4000",
+//         discount: "0",
+//         feepayable: "4000"
+//       },
+//       {
+//         id: 3,
+//         name: "Bilal Shah",
+//         fatherName: "Shahbaz Shah",
+//         dob: "2009-11-30",
+//         cnic: "34567-3456789-3",
+//         email: "bilal@example.com",
+//         phone: "03221234567",
+//         gender: "Male",
+//         address: "Rawalpindi",
+//         lastQualification: "7th",
+//         lastSchool: "City Public School",
+//         admissionDate: "2023-08-10",
+//         admissionType: ["tuition"],
+//         class: "8th",
+//         computerCourse: "",
+//         fee: "2500",
+//         discount: "200",
+//         feepayable: "2300"
+//       },
+//       {
+//         id: 4,
+//         name: "Hira Fatima",
+//         fatherName: "Faisal Fatima",
+//         dob: "2010-03-18",
+//         cnic: "45678-4567890-4",
+//         email: "hira@example.com",
+//         phone: "03331234567",
+//         gender: "Female",
+//         address: "Multan",
+//         lastQualification: "6th",
+//         lastSchool: "Beaconhouse",
+//         admissionDate: "2023-09-20",
+//         admissionType: ["english"],
+        
+//         fee: "2000",
+//         discount: "0",
+//         feepayable: "2000"
+//       }
+//     ];
+
+    const tbody = document.getElementById("studentTableBody");
+//     students.forEach((student, index) => {
+// const admissionTypes = student.admissionType?.join(", ") || "N/A";
+
+//         console.log(admissionTypes)
+//       const row = document.createElement("tr");
+//       row.innerHTML = `
+//         <td>${student.name}</td>
+//         <td>${student.class || "N/A"}</td>
+//         <td>${student.section || "N/A"}</td>
+//         <td>${admissionTypes || "N/A"}</td>
+//         <td>
+//           <button class="btn btn-info btn-sm" onclick='viewStudent(${JSON.stringify(student)})'>View</button>
+//           <button class="btn btn-danger btn-sm" onclick="deleteStudent(${index})">Delete</button>
+//         </td>
+//       `;
+//       tbody.appendChild(row);
+//     });
+
+//     function deleteStudent(index) {
+//       alert("Delete function called for student index " + index);
+//     }
+
+  const user = JSON.parse(localStorage.getItem("userData")) || [];
+
+  const isSuperAdmin = user[0]?.designation === "superadmin";
+  const sidebar = document.getElementById("sidebar");
+
+const allLinks = {
+  // dashboard: { name: "Dashboard", file: "Dashboard.html" },
+  addclass: { name: "Add Class", file: "classform.html", active:false },
+  addsection: { name: "Add Section", file: "section.html", active:false },
+  addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active:false },
+  addstudent: { name: "Student Form", file: "student.html", active:false },
+  studentlist: { name: "Student List", file: "studentlist.html" , active:true},
+  feeReceipt: { name: "Fee Receipt", file: "feeReceipt.html" , active:false},
+
+  addteacher: { name: "Teacher Form", file: "teacher.html",  active:false },
+  teacherlist: { name: "Teacher List", file: "teacherlist.html" , active:false},
+  teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" , active:false},
+
+  adduser: { name: "Add User", file: "userform.html" , active:false}
+
+};
+
+ if(user.length <= 0){
+     window.location.href= 'Dashboard.html'
+        
+  }
+
+function renderSidebar(user) {
+  // console.log(user[0].allowPages)
+  // Always show Dashboard and Logout
+  sidebar.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
+   if(isSuperAdmin){
+  sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
+
+  }
+
+  for (const key in allLinks) {
+    console.log(key)
+    if(isSuperAdmin){
+      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
+
+    }
+    
+   else {
+   if (user[0].allowedPages.includes(key)) {
+      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
+    }
+     else{
+        if(allLinks[key].active){
+            window.location.href='Dashboard.html'
+        }
+      }
+    }
+  }
+
+  sidebar.innerHTML += `<a href="#">Logout</a>`;
+}
+renderSidebar(user)
+var studentList = []
+ // 🔁 Load classes on page load
+  // window.addEventListener("DOMContentLoaded", loadClasses);
+
+  // async function loadClasses() {
+  //   console.log(123)
+  //   try {
+  //     let res;
+  //     if (isSuperAdmin) {
+  //       res = await axios.get("http://localhost:3000/api/student/get");
+  //     } else {
+  //       res = await axios.get(`http://localhost:3000/api/student/school/${user[0].school._id}`);
+  //     }
+  //     studentList = res.data.data;
+  //     console.log(studentList)
+  //     // renderTable();
+  //   } catch (err) {
+  //     console.error("Error loading student:", err);
+  //   }
+  // }
+getStudents()
+ async function getStudents(){
+  if(isSuperAdmin){
+    var res= await axios.get(`http://localhost:3000/api/student/get`)
+
+  }
+  else{
+    var res= await axios.get(`http://localhost:3000/api/student/school/${user[0]?.school._id}`)
+
+  }
+    console.log(res.data)
+      studentList = res.data;
+      renderTable();
+
+  }
+
+  function renderTable() {
+    tbody.innerHTML = "";
+
+    if (studentList.length > 0) {
+      studentList.forEach((student, index) => {
+const admissionTypes = student.admissionTypes?.join(", ") || "N/A";
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+        <td>${student.name}</td>
+        <td>${student.class || "N/A"}</td>
+        <td>${student.section || "N/A"}</td>
+        <td>${admissionTypes || "N/A"}</td>
+        <td>
+          <button class="btn btn-info btn-sm" onclick='viewStudent(${JSON.stringify(student)})'>View</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteStudent('${student._id}')">Delete</button>
+        </td>
+        `;
+        tbody.appendChild(row);
+      });
+    } else {
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center">No classes found</td></tr>`;
+    }
+  }
+
+  async function deleteStudent(id) {
+    if (!confirm("Are you sure you want to delete this class?")) return;
+    try {
+      await axios.delete(`http://localhost:3000/api/student/delete/${id}`);
+      studentList = studentList.filter(cls => cls._id !== id);
+      renderTable();
+    } catch (err) {
+      console.error("Failed to delete student:", err);
+    }
+  }
+
+
+    function viewStudent(data) {
+      localStorage.setItem("viewStudentData", JSON.stringify(data));
+      window.location.href = "student.html?view=true";
+    }
+  </script>
+</body>
+</html>

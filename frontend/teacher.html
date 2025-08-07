@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Student Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row flex-nowrap">
+      <!-- Sidebar -->
+      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar sticky-top">
+        <h4>Admin Panel</h4>
+        <nav id="sidebar" class="nav flex-column">
+
+        </nav>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col main-content">
+        <div class="row main-content-area d-flex justify-content-center align-items-start min-vh-100 py-4">
+          <div class="col-10   rounded-3">
+            <h2 class="mb-4">Teacher Admission Form</h2>
+            <div class="row mx-0 p-4 bg-white">
+              <div class="col-6">
+                <label for="teacherImage">Upload Teacher Image</label>
+                <input type="file" name="teacherImage" id="teacherImage" accept="image/*" />
+                <button class="btn btn-dark mt-3 " id="uploadImage">Upload</button>
+              </div>
+              <div class="col-6">
+                <img src="" name='imageUrl' id="teacherImageBox" class="img-fluid " width="50%" alt="">
+              </div>
+            </div>
+            <!-- Personal Info -->
+            <form id="admissionForm">
+
+              <div class="personal-info bg-white p-4">
+
+                <h5 class="mb-3">Personal Information</h5>
+                <div class="row mb-3">
+
+                  <div class="col">
+                    <label>Name</label>
+                    <input type="text" name="name" class="form-control" required />
+                  </div>
+                  <div class="col">
+                    <label>Father Name</label>
+                    <input type="text" name="fatherName" class="form-control" required />
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col">
+                    <label>Date of Birth</label>
+                    <input type="date" name="dob" class="form-control" required />
+                  </div>
+                  <div class="col">
+                    <label>CNIC/B-Form</label>
+                    <input type="text" name="cnic" class="form-control" required />
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col">
+                    <label>Email</label>
+                    <input type="email" name="email" class="form-control" />
+                  </div>
+                  <div class="col">
+                    <label>Phone</label>
+                    <input type="text" name="phone" class="form-control" />
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col">
+                    <label>Gender</label>
+                    <select name="gender" class="form-select">
+                      <option value="">Select</option>
+                      <option>Male</option>
+                      <option>Female</option>
+                    </select>
+                  </div>
+                  <div class="col">
+                    <label>Address</label>
+                    <textarea name="address" rows="1" class="form-control"></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="Qualification-info bg-white p-4 my-5">
+                <!-- Qualification Info -->
+                <h5 class="mt-4 mb-3">Qualification Information</h5>
+                <div class="row mb-3">
+                  <div class="col">
+                    <label>Last Qualification</label>
+                    <input type="text" name="lastQualification" class="form-control" />
+                  </div>
+                  <div class="col">
+                    <label>Last School</label>
+                    <input type="text" name="lastSchool" class="form-control" />
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col">
+                    <label>Admission Date</label>
+                    <input type="date" name="admissionDate" class="form-control" />
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label>Select Admission Type</label><br />
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="admissionType" value="school" />
+                    <label class="form-check-label">School</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="admissionType" value="tuition" />
+                    <label class="form-check-label">Tuition</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="admissionType" value="computer" />
+                    <label class="form-check-label">Computer Class</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="admissionType" value="english" />
+                    <label class="form-check-label">English Language</label>
+                  </div>
+                </div>
+
+                <div id="classSectionFields" class="row mb-3" style="display: none;">
+                  <div class="col">
+                    <label>Admission Class</label>
+                    <select name="class" id="admissionClass" class="form-select">
+
+                    </select>
+                  </div>
+                  <div class="col">
+                    <label>Admission Section</label>
+
+                    <select name="section" id="admissionSection" class="form-select">
+
+                    </select>
+                  </div>
+                </div>
+
+                <div id="computerCourseField" class="mb-3" style="display: none;">
+                  <label>Computer Course</label>
+                  <select name="computerCourse" id="computerCourse" class="form-select">
+
+                  </select>
+
+                  <br>
+                    <button type="button" id="addCompCourseBtn" class="btn btn-success">Add</button>
+              
+
+                  <!-- Table to show added records -->
+                  <table class="table table-bordered mt-3" id="computerCourseTable">
+                    <thead>
+                      <tr>
+                        <th>Course</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                
+
+                </div>
+ 
+                
+                <div id="engCourseField" class="mb-3" style="display: none;">
+                  <label>English Course</label>
+                  <select name="engCourse" id="engCourse" class="form-select">
+                  </select>
+                  <br>
+                    <button type="button" id="addEngCourseBtn" class="btn btn-success">Add</button>
+              
+
+                  <!-- Table to show added records -->
+                  <table class="table table-bordered mt-3" id="engCourseTable">
+                    <thead>
+                      <tr>
+                        <th>Course</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                
+
+                </div>
+ 
+
+                <!-- Only visible if 'school' checkbox is checked -->
+                <div id="teacherSchoolClassFields" style="display: none; margin-top: 20px;">
+                    <h5>School</h5>
+
+                  <div class="d-flex gap-3 align-items-center mb-3">
+                    <select id="teacherSchoolClassDropdown" class="form-control" name="schoolclass" >
+                      <option value="">Select Class</option>
+                    </select>
+
+                    <select id="teacherSchoolSectionDropdown" class="form-control" name="schoolsection" >
+                      <option value="">Select Section</option>
+                    </select>
+
+                    <input type="text" id="teacherSchoolSubjectInput" class="form-control" name="schoolsubject" placeholder="Subject"  />
+
+                    <div class="form-check">
+                      <input type="radio" name="isClassTeacher" value="yes" id="classTeacherYes"
+                        class="form-check-input"  />
+                      <label for="classTeacherYes" class="form-check-label">Class Teacher</label>
+                    </div>
+                    <div class="form-check">
+                      <input type="radio" name="isClassTeacher" value="no" id="classTeacherNo"
+                        class="form-check-input" />
+                      <label for="classTeacherNo" class="form-check-label">Not Class Teacher</label>
+                    </div>
+
+                    <button type="button" id="addTeacherSchoolClassBtn" class="btn btn-success">Add</button>
+                  </div>
+
+                  <!-- Table to show added records -->
+                  <table class="table table-bordered mt-3" id="teacherSchoolClassTable">
+                    <thead>
+                      <tr>
+                        <th>Class</th>
+                        <th>Section</th>
+                        <th>Subject</th>
+                        <th>Class Teacher</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+
+               <!-- Only visible if 'tuition' checkbox is checked -->
+                <div id="teacherTuitionClassFields" style="display: none; margin-top: 20px;">
+                    <h5>Tuition</h5>
+
+                  <div class="d-flex gap-3 align-items-center mb-3">
+                    <br><br>
+                    <select id="teacherTuitionClassDropdown" class="form-control" name="tuitionclass" >
+                      <option value="">Select Class</option>
+                    </select>
+
+                  
+
+                    <input type="text" id="teacherTuitionSubjectInput" class="form-control" name="tuitionsubject" placeholder="Subject"  />
+
+                    
+                    <button type="button" id="addTeacherTuitionClassBtn" class="btn btn-success">Add</button>
+                  </div>
+
+                  <!-- Table to show added records -->
+                  <table class="table table-bordered mt-3" id="teacherTuitionClassTable">
+                    <thead>
+                      <tr>
+                        <th>Class</th>
+                        <th>Subject</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+
+              </div>
+         
+<div class="mb-3">
+  <label class="form-label">Status</label><br>
+
+  <input type="radio" name="status" id="available" value="available" checked>
+  <label for="available">Available</label>
+
+  <input type="radio" name="status" id="left" value="left">
+  <label for="left">Left</label>
+</div>
+
+<div class="mb-3" id="leaveReasonBox" style="display: none;">
+  <label for="leaveReason" class="form-label">Leave Reason</label>
+  <input type="text" name="leftReason" class="form-control" id="leaveReason" placeholder="Enter reason for leaving">
+</div>
+
+          <div class="Fee-info bg-white p-4">
+            <h5 class="mb-3">Salary Info</h5>
+            <div class="row mb-3">
+              <div class="col-md-6 col-12">
+                <label>Salary</label>
+                <input type="number" placeholder="Enter Salary Amount" name="Salary" class="form-control" required />
+              </div>
+
+            </div>
+
+
+          </div>
+          <button type="submit" class="btn btn-primary mt-3">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <!-- JS Logic -->
+  <script>
+        const statusRadios = document.querySelectorAll('input[name="status"]');
+  const leaveReasonBox = document.getElementById('leaveReasonBox');
+  const leaveReasonInput = document.getElementById('leaveReason');
+  
+  // Show/hide Leave Reason box
+  statusRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      leaveReasonBox.style.display = document.getElementById('left').checked ? 'block' : 'none';
+    });
+  });
+    const user = JSON.parse(localStorage.getItem("userData")) || [];
+    const imageBox = document.getElementById("teacherImageBox");
+
+    const isSuperAdmin = user[0]?.designation === "superadmin";
+    var schoolId = isSuperAdmin ? null : user[0].school._id;
+    var isEdit = false
+
+    var imageUrl
+    const sidebar = document.getElementById("sidebar");
+    var editingTeacherId = ''
+    const allLinks = {
+      // dashboard: { name: "Dashboard", file: "Dashboard.html" },
+      addclass: { name: "Add Class", file: "classform.html", active: false },
+      addsection: { name: "Add Section", file: "section.html", active: false },
+      addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active: false },
+      addstudent: { name: "Student Form", file: "student.html", active: false },
+      studentlist: { name: "Student List", file: "studentlist.html", active: false },
+      addteacher: { name: "Teacher Form", file: "teacher.html", active: true },
+      teacherlist: { name: "Teacher List", file: "teacherlist.html", active: false },
+  teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" , active:false},
+
+      adduser: { name: "Add User", file: "userform.html", active: false }
+
+    };
+ if(user.length <= 0){
+     window.location.href= 'Dashboard.html'
+        
+  }
+    function renderSidebar(user) {
+      // console.log(user[0].allowPages)
+      // Always show Dashboard and Logout
+      sidebar.innerHTML = `<a class='' href="Dashboard.html">Dashboard</a>`;
+      if (isSuperAdmin) {
+        sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
+
+      }
+
+      for (const key in allLinks) {
+        console.log(key)
+        if (isSuperAdmin) {
+          sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active ? 'active' : ''}">${allLinks[key].name}</a>`;
+
+        }
+
+        else {
+          if (user[0].allowedPages.includes(key)) {
+            sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active ? 'active' : ''}">${allLinks[key].name}</a>`;
+          }
+          else {
+            if (allLinks[key].active) {
+              window.location.href = 'Dashboard.html'
+            }
+          }
+        }
+      }
+
+      sidebar.innerHTML += `<a href="#">Logout</a>`;
+    }
+    renderSidebar(user)
+    const checkboxes = document.querySelectorAll('input[name="admissionType"]');
+    const classSectionFields = document.getElementById('classSectionFields');
+    const computerCourseField = document.getElementById('computerCourseField');
+    const teachercomputerCourseTableBody = document.querySelector("#computerCourseTable tbody");
+    const addTeacherCompCoursebtn = document.getElementById("addCompCourseBtn");
+
+    const engCourseField = document.getElementById('engCourseField');
+    const engcourseSelect = document.getElementById('engCourse');
+    const addTeacherCoursebtn = document.getElementById("addEngCourseBtn");
+    
+    const teacherEngCourseTableBody = document.querySelector("#engCourseTable tbody");
+
+    const teacherSchoolClassFields = document.getElementById("teacherSchoolClassFields");
+    const teacherSchoolClassDropdown = document.getElementById("teacherSchoolClassDropdown");
+    const teacherSchoolSectionDropdown = document.getElementById("teacherSchoolSectionDropdown");
+    const teacherSchoolSubjectInput = document.getElementById("teacherSchoolSubjectInput");
+    const addTeacherSchoolClassBtn = document.getElementById("addTeacherSchoolClassBtn");
+    const teacherSchoolClassTableBody = document.querySelector("#teacherSchoolClassTable tbody");
+
+    // tuition divs
+     const teacherTuitionClassFields = document.getElementById("teacherTuitionClassFields");
+    const teacherTuitionClassDropdown = document.getElementById("teacherTuitionClassDropdown");
+    const teacherTuitionSectionDropdown = document.getElementById("teacherTuitionSectionDropdown");
+    const teacherTuitionSubjectInput = document.getElementById("teacherTuitionSubjectInput");
+    const addTeacherTuitionClassBtn = document.getElementById("addTeacherTuitionClassBtn");
+    const teacherTuitionClassTableBody = document.querySelector("#teacherTuitionClassTable tbody");
+
+    function updateFormDisplay() {
+
+      const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+      // classSectionFields.style.display = (selected.includes('school') || selected.includes('tuition')) ? 'flex' : 'none';
+      computerCourseField.style.display = selected.includes('computer') ? 'block' : 'none';
+      teacherSchoolClassFields.style.display = selected.includes('school') ? 'block' : 'none';
+      teacherTuitionClassFields.style.display = selected.includes('tuition') ? 'block' : 'none';
+      engCourseField.style.display = selected.includes('english') ? 'block' : 'none';
+
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', updateFormDisplay));
+
+    document.getElementById('admissionForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+      if (imageUrl) {
+        data.imageUrl = imageUrl
+      }
+      else {
+        alert('select image')
+        console.log('not')
+        return
+      }
+
+      data.admissionTypes = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+      data.schoolClassesRec = teacherSchoolClassRecords || []
+      data.schooltuitionRec = teacherTuitionClassRecords || []
+      data.englishCourses = teacherEnglishCourses || []
+      data.computerCourses = teacherCompCourses || []
+       delete data.schoolclass;
+        delete data.schoolsection;
+        delete data.schoolsubject;
+           delete data.tuitionclass;
+        delete data.tuitionsection;
+        delete data.tuitionsubject;
+        delete data.isClassTeacher
+        delete data.engCourse
+        delete data.computerCourse;
+const selectedStatus = document.querySelector('input[name="status"]:checked').value;
+    const leaveReason = leaveReasonInput.value;
+
+        if(selectedStatus == 'left'){ 
+          data.status = selectedStatus
+          data.leftReason = leaveReason
+
+        }
+        else{
+          data.status = selectedStatus
+           data.leftReason = ''
+
+        }
+   
+      data.schoolId = isSuperAdmin
+        ? document.getElementById("schoolDropdown")?.value
+        : schoolId;
+      const submitBtn = document.querySelector('button[type="submit"]');
+      delete data.admissionType
+      try {
+        if (isEdit) {
+          submitBtn.textContent = 'updating...'
+          // UPDATE STUDENT
+          const res = await axios.put(
+            `http://localhost:3000/api/teacher/update/${editingTeacherId}`,
+            data
+          );
+          alert(res.data.message || " Teacher updated successfully");
+          editingTeacherId = null;
+          submitBtn.textContent = 'submit'
+
+        } else {
+          submitBtn.textContent = 'submiting...'
+
+          // ADD STUDENT
+          const res = await axios.post(
+            "http://localhost:3000/api/teacher/add",
+            data
+          );
+          alert(res.data.message || "teacher added successfully");
+          submitBtn.textContent = 'submit'
+
+        }
+        form.reset();
+        imageBox.src = ''
+        teacherEngCourseTableBody.innerHTML =''
+        teacherSchoolClassTableBody.innerHTML = ''
+        teacherTuitionClassTableBody.innerHTML = ''
+        teachercomputerCourseTableBody.innerHTML = ''
+        // feeInput.value = "";
+      } catch (err) {
+        console.error("Failed to add teacher:", err);
+        alert("Failed to add teacher. Please check the form and try again.");
+      }
+      console.log('Submitted Data:', data);
+
+
+      // TODO: Send to backend using fetch or axios
+    });
+
+    var queryParams = new URLSearchParams(window.location.search)
+    var isViewmode = queryParams.get('view') === 'true'
+
+    const form = document.getElementById("admissionForm");
+   async function loadData() {
+      var teacherData = JSON.parse(localStorage.getItem('viewteacherData'))
+    console.log(teacherData)
+      editingTeacherId = teacherData?._id
+
+      if (isViewmode && teacherData) {
+        if(teacherData.schoolClassesRec.length > 0){
+        teacherSchoolClassRecords = teacherData.schoolClassesRec
+        renderSchoolClass()
+      }
+
+      
+          if(teacherData.schooltuitionRec.length > 0){
+        teacherTuitionClassRecords = teacherData.schooltuitionRec
+        renderTuitionClass()
+      }
+             if(teacherData.computerCourses.length > 0){
+        teacherCompCourses = teacherData.computerCourses
+        renderCompCourse()
+      }
+     
+        if(teacherData.englishCourses.length > 0){
+        teacherEnglishCourses = teacherData.englishCourses
+        renderEngCourse()
+      }
+
+     
+
+          if (teacherData.schoolId) {
+    if(isSuperAdmin){
+    schoolDropdown.value = teacherData.schoolId;
+    schoolId = teacherData.schoolId;
+    }
+    schoolId = teacherData.schoolId;
+
+    await Promise.all([
+      loadClasses(),
+      loadSections(),
+      loadCourses(),
+      loadEngCourses()
+    ]);
+  }
+
+
+        for (let key in teacherData) {
+          if (key == 'imageUrl') {
+            console.log(imageBox)
+            imageBox.src = teacherData[key]
+            imageUrl = teacherData[key]
+          }
+
+
+          const el = form.elements[key];
+          if (!el || key === "admissionTypes") continue;
+
+
+          if (key === "dob" || key === 'admissionDate') {
+            const dateValue = teacherData[key]?.slice(0, 10);
+            console.log("Setting DOB:", dateValue);
+            el.value = teacherData[key].slice(0, 10);
+          } else if (el.type === "select-one") {
+            el.value = teacherData[key] || "";
+          } else {
+            el.value = teacherData[key];
+          }
+
+          el.disabled = true; // disable after setting value
+
+        }
+
+
+        // ✅ Special handling for checkboxes (admissionType[])
+        if (Array.isArray(teacherData.admissionTypes)) {
+          document.querySelectorAll('input[name="admissionType"]').forEach(cb => {
+            cb.checked = teacherData.admissionTypes.includes(cb.value);
+          });
+        }
+
+        updateFormDisplay()
+
+        Array.from(form.elements).forEach(el => el.disabled = true)
+
+        document.getElementById('uploadImage').disabled = true
+        document.getElementById('teacherImage').disabled = true
+        const submitBtn = document.querySelector('button[type="submit"]');
+        submitBtn.outerHTML = `<button type="button" id="editBtn" class="btn btn-warning mt-3">Edit</button>`;
+
+        document.getElementById("editBtn").addEventListener("click", () => {
+          Array.from(form.elements).forEach(el => el.disabled = false);
+          document.getElementById('teacherImage').disabled = false
+          document.getElementById('uploadImage').disabled = false
+
+          document.getElementById("editBtn").style.display = "none";
+          isEdit = true
+
+          const submitBtn = document.createElement("button");
+          submitBtn.className = "btn btn-primary mt-3";
+          submitBtn.type = "submit";
+          submitBtn.textContent = "Update ";
+          form.appendChild(submitBtn);
+        });
+
+      }
+    }
+
+    document.getElementById('uploadImage').addEventListener('click', async () => {
+      const fileInput = document.getElementById("teacherImage");
+
+      if (fileInput.files.length > 0) {
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+        formData.append("upload_preset", "teacher_unsigned");  // your unsigned upload preset
+
+        try {
+          const res = await axios.post(
+            "https://api.cloudinary.com/v1_1/drtd00x70/image/upload",
+            formData,  // <-- send formData directly here
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          console.log(res)
+          const data = res.data;
+          imageUrl = data.secure_url;
+          imageBox.src = imageUrl
+          console.log("Uploaded Image URL:", imageUrl);
+        } catch (error) {
+          console.error("Upload error:", error);
+        }
+      } else {
+        console.log("No file selected");
+      }
+    });
+
+    const classSelect = document.getElementById("admissionClass");
+    const sectionSelect = document.getElementById("admissionSection");
+    const courseSelect = document.getElementById("computerCourse");
+    let allClasses = [];
+    let allSections = [];
+    let allCourses = [];
+
+    // Load data on page load
+    window.addEventListener("DOMContentLoaded", async () => {
+      await Promise.all([
+        loadSchools(),
+        loadClasses(),
+        loadSections(),
+        loadCourses(),
+      loadEngCourses()
+
+      ]);
+      loadData()
+    });
+
+    let schoolList = [];
+
+  // 🔽 Inject dropdown if superadmin
+  
+    // 🟢 Fetch and populate schools dropdown
+    async function loadSchools() {
+      if (isSuperAdmin) {
+    const schoolDropdown = document.createElement("select");
+    schoolDropdown.className = "form-select mb-3";
+    schoolDropdown.id = "schoolDropdown";
+    schoolDropdown.required = true;
+    schoolDropdown.addEventListener('change', async(e)=>{
+      schoolId = e.target.value
+      loadClasses()
+      loadCourses()
+      loadEngCourses()
+      loadSections()
+      // loadData()
+    })
+    const label = document.createElement("label");
+    label.textContent = "Select School";
+    label.setAttribute("for", "schoolDropdown");
+    label.className = "form-label";
+
+    // const form = document.getElementById("classForm");
+    form.insertBefore(label, form.children[2]); // Insert before fee input
+    form.insertBefore(schoolDropdown, form.children[3]);
+  
+      try {
+        const res = await axios.get("http://localhost:3000/api/school/get");
+        schoolList = res.data.data;
+      schoolDropdown.innerHTML = `<option value="">Select School</option>`;
+
+        schoolList.forEach(school => {
+          const option = document.createElement("option");
+          option.value = school._id;
+          option.textContent = school.name;
+          schoolDropdown.appendChild(option);
+        });
+      } catch (err) {
+        console.error("Error fetching schools:", err);
+      }
+    }
+    }
+
+    // loadSchools();
+  
+
+  async function loadEngCourses() {
+           
+    if(schoolId == null){
+        console.log('school select')
+        return
+      }
+    try {
+      const url =`http://localhost:3000/api/english-courses/school/${schoolId}`;
+      const res = await axios.get(url);
+      engCourses = res.data.data;
+      console.log(engCourses)
+      engcourseSelect.innerHTML = `<option value="">Select Course</option>`;
+      engCourses.forEach(course => {
+        const option = document.createElement("option");
+        option.value = course.levelName;
+        option.textContent = course.levelName;
+
+        engcourseSelect.appendChild(option);
+      });
+    } catch (err) {
+      console.error("Error loading computer courses:", err);
+    }
+  }
+
+  
+
+
+    // Load Classes
+    async function loadClasses() {  
+      
+      if(schoolId == null){
+        return
+      }
+
+      try {
+        const url =  `http://localhost:3000/api/class/getBySchool/${schoolId}`;
+        const res = await axios.get(url);
+        allClasses = res.data.data;
+        teacherSchoolClassDropdown.innerHTML = `<option value="">Select Class</option>`;
+        teacherTuitionClassDropdown.innerHTML = `<option value="">Select Class</option>`;
+        allClasses.forEach(cls => {
+          const option = document.createElement("option");
+          option.value = cls.name;
+          option.textContent = cls.name;
+          option.setAttribute("data-id", cls._id); // store ID in data attribute
+
+          teacherSchoolClassDropdown.appendChild(option);
+        });
+             allClasses.forEach(cls => {
+          const option = document.createElement("option");
+          option.value = cls.name;
+          option.textContent = cls.name;
+          option.setAttribute("data-id", cls._id); // store ID in data attribute
+
+          teacherTuitionClassDropdown.appendChild(option);
+        });
+      } catch (err) {
+        console.error("Error loading classes:", err);
+      }
+    }
+
+    // Load Sections (independent of class)
+    async function loadSections() {
+       if(schoolId == null){
+        return
+      }
+      try {
+        const url =  `http://localhost:3000/api/section/school/${schoolId}`;
+        const res = await axios.get(url);
+        allSections = res.data.data;
+        teacherSchoolSectionDropdown.innerHTML = `<option value="">Select Section</option>`;
+        allSections.forEach(sec => {
+          const option = document.createElement("option");
+          option.value = sec.name;
+          option.textContent = sec.name;
+          teacherSchoolSectionDropdown.appendChild(option);
+        });
+      } catch (err) {
+        console.error("Error loading sections:", err);
+      }
+    }
+
+    // Load Computer Courses
+    async function loadCourses() {
+       if(schoolId == null){
+        return
+      }
+      try {
+        const url = `http://localhost:3000/api/course/school/${schoolId}`;
+        const res = await axios.get(url);
+        allCourses = res.data.data;
+        courseSelect.innerHTML = `<option value="">Select Course</option>`;
+        allCourses.forEach(course => {
+          const option = document.createElement("option");
+          option.value = course.name;
+          option.textContent = course.name;
+          option.setAttribute("data-id", course._id); // store ID in data attribute
+
+          courseSelect.appendChild(option);
+        });
+      } catch (err) {
+        console.error("Error loading computer courses:", err);
+      }
+    }
+
+
+    var teacherSchoolClassRecords = []
+
+addTeacherSchoolClassBtn.addEventListener("click", () => {
+  const classVal = teacherSchoolClassDropdown.value;
+  const sectionVal = teacherSchoolSectionDropdown.value;
+  const subjectVal = teacherSchoolSubjectInput.value;
+  const isClassTeacherVal = document.querySelector('input[name="isClassTeacher"]:checked')?.value;
+
+  if (!classVal || !sectionVal || !subjectVal || !isClassTeacherVal) {
+    alert("Please fill all fields.");
+    return;
+  }
+
+  const entry = {
+    class: classVal,
+    section: sectionVal,
+    subject: subjectVal,
+    isClassTeacher: isClassTeacherVal === 'yes'
+  };
+
+  teacherSchoolClassRecords.push(entry);
+  console.log(teacherSchoolClassRecords)
+  const index = teacherSchoolClassRecords.length - 1; // For delete tracking
+
+  renderSchoolClass()
+
+  // Reset fields
+  teacherSchoolClassDropdown.value=""
+  teacherSchoolSectionDropdown.value=""
+  teacherSchoolSubjectInput.value = "";
+  document.querySelectorAll('input[name="isClassTeacher"]').forEach(r => r.checked = false);
+});
+
+var teacherTuitionClassRecords = []
+addTeacherTuitionClassBtn.addEventListener("click", () => {
+  
+  const classVal = teacherTuitionClassDropdown.value;
+  const subjectVal = teacherTuitionSubjectInput.value;
+
+  if (!classVal || !subjectVal ) {
+    alert("Please fill all fields.");
+    return;
+  }
+
+  const entry = {
+    class: classVal,
+    subject: subjectVal,
+  };
+
+  teacherTuitionClassRecords.push(entry);
+ 
+  const index = teacherTuitionClassRecords.length - 1; // For delete tracking
+
+  renderTuitionClass()
+  // Reset fields
+  teacherTuitionClassDropdown.value=""
+  teacherTuitionSubjectInput.value=""
+});
+
+var teacherEnglishCourses = []
+
+addTeacherCoursebtn.addEventListener("click", () => {
+  const courseName = engcourseSelect.value;
+ 
+  if (!courseName) {
+    alert("Please fill all fields.");
+    return;
+  }
+
+  const entry = {
+    courseName: courseName
+    
+  };
+
+  teacherEnglishCourses.push(entry);
+  console.log(teacherEnglishCourses)
+  const index = teacherEnglishCourses.length - 1; // For delete tracking
+
+  renderEngCourse()
+
+  // Reset fields
+  courseName.value=""
+
+});
+
+var teacherCompCourses = []
+
+addTeacherCompCoursebtn.addEventListener("click", () => {
+  const courseName = courseSelect.value;
+ 
+  if (!courseName) {
+    alert("Please fill all fields.");
+    return;
+  }
+
+  const entry = {
+    courseName: courseName
+    
+  };
+
+ var isCourseExist = teacherCompCourses.find(course => course.courseName == entry.courseName)
+  if(isCourseExist) return alert('course already exist')
+  teacherCompCourses.push(entry);
+  console.log(teacherCompCourses)
+  const index = teacherCompCourses.length - 1; // For delete tracking
+  renderCompCourse()
+ 
+
+  // Reset fields
+  courseName.value=""
+
+});
+
+  function renderCompCourse(){
+    teachercomputerCourseTableBody.innerHTML = ''
+    teacherCompCourses.map((course , index)=>{
+      const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${course.courseName}</td>
+    <td><button type="button" class="btn btn-danger btn-sm delete-teacher-class">Delete</button></td>
+  `;
+
+  // Add row to table
+  teachercomputerCourseTableBody.appendChild(row);
+
+  // Add delete functionality
+  row.querySelector(".delete-teacher-class").addEventListener("click", () => {
+    // Remove from array
+    teacherCompCourses.splice(index, 1);
+    // Remove from DOM
+    row.remove();
+  });
+    })
+     
+  }
+
+  function renderEngCourse(){
+    teacherEngCourseTableBody.innerHTML = ''
+    teacherEnglishCourses.map((course , index)=>{
+      const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${course.courseName}</td>
+    <td><button type="button" class="btn btn-danger btn-sm delete-teacher-class">Delete</button></td>
+  `;
+
+  // Add row to table
+  teacherEngCourseTableBody.appendChild(row);
+
+  // Add delete functionality
+  row.querySelector(".delete-teacher-class").addEventListener("click", () => {
+    // Remove from array
+    teacherEnglishCourses.splice(index, 1);
+    // Remove from DOM
+    row.remove();
+  });
+    })
+     
+  }
+
+  function renderTuitionClass(){
+    teacherTuitionClassTableBody.innerHTML = ''
+    teacherTuitionClassRecords.map((tuition , index)=>{
+      const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${tuition.class}</td>
+    <td>${tuition.subject}</td>
+    <td><button type="button" class="btn btn-danger btn-sm delete-teacher-class">Delete</button></td>
+  `;
+
+  // Add row to table
+  teacherTuitionClassTableBody.appendChild(row);
+
+  // Add delete functionality
+  row.querySelector(".delete-teacher-class").addEventListener("click", () => {
+    // Remove from array
+    teacherTuitionClassRecords.splice(index, 1);
+    // Remove from DOM
+    row.remove();
+  });
+    })
+     
+  }
+
+  function renderSchoolClass(){
+    teacherSchoolClassRecords.innerHTML = ''
+    teacherSchoolClassRecords.map((classData , index)=>{
+      const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${classData.class}</td>
+    <td>${classData.section}</td>
+    <td>${classData.subject}</td>
+    <td>${classData.isClassTeacher ? "Yes" : "No"}</td>
+    <td><button type="button" class="btn btn-danger btn-sm delete-teacher-class">Delete</button></td>
+  `;
+
+  // Add row to table
+  teacherSchoolClassTableBody.appendChild(row);
+
+  // Add delete functionality
+  row.querySelector(".delete-teacher-class").addEventListener("click", () => {
+    // Remove from array
+    teacherSchoolClassRecords.splice(index, 1);
+    // Remove from DOM
+    row.remove();
+  });
+    })
+     
+  }
+
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

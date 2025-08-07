@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Registration | EduManage</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 460px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .card h2 {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 24px;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    input {
+      padding: 10px 14px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+      background-color: #fdfdfd;
+    }
+
+    input:focus {
+      border-color: #5c6ac4;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #5c6ac4;
+      color: #fff;
+      font-weight: 600;
+      font-size: 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4b5ac1;
+    }
+
+    .copy-id {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 20px;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+
+    .copy-id span {
+      font-weight: 500;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .copy-id button {
+      padding: 6px 12px;
+      background-color: #5c6ac4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>User Registration</h2>
+
+    <form id="registerForm">
+      <label for="name">Name</label>
+      <input type="text" name="name" id="name" placeholder="e.g. John Doe" required />
+
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email" placeholder="john@example.com" required />
+
+      <label for="contact">Contact</label>
+      <input type="text" name="contact" id="contact" placeholder="03XXXXXXXXX" required />
+
+      <button type="submit">Register</button>
+    </form>
+
+    <div class="copy-id" id="copySection">
+      <span>Your ID: <strong id="userIdDisplay"></strong></span>
+      <button onclick="copyUserId()">Copy</button>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("registerForm");
+    const userIdDisplay = document.getElementById("userIdDisplay");
+    const copySection = document.getElementById("copySection");
+
+    function showToast(type, message) {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: type,
+        title: message,
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+      });
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      copySection.style.display = "none";
+
+      const formData = new FormData(form);
+      const body = {};
+      formData.forEach((val, key) => body[key] = val);
+
+      try {
+        const res = await axios.post("http://localhost:3000/api/auth/register", body);
+        const data = res.data;
+
+        showToast('success', data.message || "Registered successfully! Check email.");
+
+        if (data.userId) {
+          userIdDisplay.textContent = data.userId;
+          copySection.style.display = "flex";
+        }
+
+        form.reset();
+
+      } catch (err) {
+        const errorMessage = err.response?.data?.message || "Something went wrong.";
+        showToast('error', errorMessage);
+      }
+    });
+
+    function copyUserId() {
+      const idText = userIdDisplay.textContent;
+      navigator.clipboard.writeText(idText).then(() => {
+        showToast('success', 'User ID copied to clipboard!');
+      });
+    }
+  </script>
+
+</body>
+</html>

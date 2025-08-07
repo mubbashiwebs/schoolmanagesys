@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student List</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row flex-nowrap">
+      <!-- Sidebar -->
+      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar">
+        <h4>Admin Panel</h4>
+        <nav id="sidebar" class="nav flex-column">
+         
+        </nav>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col main-content ">
+        <div class="container bg-white mt-4 p-5">
+          <h2>Teacher Data List</h2>
+        <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+  <table class="table table-bordered table-hover table-striped align-middle">
+    <thead class="table-light sticky-top">
+      <tr>
+        <th>Name</th>
+        <th>SCl-Sec-Sub</th>
+        <th>TCl-Subject</th>
+        <th>admissionType</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="teacherTableBody">
+      <!-- Dynamic rows -->
+    </tbody>
+  </table>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+     const user = JSON.parse(localStorage.getItem("userData")) ||[];
+  const isSuperAdmin = user[0]?.designation === "superadmin";
+       if(user.length <= 0){
+     window.location.href= 'Dashboard.html'
+        
+  }
+
+    const tbody = document.getElementById("teacherTableBody");
+   var teacherlist = []
+    getTeachers()
+ async function getTeachers(){
+  if(isSuperAdmin){
+    var res= await axios.get(`http://localhost:3000/api/teacher/get`)
+
+  }
+  else{
+    var res= await axios.get(`http://localhost:3000/api/teacher/school/${user[0]?.school._id}`)
+
+  }
+    console.log(res.data)
+    console.log(res.data.message)
+      teacherlist = res.data;
+      renderTable();
+
+  }
+  function renderTable() {
+  tbody.innerHTML = '';
+  if (teacherlist.length > 0) {
+    teacherlist.forEach((teacher, index) => {
+      const admissionTypes = teacher.admissionTypes?.join(", ") || "N/A";
+
+      // Format school class records
+      const schoolClassDetails = teacher.schoolClassesRec?.map(
+        rec => `${rec.class || ''} - ${rec.section || ''} -${rec.subject || ''}`
+      ).join(", ") || "N/A";
+    console.log(teacher.schoolClassesRec.join(','))
+      // Format tuition class records
+      const tuitionClassDetails = teacher.schooltuitionRec?.map(
+        rec => `${rec.class || ''} - ${rec.subject || ''}`
+      ).join(", ") || "N/A";
+      console.log(schoolClassDetails)
+      const allClasses = `${schoolClassDetails}<br><strong>Tuition:</strong> ${tuitionClassDetails}`;
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${teacher.name}</td>
+        <td>${schoolClassDetails}</td>
+        <td>${tuitionClassDetails || "N/A"}</td>
+        <td>${admissionTypes}</td>
+        <td>
+          <button class="btn btn-info btn-sm" onclick='viewTeacher(${JSON.stringify(teacher)})'>View</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteTeacher('${teacher._id}')">Delete</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  } else {
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center">No classes found</td></tr>`;
+  }
+}
+
+
+   async function deleteTeacher(id) {
+    console.log(id)
+      if(!confirm('Are you sure you want to delete this class?'))return
+      try {
+        await axios.delete(`http://localhost:3000/api/teacher/delete/${id}`)
+        teacherlist = teacherlist.filter((teacher)=>teacher._id != id)
+        renderTable()
+      } catch (error) {
+      console.error("Failed to delete teacher:", error.message);
+        
+      }
+    }
+
+    function viewTeacher(data) {
+      localStorage.setItem("viewteacherData", JSON.stringify(data));
+      window.location.href = "teacher.html?view=true";
+    }
+ 
+  const sidebar = document.getElementById("sidebar");
+
+const allLinks = {
+  // dashboard: { name: "Dashboard", file: "Dashboard.html" },
+  addclass: { name: "Add Class", file: "classform.html", active:false },
+  addsection: { name: "Add Section", file: "section.html", active:false },
+  addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active:false },
+  addstudent: { name: "Student Form", file: "student.html", active:false },
+  studentlist: { name: "Student List", file: "studentlist.html" , active:false},
+  addteacher: { name: "Teacher Form", file: "teacher.html",  active:false },
+  teacherlist: { name: "Teacher List", file: "teacherlist.html" , active:true},
+  teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" , active:false},
+
+  adduser: { name: "Add User", file: "userform.html" , active:false}
+
+};
+
+function renderSidebar(user) {
+  // console.log(user[0].allowPages)
+  // Always show Dashboard and Logout
+  sidebar.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
+   if(isSuperAdmin){
+  sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
+
+  }
+
+  for (const key in allLinks) {
+    console.log(key)
+    if(isSuperAdmin){
+      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
+
+    }
+    
+   else {
+   if (user[0].allowedPages.includes(key)) {
+      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
+    }
+     else{
+        if(allLinks[key].active){
+            window.location.href='Dashboard.html'
+        }
+      }
+    }
+  }
+
+  sidebar.innerHTML += `<a href="#">Logout</a>`;
+}
+renderSidebar(user)
+  </script>
+</body>
+</html>

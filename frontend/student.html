@@ -1,0 +1,910 @@
+  <!DOCTYPE html>
+  <html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Student Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="row flex-nowrap">
+        <!-- Sidebar -->
+        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 d-md-block d-none sidebar sticky-top">
+          <h4>Admin Panel</h4>
+          <nav id="sidebar" class="nav flex-column">
+        
+          </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col main-content">
+          <div class="row main-content-area d-flex justify-content-center align-items-start min-vh-100 py-4">
+            <div class="col-10  rounded-3">
+              <h2 class="mb-4">Student Admission Form</h2>
+
+              <div class="row mx-0 p-4 bg-white">
+              <div class="col-6">
+                <label for="teacherImage">Upload Student Image</label>
+                <input type="file" name="studentImage" id="studentImage" accept="image/*" />
+                <button class="btn btn-dark mt-3 " id="uploadImage">Upload</button>
+              </div>
+              <div class="col-6">
+                <img src="" name='imageUrl' id="studentImageBox" class="img-fluid " width="100px" alt="">
+              </div>
+            </div>
+              <form id="admissionForm">
+                <!-- Personal Info -->
+                <div class="personal-info bg-white p-4">
+                  <h5 class="mb-3">Personal Information</h5>
+                  <div class="row mb-3">
+                       <div class="col-12">
+                      <label class="fw-bold">GrNo :</label>
+                      <label name='grno' id="grno"></label>
+                    </div>
+                    <br><br>
+                    <div class="col">
+                      <label>Name</label>
+                      <input type="text" name="name" class="form-control" required />
+                    </div>
+                    <div class="col">
+                      <label>Father Name</label>
+                      <input type="text" name="fatherName" class="form-control" required />
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col">
+                      <label>Date of Birth</label>
+                      <input type="date" name="dob" class="form-control" required />
+                    </div>
+                    <div class="col">
+                      <label>CNIC/B-Form</label>
+                      <input type="text" name="cnic" class="form-control" required />
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col">
+                      <label>Email</label>
+                      <input type="email" name="email" class="form-control" />
+                    </div>
+                    <div class="col">
+                      <label>Phone</label>
+                      <input type="text" name="phone" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col">
+                      <label>Gender</label>
+                      <select name="gender" class="form-select">
+                        <option value="">Select</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <label>Address</label>
+                      <textarea name="address" rows="1" class="form-control"></textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="Qualification-info bg-white p-4 my-5">
+                  <!-- Qualification Info -->
+                  <h5 class="mt-4 mb-3">Qualification Information</h5>
+                  <div class="row mb-3">
+                    <div class="col">
+                      <label>Last Qualification</label>
+                      <input type="text" name="lastQualification" class="form-control" />
+                    </div>
+                    <div class="col">
+                      <label>Last School</label>
+                      <input type="text" name="lastSchool" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col">
+                      <label>Admission Date</label>
+                      <input type="date" name="admissionDate" class="form-control" />
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label>Select Admission Type</label><br />
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" name="admissionType" value="school" />
+                      <label class="form-check-label">School</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" name="admissionType" value="tuition" />
+                      <label class="form-check-label">Tuition</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" name="admissionType" value="computer" />
+                      <label class="form-check-label">Computer Class</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" name="admissionType" value="english" />
+                      <label class="form-check-label">English Language</label>
+                    </div>
+                  </div>
+
+                  <div id="classSectionFields" class="row mb-3" style="display: none;">
+                    <div class="col">
+                      <label>Admission Class</label>
+                      <select name="class" id="admissionClass" class="form-select">
+                      <!-- <option value="">Select Class</option>
+                      <option value="8th">8</option>
+                      <option value="9th">9</option>
+                      <option value="10th">10</option> -->
+                    </select>
+                    </div>
+                    <div class="col">
+                      <label>Admission Section</label>
+
+                      <select name="section" id="admissionSection" class="form-select">
+                      <!-- <option value="">Select Course</option> -->
+                      <!-- <option value="A">A</option>
+                      <option value="B">B</option>
+                      <option value="C">C</option> -->
+                    </select>
+                    </div>
+                  </div>
+
+                  <div id="computerCourseField" class="mb-3" style="display: none;">
+                    <label>Computer Course</label>
+                    <select name="computerCourse" id="computerCourse" class="form-select">
+                      <!-- <option value="">Select Course</option>
+                      <option value="ms_office">MS Office</option>
+                      <option value="web_dev">Web Development</option> -->
+                    </select>
+                  </div>
+
+                      <div id="engCourseField" class="mb-3" style="display: none;">
+                    <label>English Course</label>
+                    <select name="englishCourse" id="englishCourse" class="form-select">
+                      <!-- <option value="">Select Course</option>
+                      <option value="ms_office">MS Office</option>
+                      <option value="web_dev">Web Development</option> -->
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+  <label class="form-label">Status</label><br>
+
+  <input type="radio" name="status" id="available" value="available" checked>
+  <label for="available">Available</label>
+
+  <input type="radio" name="status" id="left" value="left">
+  <label for="left">Left</label>
+</div>
+
+<div class="mb-3" id="leaveReasonBox" style="display: none;">
+  <label for="leaveReason" class="form-label">Leave Reason</label>
+  <input type="text" name="leftReason" class="form-control" id="leaveReason" placeholder="Enter reason for leaving">
+</div>
+
+                <div class="Fee-info bg-white p-4" id="Fee-info">
+                  <h5 class="mb-3">Fee Info</h5>
+                  <!-- <div class="row mb-3">
+                    <div class="col">
+                      <label>Fee</label>
+                      <input type="number" name="fee" id="admissionFee" class="form-control" required />
+                    </div>
+                    <div class="col">
+                      <label>Discount</label>
+                      <input type="text" name="discount" id="discount" class="form-control" required />
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col">
+                      <label>Fee Payable</label>
+                      <input type="number" name="feepayable"  disabled class="form-control" required />
+                    </div>
+                    <div class="col">
+                      <button class="btn btn-primary">Print</button>
+                    </div>
+                  </div> -->
+                 
+
+                </div>
+                 <label for="" class="fw-bold">Total Amout :</label>
+                <input type="number" class="form-controls" disabled id="totalFee" name="totalFee" />
+
+                <button type="submit" class="btn btn-primary mt-3">Submit</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- JS Logic -->
+    <script>
+       const statusRadios = document.querySelectorAll('input[name="status"]');
+  const leaveReasonBox = document.getElementById('leaveReasonBox');
+  const leaveReasonInput = document.getElementById('leaveReason');
+  
+  // Show/hide Leave Reason box
+  statusRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      leaveReasonBox.style.display = document.getElementById('left').checked ? 'block' : 'none';
+    });
+  });
+  const user = JSON.parse(localStorage.getItem("userData")) || [];
+  const isSuperAdmin = user[0]?.designation === "superadmin";
+  const fileInput = document.getElementById("studentImage");
+  const imageBox = document.getElementById("studentImageBox");
+     const sidebar = document.getElementById("sidebar");
+var editingStudentId 
+const allLinks = {
+  // dashboard: { name: "Dashboard", file: "Dashboard.html" },
+  addclass: { name: "Add Class", file: "classform.html", active:false },
+  addsection: { name: "Add Section", file: "section.html", active:false },
+  addschool: { name: "Add School", file: "schoolform.html", active:false },
+  addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active:false },
+  addstudent: { name: "Student Form", file: "student.html", active:true },
+  studentlist: { name: "Student List", file: "studentlist.html" , active:false},
+  feeReceipt: { name: "Fee Receipt", file: "feeReceipt.html" , active:false},
+  addteacher: { name: "Teacher Form", file: "teacher.html",  active:false },
+  teacherlist: { name: "Teacher List", file: "teacherlist.html" , active:false},
+  teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" , active:false},
+
+  adduser: { name: "Add User", file: "userform.html" , active:false}
+
+};
+ if(user.length <= 0){
+     window.location.href= 'Dashboard.html'
+        
+  }
+
+function renderSidebar(user) {
+  // console.log(user[0].allowPages)
+  // Always show Dashboard and Logout
+  sidebar.innerHTML = `<a class='' href="Dashboard.html">Dashboard</a>`;
+   if(isSuperAdmin){
+  sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
+
+  }
+
+  for (const key in allLinks) {
+    console.log(key)
+    if(isSuperAdmin){
+      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
+
+    }
+    
+   else {
+   if (user[0].allowedPages.includes(key)) {
+      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
+    }
+     else{
+        if(allLinks[key].active){
+            window.location.href='Dashboard.html'
+        }
+      }
+    }
+  }
+
+  sidebar.innerHTML += `<a href="#">Logout</a>`;
+}
+
+renderSidebar(user)
+ 
+
+    const form = document.getElementById("admissionForm");
+  var isEdit = false
+
+      var imageUrl
+      const checkboxes = document.querySelectorAll('input[name="admissionType"]');
+      const classSectionFields = document.getElementById('classSectionFields');
+      const computerCourseField = document.getElementById('computerCourseField');
+      const englishCourseField = document.getElementById('engCourseField');
+      
+      const admissionClassSelect = document.getElementById("admissionClass");
+      const admissionSectionSelect = document.getElementById("admissionSection");
+      const computerCourse = document.getElementById('computerCourse')
+      function updateFormDisplay() {
+        const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+        classSectionFields.style.display = (selected.includes('school') || selected.includes('tuition')) ? 'flex' : 'none';
+        computerCourseField.style.display = selected.includes('computer') ? 'block' : 'none';
+        engCourseField.style.display = selected.includes('english') ? 'block' : 'none'
+        updateFee()
+      }
+
+      checkboxes.forEach(cb => cb.addEventListener('change', updateFormDisplay));
+
+      document.getElementById('admissionForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+         
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+           if(imageUrl){
+          data.imageUrl = imageUrl
+        }
+        else{
+          alert('select image')
+          console.log('not')
+          return
+        }
+        data.admissionTypes = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+        data.class = admissionClassSelect.options[admissionClassSelect.selectedIndex]?.text || "";
+data.section= admissionSectionSelect.options[admissionSectionSelect.selectedIndex]?.text || "";
+data.computerCourse= computerCourse.options[computerCourse.selectedIndex]?.text || "";
+data.englishCourse = engcourseSelect.options[engcourseSelect.selectedIndex].text || ''
+        if (!data.admissionTypes.includes('school') && !data.admissionTypes.includes('tuition')) {
+          delete data.class;
+          delete data.section;
+        }
+        if (!data.admissionTypes.includes('computer')) {
+          delete data.computerCourse;
+        }
+           if (!data.admissionTypes.includes('english')) {
+          delete data.englishCourse;
+        }
+         // Add schoolId to request body
+    data.schoolId = isSuperAdmin
+      ? document.getElementById("schoolDropdown")?.value
+      : schoolId;
+
+        const selectedStatus = document.querySelector('input[name="status"]:checked').value;
+    const leaveReason = leaveReasonInput.value;
+
+        if(selectedStatus == 'left'){ 
+          data.status = selectedStatus
+          data.leftReason = leaveReason
+
+        }
+        else{
+          data.status = selectedStatus
+           data.leftReason = ''
+
+        }
+
+        data.grno = studentList.length + 1
+
+      // ➕ Add Fee Details
+  const feeTypes = ["school", "tuition", "computer", "english"];
+  const feeDetails = {};
+
+  feeTypes.forEach((type) => {
+    const original = document.getElementById(`${type}Original`);
+    const discount = document.getElementById(`${type}Discount`);
+    const payable = document.getElementById(`${type}Payable`);
+
+    if (original && discount && payable) {
+      feeDetails[type] = {
+        originalFee: Number(original.innerText),
+        discount: Number(discount.value) || 0,
+        payableFee: Number(payable.innerText),
+      };
+    }
+  });
+
+  const totalFee = document.getElementById("totalFee")?.value || 0;
+      const submitBtn = document.querySelector('button[type="submit"]');
+
+  data.feeDetails = feeDetails;
+  data.totalFee = Number(totalFee);
+try{
+   if (isEdit) {
+          submitBtn.textContent = 'updating...'
+
+        // UPDATE STUDENT
+        const res = await axios.put(
+          `http://localhost:3000/api/student/update/${editingStudentId}`,
+          data
+        );
+        alert(res.data.message || "Student updated successfully");
+        editingStudentId = null;
+        submitbtn.textContent = 'submit'
+      } else {
+        // ADD STUDENT
+        submitbtn.textContent = 'submiting...'
+
+        const res = await axios.post(
+          "http://localhost:3000/api/student/add",
+          data
+        );
+        alert(res.data.message || "Student added successfully");
+          submitBtn.textContent = 'submit'
+        
+      }
+      form.reset();
+      feeInfo.innerHTML = ''
+      imageBox.src = ''
+      imageUrl = ''
+      fileInput.value = ''
+      // feeInput.value = "";
+    } catch (err) {
+      console.error("Failed to add student:", err);
+      alert("Failed to add student. Please check the form and try again.");
+    }
+        console.log('Submitted Data:', data);
+        // TODO: Send to backend using fetch or axios
+      });
+
+        const queryParams = new URLSearchParams(window.location.search);
+    const isViewMode = queryParams.get("view") === "true";
+  var studentData 
+
+
+async function loadData() {
+  studentData = JSON.parse(localStorage.getItem("viewStudentData"));
+  console.log(studentData);
+
+  editingStudentId = studentData?._id;
+  console.log(editingStudentId);
+  if (!isViewMode || !studentData) return;
+  console.log(studentData.grno)
+        const grnoVal = document.getElementById('grno')
+        grnoVal.innerHTML = studentData.grno
+   if(studentData.status == 'left'){
+    leaveReasonBox.style.display = 'block'
+   }
+  // Set image if exists
+  if (studentData.imageUrl) {
+    imageBox.src = studentData.imageUrl;
+    imageUrl = studentData.imageUrl;
+  }
+
+  // Set schoolId and load dependent dropdowns
+  if (studentData.schoolId) {
+    if(isSuperAdmin){
+    schoolDropdown.value = studentData.schoolId;
+    schoolId = studentData.schoolId;
+    }
+    schoolId = studentData.schoolId;
+
+    await Promise.all([
+      loadClasses(),
+      loadSections(),
+      loadCourses(),
+      loadEngCourses()
+    ]);
+  }
+
+  // Fill basic fields (excluding special ones)
+  for (let key in studentData) {
+    if (["imageUrl", "schoolId", "admissionTypes"].includes(key)) continue;
+
+    const el = form.elements[key];
+    if (!el) continue;
+
+    if (key === "dob" || key === "admissionDate") {
+      el.value = studentData[key]?.slice(0, 10);
+    } else if (el.type === "select-one") {
+      el.value = studentData[key] || "";
+    } else {
+      el.value = studentData[key];
+    }
+  }
+
+  // ✅ Set dropdown selections from loaded options
+
+  if (studentData.class) {
+    const selected = allClasses.find(c => c.name === studentData.class);
+    if (selected) classSelect.value = selected._id;
+  }
+
+  if (studentData.admissionSection) {
+    sectionSelect.value = studentData.admissionSection;
+  }
+
+  if (studentData.computerCourse) {
+    const selected = allCourses.find(c => c.name === studentData.computerCourse);
+    console.log(selected)
+    if (selected) courseSelect.value = selected._id;
+  }
+
+  if (studentData.englishCourse) {
+    const selected = engCourses.find(c => c.levelName === studentData.englishCourse);
+    if (selected) engcourseSelect.value = selected.fee;
+  }
+
+  // Check admissionTypes checkboxes
+  if (Array.isArray(studentData.admissionTypes)) {
+    document.querySelectorAll('input[name="admissionType"]').forEach(cb => {
+      cb.checked = studentData.admissionTypes.includes(cb.value);
+    });
+  }
+
+  // Disable fee discount input fields
+  setTimeout(() => {
+    updateFormDisplay()
+    const feeTypes = ["school", "tuition", "computer", "english"];
+    feeTypes.forEach(type => {
+      const discount = document.getElementById(`${type}Discount`);
+      if (discount) discount.disabled = true;
+    });
+  }, 150);
+
+  // Disable entire form initially
+  imageUrl = studentData.imageUrl || "";
+  document.getElementById('studentImage').disabled = true;
+  document.getElementById('uploadImage').disabled = true;
+  Array.from(form.elements).forEach(el => el.disabled = true);
+  const submitBtn = document.querySelector('button[type="submit"]');
+  submitBtn.outerHTML = `<button type="button" id="editBtn" class="btn btn-warning mt-3">Edit</button>`;
+
+  // Enable form on edit
+  document.getElementById("editBtn").addEventListener("click", () => {
+    Array.from(form.elements).forEach(el => el.disabled = false);
+    document.getElementById("editBtn").style.display = "none";
+    isEdit = true;
+    document.getElementById('studentImage').disabled = false;
+    document.getElementById('uploadImage').disabled = false;
+
+    const submitBtn = document.createElement("button");
+    submitBtn.className = "btn btn-primary mt-3";
+    submitBtn.type = "submit";
+    submitBtn.id = 'submitbtn'
+    submitBtn.textContent = "Update";
+    form.appendChild(submitBtn);
+  });
+}
+
+
+  
+
+
+  var schoolId = isSuperAdmin ? null : user[0].school._id;
+  var feeInfo = document.getElementById('Fee-info')
+  // Form elements
+  const classSelect = document.getElementById("admissionClass");
+  const sectionSelect = document.getElementById("admissionSection");
+  const courseSelect = document.getElementById("computerCourse");
+  const engCourseField = document.getElementById("engCourseField");
+  const engcourseSelect = document.getElementById("englishCourse");
+  const feeInput = document.getElementById("admissionFee");
+  // const form = document.getElementById("studentForm");
+
+  let allClasses = [];
+  let allSections = [];
+  let allCourses = [];
+  let engCourses = [];
+   let schoolList = [];
+var schoolDropdown
+  // 🔽 Inject dropdown if superadmin
+ 
+    // 🟢 Fetch and populate schools dropdown
+    async function loadSchools() {
+       if (isSuperAdmin) {
+     schoolDropdown = document.createElement("select");
+    schoolDropdown.className = "form-select mb-3";
+    schoolDropdown.id = "schoolDropdown";
+    schoolDropdown.required = true;
+    schoolDropdown.addEventListener('change', async(e)=>{
+      schoolId = e.target.value
+      loadClasses()
+      loadCourses()
+      loadEngCourses()
+      loadSections()
+      schoolId = e.target.value
+      getStudents()
+      // loadData()
+    })
+    const label = document.createElement("label");
+    label.textContent = "Select School";
+    label.setAttribute("for", "schoolDropdown");
+    label.className = "form-label";
+
+    // const form = document.getElementById("classForm");
+    form.insertBefore(label, form.children[2]); // Insert before fee input
+    form.insertBefore(schoolDropdown, form.children[3]);
+  
+      
+      try {
+        const res = await axios.get("http://localhost:3000/api/school/get");
+        schoolList = res.data.data;
+      schoolDropdown.innerHTML = `<option value="">Select School</option>`;
+
+        schoolList.forEach(school => {
+          const option = document.createElement("option");
+          option.value = school._id;
+          option.textContent = school.name;
+          schoolDropdown.appendChild(option);
+        });
+      } catch (err) {
+        console.error("Error fetching schools:", err);
+      }
+
+    }
+    }
+  
+  
+
+  // Load data on page load
+  window.addEventListener("DOMContentLoaded", async () => {
+
+    
+    await Promise.all([
+      
+    loadSchools(),
+      loadClasses(),
+      loadSections(),
+      loadCourses(),
+      loadEngCourses()
+    ]);
+    
+    loadData()
+
+  });
+
+  // Load Classes
+  async function loadClasses() {
+    try {
+      if(schoolId == null){
+        console.log('school select')
+        return
+      }
+
+      console.log('reach')
+      const url = 
+         
+        `http://localhost:3000/api/class/getBySchool/${schoolId}`;
+      const res = await axios.get(url);
+      allClasses = res.data.data;
+      classSelect.innerHTML = `<option value="">Select Class</option>`;
+      allClasses.forEach(cls => {
+        const option = document.createElement("option");
+        option.value = cls._id;
+        option.textContent = cls.name;
+
+        classSelect.appendChild(option);
+      });
+    } catch (err) {
+      console.error("Error loading classes:", err);
+    }
+  }
+
+  // Load Sections (independent of class)
+  async function loadSections() {
+          if(schoolId == null){
+        console.log('school select')
+        return
+      }
+      console.log(schoolId)
+    try {
+      const url =  `http://localhost:3000/api/section/school/${schoolId}`;
+      const res = await axios.get(url);
+      allSections = res.data.data;
+      sectionSelect.innerHTML = `<option value="">Select Section</option>`;
+      allSections.forEach(sec => {
+        const option = document.createElement("option");
+        option.value = sec.name;
+        option.textContent = sec.name;
+        sectionSelect.appendChild(option);
+      });
+    } catch (err) {
+      console.error("Error loading sections:", err);
+    }
+  }
+
+  // Load Computer Courses
+  async function loadCourses() {
+          if(schoolId == null){
+        console.log('school select')
+        return
+      }
+    try {
+      const url =`http://localhost:3000/api/course/school/${schoolId}`;
+      const res = await axios.get(url);
+      allCourses = res.data.data;
+      courseSelect.innerHTML = `<option value="">Select Course</option>`;
+      allCourses.forEach(course => {
+        const option = document.createElement("option");
+        option.value = course._id;
+        option.textContent = course.name;
+
+        courseSelect.appendChild(option);
+      });
+    } catch (err) {
+      console.error("Error loading computer courses:", err);
+    }
+  }
+
+    async function loadEngCourses() {
+            if(schoolId == null){
+        console.log('school select')
+        return
+      }
+    try {
+      const url =`http://localhost:3000/api/english-courses/school/${schoolId}`;
+      const res = await axios.get(url);
+      engCourses = res.data.data;
+      console.log(engCourses)
+      engcourseSelect.innerHTML = `<option value="">Select Course</option>`;
+      engCourses.forEach(course => {
+        const option = document.createElement("option");
+        option.value = course.fee;
+        option.textContent = course.levelName;
+
+        engcourseSelect.appendChild(option);
+      });
+    } catch (err) {
+      console.error("Error loading computer courses:", err);
+    }
+  }
+
+ function updateFee() {
+
+  if (!courseSelect || courseSelect.selectedIndex === -1 || !classSelect || classSelect.selectedIndex === -1 ) {
+    console.warn("Class or course not selected properly.");
+    return;
+  }
+
+  const selectedCourseOption = courseSelect.options[courseSelect.selectedIndex];
+  const selectedCourseId = selectedCourseOption?.value;
+  const selectedCourse = allCourses.find(course => course._id === selectedCourseId);
+
+  const selectedClassOption = classSelect.options[classSelect.selectedIndex];
+  const selectedClassId = selectedClassOption?.value;
+  const selectedClass = allClasses.find(cls => cls._id === selectedClassId);
+  
+  // ... rest of your code
+
+
+
+  const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+  feeInfo.innerHTML = ''; // Clear old content
+
+  let totalFee = 0;
+
+  const createFeeSection = (label, feeAmount, discount, key) => {
+    console.log(discount.discount)
+    const sectionId = `${key}FeeSection`;
+    const discountId = `${key}Discount`;
+    const payableId = `${key}Payable`;
+
+    feeInfo.innerHTML += `
+      <div class="row my-2" id="${sectionId}">
+        <div class="col d-flex">
+          <label class="fw-bold me-2">${label} Fee:</label>
+          <p class="mb-0" id="${key}Original">${feeAmount}</p>
+        </div>
+        <div class="col-4">
+          <label class="fw-bold">Discount:</label>
+          <input type="number" min="0" value="${discount.discount}" class="form-control" id="${discountId}" />
+        </div>
+        <div class="col d-flex">
+          <label class="fw-bold me-2">Payable:</label>
+          <p class="mb-0" id="${payableId}">${feeAmount-discount.discount}</p>
+        </div>
+      </div>
+    `;
+
+    // Attach event listener to update payable fee on discount input
+    setTimeout(() => {
+      const discountInput = document.getElementById(discountId);
+      const payableField = document.getElementById(payableId);
+      discountInput.addEventListener('input', () => {
+        const discount = parseFloat(discountInput.value) || 0;
+        const payable = Math.max(0, feeAmount - discount);
+        payableField.innerText = payable;
+        calculateTotalFee(); // update total on any discount change
+      });
+    }, 100);
+  };
+
+  if (selected.includes('school') && selectedClass) {
+    createFeeSection('School', Number(selectedClass.fee), { discount: studentData?.feeDetails?.school?.discount || 0 }, 'school');
+    totalFee += Number(selectedClass.fee);
+  }
+
+  if (selected.includes('tuition') && selectedClass) {
+    createFeeSection('Tuition', Number(selectedClass.tuitionFee), { discount: studentData?.feeDetails?.tuition?.discount || 0 }, 'tuition');
+    totalFee += Number(selectedClass.tuitionFee);
+  }
+
+  if (selected.includes('computer') && selectedCourse) {
+    createFeeSection('Computer', Number(selectedCourse.computerFee || selectedCourse.fee), { discount: studentData?.feeDetails?.computer?.discount || 0 }, 'computer');
+    totalFee += Number(selectedCourse.computerFee || selectedCourse.fee);
+  }
+
+  if (selected.includes('english') && engcourseSelect) {
+    createFeeSection('English', Number(engcourseSelect.value || 0),  { discount: studentData?.feeDetails?.english?.discount || 0 }, 'english');
+    totalFee += Number(engcourseSelect.value || 0);
+  }
+
+  setTimeout(() => calculateTotalFee(), 100); // calculate total at the end
+}
+
+function calculateTotalFee() {
+  const feeTypes = ['school', 'tuition', 'computer', 'english'];
+  let total = 0;
+  feeTypes.forEach(key => {
+    const payable = document.getElementById(`${key}Payable`);
+    if (payable) {
+      total += parseFloat(payable.innerText) || 0;
+    }
+  });
+
+  // Show total somewhere, or set to a hidden input
+  const totalFeeInput = document.getElementById('totalFee');
+  console.log(totalFeeInput)
+  if (totalFeeInput) totalFeeInput.value = total;
+}
+
+
+  // Show fee based on selected class
+  classSelect.addEventListener("change", () => {
+    console.log(123)
+ updateFee()
+  });
+
+  // Show fee based on selected course (optional override)
+  courseSelect.addEventListener("change", () => {
+
+ updateFee()
+    
+  });
+
+    engcourseSelect.addEventListener("change", () => {
+
+ updateFee()
+    
+  });
+
+//  
+document.getElementById('uploadImage').addEventListener('click', async () => {
+
+  if (fileInput.files.length > 0) {
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+    formData.append("upload_preset", "student_unsigned");  // your unsigned upload preset
+
+    try {
+      const res = await axios.post(
+        "https://api.cloudinary.com/v1_1/drtd00x70/image/upload",
+        formData,  // <-- send formData directly here
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      const data = res.data;
+       imageUrl = data.secure_url;
+      imageBox.src = imageUrl
+      console.log("Uploaded Image URL:", imageUrl);
+    } catch (error) {
+      console.error("Upload error:", error.response.data);
+    }
+  } else {
+    console.log("No file selected");
+  }
+});
+
+
+ getStudents()
+  var studentList = []
+ async function getStudents(){
+  if(schoolId == null){
+    console.log('empty')
+    return
+  }
+  
+    var res= await axios.get(`http://localhost:3000/api/student/school/${schoolId}`)
+
+  
+    console.log(res.data)
+      studentList = res.data;
+        const grnoVal = document.getElementById('grno')
+  grnoVal.innerHTML = studentList.length  + 1
+
+
+ }
+ console.log(studentList)
+
+
+
+</script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+
+  </html>
