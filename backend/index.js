@@ -1,5 +1,5 @@
 import express from 'express'
-import cors from 'cors'
+import cors from 'cor'
 import { connectDb } from './db/config.js'
 import schoolRouter from './routes/school.js'
 import userRouter from './routes/user.js'
