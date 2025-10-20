@@ -1,5 +1,5 @@
 import express from 'express';
-import { addClass,getAllClasses,getAllClassesBySchool,deleteClass,updateClass } from '../controller/class.js';
+import { addClass,getAllClasses,getAllClassesByCampus,deleteClass,updateClass } from '../controller/class.js';
 
 const router = express.Router();
 
@@ -7,10 +7,10 @@ const router = express.Router();
 router.post('/add', addClass);
 
 // Get all classes (for super admin)
-router.get('/all', getAllClasses);
+router.get('/school/:schoolId', getAllClasses);
 
 // Get all classes by school ID
-router.get('/getBySchool/:schoolId', getAllClassesBySchool);
+router.get('/getByCampus/:schoolId/:campusId', getAllClassesByCampus);
 
 // Delete class by class ID
 router.delete('/delete/:id', deleteClass);

@@ -14,7 +14,12 @@ const feeReceiptSchema = new mongoose.Schema({
   year: String,
   paymentMethod: String,
   schoolId : String,
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+   createdBy:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      }
 });
 
 const FeeReceipt = mongoose.model('FeeReceipt', feeReceiptSchema);

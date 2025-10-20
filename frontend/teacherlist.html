@@ -7,6 +7,21 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link rel="stylesheet" href="index.css">
 </head>
+<style>
+     .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      justify-content: start;
+      margin-bottom: 20px;
+    }
+    input, select {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+</style>
 <body>
   <div class="container-fluid">
     <div class="row flex-nowrap">
@@ -19,17 +34,36 @@
       </div>
 
       <!-- Main Content -->
-      <div class="col main-content ">
+          <div class="col  main-content p-0">
+        
+        <div id="navContent"></div>
         <div class="container bg-white mt-4 p-5">
           <h2>Teacher Data List</h2>
+          
+      <div class="filters mt-4">
+        <input type="text" id="searchInput" placeholder="Search by ID / Name / Class / Section / Campus / Role">
+        
+
+        <select id="campusSelect">
+          <option value="">All Campuses</option>
+         
+        </select>
+
+        <select id="roleSelect">
+          <option value="">All Roles</option>
+          <option value="teacher">Teacher</option>
+          <option value="staff">Staff</option>
+        </select>
+      </div>
         <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
   <table class="table table-bordered table-hover table-striped align-middle">
     <thead class="table-light sticky-top">
       <tr>
         <th>Name</th>
-        <th>SCl-Sec-Sub</th>
-        <th>TCl-Subject</th>
-        <th>admissionType</th>
+        <th>Role</th>
+        <th>EmployType</th>
+        <th>Salary</th>
+        <th id="adminth">Campus</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -46,54 +80,61 @@
 
   <script>
      const user = JSON.parse(localStorage.getItem("userData")) ||[];
-  const isSuperAdmin = user[0]?.designation === "superadmin";
+  const isSuperAdmin = user[0]?.designation === "supremeadmin";
        if(user.length <= 0){
      window.location.href= 'Dashboard.html'
         
   }
 
     const tbody = document.getElementById("teacherTableBody");
+  const adminTh = document.getElementById('adminth')
+
    var teacherlist = []
     getTeachers()
  async function getTeachers(){
   if(isSuperAdmin){
-    var res= await axios.get(`http://localhost:3000/api/teacher/get`)
+    var res= await axios.get(`http://localhost:3000/api/teacher/school/${user[0]?.school._id}`)
 
   }
   else{
-    var res= await axios.get(`http://localhost:3000/api/teacher/school/${user[0]?.school._id}`)
+    var res= await axios.get(`http://localhost:3000/api/teacher/get/${user[0]?.school._id}/${user[0]?.campus._id}`)
 
   }
     console.log(res.data)
     console.log(res.data.message)
       teacherlist = res.data;
-      renderTable();
+      renderTable(teacherlist);
 
   }
-  function renderTable() {
-  tbody.innerHTML = '';
-  if (teacherlist.length > 0) {
-    teacherlist.forEach((teacher, index) => {
-      const admissionTypes = teacher.admissionTypes?.join(", ") || "N/A";
 
+  function renderTable(data) {
+  tbody.innerHTML = '';
+      adminTh.style.display =  isSuperAdmin ?'block' : 'none'
+
+  if (data.length > 0) {
+    data.forEach((teacher, index) => {
+      const employTypes = teacher.admissionTypes?.join(", ") || "N/A";
+      console.log(teacher)
       // Format school class records
-      const schoolClassDetails = teacher.schoolClassesRec?.map(
-        rec => `${rec.class || ''} - ${rec.section || ''} -${rec.subject || ''}`
-      ).join(", ") || "N/A";
-    console.log(teacher.schoolClassesRec.join(','))
-      // Format tuition class records
-      const tuitionClassDetails = teacher.schooltuitionRec?.map(
-        rec => `${rec.class || ''} - ${rec.subject || ''}`
-      ).join(", ") || "N/A";
-      console.log(schoolClassDetails)
-      const allClasses = `${schoolClassDetails}<br><strong>Tuition:</strong> ${tuitionClassDetails}`;
+    //   const schoolClassDetails = teacher.schoolClassesRec?.map(
+    //     rec => `${rec.class || ''} - ${rec.section || ''} -${rec.subject || ''}`
+    //   ).join(", ") || "N/A";
+    // console.log(teacher.schoolClassesRec.join(','))
+    //   // Format tuition class records
+    //   const tuitionClassDetails = teacher.schooltuitionRec?.map(
+    //     rec => `${rec.class || ''} - ${rec.subject || ''}`
+    //   ).join(", ") || "N/A";
+    //   console.log(schoolClassDetails)
+    //   const allClasses = `${schoolClassDetails}<br><strong>Tuition:</strong> ${tuitionClassDetails}`;
 
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${teacher.name}</td>
-        <td>${schoolClassDetails}</td>
-        <td>${tuitionClassDetails || "N/A"}</td>
-        <td>${admissionTypes}</td>
+        <td>${teacher.name + ' ' + teacher.fatherName}</td>
+        <td>${teacher.role}</td>
+        <td>${employTypes}</td>
+        <td>${teacher.Salary}</td>
+                 ${isSuperAdmin ? `<td>${teacher.campus?.name || 'N/A'}</td>` : ''}
+        
         <td>
           <button class="btn btn-info btn-sm" onclick='viewTeacher(${JSON.stringify(teacher)})'>View</button>
           <button class="btn btn-danger btn-sm" onclick="deleteTeacher('${teacher._id}')">Delete</button>
@@ -102,7 +143,7 @@
       tbody.appendChild(row);
     });
   } else {
-    tbody.innerHTML = `<tr><td colspan="5" class="text-center">No classes found</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center">No classes found</td></tr>`;
   }
 }
 
@@ -119,60 +160,70 @@
         
       }
     }
+          const campusSelect = document.getElementById('campusSelect');
 
+    if(isSuperAdmin){
+      loadCampuses()
+      campusSelect.style.display = 'inline-block'
+    }
+    else{
+      campusSelect.style.display = 'none'
+
+    }
+    function loadCampuses() {
+      return axios.get(`http://localhost:3000/api/campus/getBySchool/${user[0].school._id}`)
+        .then(response => {
+          const campuses = response.data;
+          campuses.forEach(campus => {
+            const option = document.createElement('option');
+            option.value = campus._id; // Use campus name as value
+            option.textContent = campus.name;
+            campusSelect.appendChild(option);
+          });
+        })
+        .catch(error => {
+          console.error('Error loading campuses:', error);
+        });
+    }
     function viewTeacher(data) {
       localStorage.setItem("viewteacherData", JSON.stringify(data));
       window.location.href = "teacher.html?view=true";
     }
- 
-  const sidebar = document.getElementById("sidebar");
-
-const allLinks = {
-  // dashboard: { name: "Dashboard", file: "Dashboard.html" },
-  addclass: { name: "Add Class", file: "classform.html", active:false },
-  addsection: { name: "Add Section", file: "section.html", active:false },
-  addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active:false },
-  addstudent: { name: "Student Form", file: "student.html", active:false },
-  studentlist: { name: "Student List", file: "studentlist.html" , active:false},
-  addteacher: { name: "Teacher Form", file: "teacher.html",  active:false },
-  teacherlist: { name: "Teacher List", file: "teacherlist.html" , active:true},
-  teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" , active:false},
-
-  adduser: { name: "Add User", file: "userform.html" , active:false}
-
-};
-
-function renderSidebar(user) {
-  // console.log(user[0].allowPages)
-  // Always show Dashboard and Logout
-  sidebar.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
-   if(isSuperAdmin){
-  sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
-
-  }
-
-  for (const key in allLinks) {
-    console.log(key)
-    if(isSuperAdmin){
-      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
-
-    }
+  function applyFilters() {
+      const search = searchInput.value.toLowerCase();
     
-   else {
-   if (user[0].allowedPages.includes(key)) {
-      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
-    }
-     else{
-        if(allLinks[key].active){
-            window.location.href='Dashboard.html'
-        }
-      }
-    }
-  }
+      const selectedCampus = campusSelect.value;
+      const selectedRole = roleSelect.value;
 
-  sidebar.innerHTML += `<a href="#">Logout</a>`;
-}
-renderSidebar(user)
+      const filtered = teacherlist.filter(staff => {
+        const matchesSearch =
+          staff.staffCode.includes(search) ||
+          staff.name.toLowerCase().includes(search) ||
+          staff.fatherName.toLowerCase().includes(search) ||
+          staff.campus.name.toLowerCase().includes(search) ||
+          staff.role.toLowerCase().includes(search);
+       
+        const matchesCampus = !selectedCampus || staff.campus._id === selectedCampus;
+        const matchesRole = !selectedRole || staff.role === selectedRole;
+        if(isSuperAdmin){
+          return matchesSearch && matchesCampus && matchesRole;
+        }
+        else{
+          return matchesSearch && matchesRole;
+        }
+      });
+
+      renderTable(filtered);
+    }
+
+    // Event Listeners
+    searchInput.addEventListener('input', applyFilters);
+  
+    campusSelect.addEventListener('change', applyFilters);
+    roleSelect.addEventListener('change', applyFilters);
+
   </script>
+<script src="index.js"></script>
+
 </body>
 </html>

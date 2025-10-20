@@ -1,20 +1,34 @@
 import Course from "../models/computercourse.js";
 // Add Course
+// course.js
+
+// Add Course
 export const addCourse = async (req, res) => {
   try {
-    const existingCourse = await Course.find({
+    // Check if course already exists
+    const isCourseExist = await Course.findOne({
       schoolId: req.body.schoolId,
-      name: req.body.name
+      name: req.body.name,
+      campusId: req.body.campusId,
     });
 
-    if (existingCourse.length > 0) {
-      return res.json({ data: [], message: "Course already exists" });
+    if (isCourseExist) {
+      return res.json({ message: "Course Already Exist" });
     }
 
-    const newCourseEntry = new Course(req.body);
-    await newCourseEntry.save();
-          var newCourse = await Course.findOne({name : newCourseEntry.name, schoolId : newCourseEntry.schoolId}).populate('schoolId', 'name')
-  
+    // Save new course
+    const courseData = new Course(req.body);
+    await courseData.save();
+
+    // Fetch newly added course with populated school & campus
+    const newCourse = await Course.findOne({
+      name: courseData.name,
+      schoolId: courseData.schoolId,
+      campusId: courseData.campusId,
+    })
+      .populate("schoolId", "name")
+      .populate("campusId", "name")
+
     res.json({ data: newCourse, message: "Successfully added" });
   } catch (error) {
     console.error("Add Course Error:", error);
@@ -22,22 +36,36 @@ export const addCourse = async (req, res) => {
   }
 };
 
-// Get All Courses by School
+// Get Courses by School (Admin)
 export const getCoursesBySchool = async (req, res) => {
   try {
-    const courses = await Course.find({ schoolId: req.params.schoolId });
-    res.json({ data: courses });
+    const courses = await Course.find({ schoolId: req.params.schoolId })
+      .populate("schoolId", "name")
+      .populate("campusId", "name")
+
+    if (courses.length > 0) {
+      res.json({ data: courses, message: "Successfully Found" });
+    } else {
+      res.json({ data: [], message: "Data not Found" });
+    }
   } catch (error) {
+    console.error("Get Courses by School Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-// Get All Courses (Super Admin)
-export const getAllCourses = async (req, res) => {
+// Get All Courses
+export const getAllCoursesByCampus = async (req, res) => {
   try {
-    const courses = await Course.find().populate('schoolId',"name")
-    res.json({ data: courses });
+    const courses = await Course.find({ schoolId: req.params.schoolId, campusId: req.params.campusId })
+   
+    if (courses.length > 0) {
+      res.json({ data: courses, message: "Successfully Found" });
+    } else {
+      res.json({ data: [], message: "Data not Found" });
+    }
   } catch (error) {
+    console.error("Get All Courses Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -73,7 +101,7 @@ export const updateCourse = async (req, res) => {
       courseId,
       req.body,
       { new: true }
-    ).populate('schoolId', 'name');
+    ).populate('schoolId', 'name').populate('campusId', 'name')
 
     if (!updatedCourse) {
       return res.status(404).json({ message: "Course not found" });

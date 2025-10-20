@@ -1,13 +1,16 @@
   body {
       background-color: #f8f9fa;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
     }
 
     .sidebar {
       height: 100vh;
-      background-color: #343a40;
-      color: white;
+      background-color: white;
+      color: black;
       padding-top: 1rem;
+      position: sticky;
+      overflow-y: scroll;
     }
 
     .sidebar h4 {
@@ -18,16 +21,18 @@
 
     .sidebar a {
       display: block;
-      color: #adb5bd;
+      color: black;
       padding: 0.75rem 1.5rem;
       text-decoration: none;
       transition: all 0.3s ease;
+      margin: 5px 0;
     }
 
     .sidebar a:hover, .sidebar a.active {
-      background-color: #495057;
-      color: white;
+      background-color: whitesmoke;
+      color: black;
       font-weight: 500;
+      border-radius: 10px;
     }
 
     .main-content {
@@ -44,3 +49,46 @@
       border-radius: 0.5rem;
       margin-top: 2rem;
     }
+
+    .minimalist-input {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: none;
+    font-size: 0.95rem;
+    padding: 10px;
+    transition: all 0.2s ease-in-out;
+  }
+
+   .minimalist-input:focus {
+    border-color: #000;
+    box-shadow: none; /* Removes Bootstrap outline */
+  }
+  select:focus {
+    border-color: #000;
+    box-shadow: none; /* Removes Bootstrap outline */
+  }
+
+  .modal-content {
+    background: #fff;
+  }
+
+  .modal-header,
+  .modal-footer {
+    background: #f9f9f9;
+  }
+
+  .btn-dark {
+    background-color: #000;
+    border: none;
+    border-radius: 8px;
+  }
+
+  .btn-dark:hover {
+    background-color: #333;
+  }
+    @media (max-width: 576px) { 
+      
+      .sidebar{
+        display: none !important;
+      }
+     }

@@ -1,44 +1,80 @@
 import EnglishCourse from "../models/englang.js";
 // Create a new English course
+// Add English Course
 export const createEnglishCourse = async (req, res) => {
   try {
-    const { levelName, fee, schoolId } = req.body;
-     const isEngCourseExist = await EnglishCourse.findOne({
-                levelName,schoolId
-            });
-    
-            if (isEngCourseExist) {
-                return res.json({ message: "Course Already Exist" });
-            }
+    const { name,  schoolId, campusId  , createdBy} = req.body;
 
+    // Check for duplicate
+    const isEngCourseExist = await EnglishCourse.findOne({
+      name,
+      schoolId,
+      campusId,
+      
+    });
 
-    const course = new EnglishCourse({ levelName, fee, schoolId });
-    await course.save();
-    var newCourse = await EnglishCourse.findOne({levelName : course.levelName, schoolId : course.schoolId}).populate('schoolId', 'name')
-    res.json({ success: true, message: 'English course created successfully', data: newCourse });
+    if (isEngCourseExist) {
+      return res.json({ message: "Course Already Exist" });
+    }
+
+    // Save new English course
+    const courseData = new EnglishCourse({ name, schoolId, campusId, createdBy });
+    await courseData.save();
+
+    // Fetch and populate new course
+    const newCourse = await EnglishCourse.findOne({
+      name: courseData.name,
+      schoolId: courseData.schoolId,
+      campusId: courseData.campusId,
+    })
+      .populate("schoolId", "name")
+      .populate("campusId", "name")
+
+    res.json({
+      data: newCourse,
+      message: "English Course Successfully Added",
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to create course', error: error.message });
+    console.error("Create English Course Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-// Get all English courses
-export const getAllEnglishCourses = async (req, res) => {
+// Get All English Courses
+export const getAllEnglishCoursesByCampus = async (req, res) => {
   try {
-    const courses = await EnglishCourse.find().populate('schoolId', 'name'); // populates only school name
-    res.json({ success: true, data:courses });
+    const courses = await EnglishCourse.find({schoolId: req.params.schoolId, campusId: req.params.campusId })
+      
+
+    if (courses.length > 0) {
+      res.json({ data: courses, message: "Successfully Found" });
+    } else {
+      res.json({ data: [], message: "Data not Found" });
+    }
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch courses', error: error.message });
+    console.error("Get All English Courses Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-// Get all English courses
+// Get English Courses by School (Admin)
 export const getEnglishCoursesBySchool = async (req, res) => {
-    console.log(req.params.schoolId)
   try {
-    const courses = await EnglishCourse.find({schoolId:req.params.schoolId}).populate('schoolId', 'name'); // populates only school name
-    res.json({ success: true, data:courses });
+    const courses = await EnglishCourse.find({
+      schoolId: req.params.schoolId,
+    })
+      .populate("schoolId", "name")
+      .populate("campusId", "name")
+
+
+    if (courses.length > 0) {
+      res.json({ data: courses, message: "Successfully Found" });
+    } else {
+      res.json({ data: [], message: "Data not Found" });
+    }
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch courses', error: error.message });
+    console.error("Get English Courses by School Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -61,11 +97,11 @@ export const getEnglishCourseById = async (req, res) => {
 // Update a course
 // export const updateEnglishCourse = async (req, res) => {
 //   try {
-//     const { levelName, fee, schoolId } = req.body;
+//     const { name, fee, schoolId } = req.body;
 
 //     const updatedCourse = await EnglishCourse.findByIdAndUpdate(
 //       req.params.id,
-//       { levelName, fee, schoolId },
+//       { name, fee, schoolId },
 //       { new: true }
 //     );
 
@@ -97,12 +133,12 @@ export const deleteEnglishCourse = async (req, res) => {
 // Update a course
 export const updateEnglishCourse = async (req, res) => {
   try {
-    const { levelName, fee, schoolId } = req.body;
+    const { name, fee, schoolId } = req.body;
 
-    // Check if another course with the same levelName and schoolId exists (excluding current one)
+    // Check if another course with the same name and schoolId exists (excluding current one)
     const existingCourse = await EnglishCourse.findOne({
       _id: { $ne: req.params.id },
-      levelName,
+      name,
       schoolId
     });
 
@@ -112,7 +148,7 @@ export const updateEnglishCourse = async (req, res) => {
 
     const updatedCourse = await EnglishCourse.findByIdAndUpdate(
       req.params.id,
-      { levelName, fee, schoolId },
+      { name, fee, schoolId },
       { new: true }
     ).populate('schoolId', 'name');
 

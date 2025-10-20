@@ -21,7 +21,9 @@
       </div>
 
       <!-- Main Content -->
-      <div class="col main-content">
+           <div class="col  main-content p-0">
+        
+        <div id="navContent"></div>
         <div class="row main-content-area d-flex justify-content-center align-items-start min-vh-100 py-4">
           <div class="col-10   rounded-3">
             <h2 class="mb-4">Teacher Admission Form</h2>
@@ -58,7 +60,7 @@
                     <input type="date" name="dob" class="form-control" required />
                   </div>
                   <div class="col">
-                    <label>CNIC/B-Form</label>
+                    <label>CNIC</label>
                     <input type="text" name="cnic" class="form-control" required />
                   </div>
                 </div>
@@ -101,13 +103,29 @@
                   </div>
                 </div>
                 <div class="row mb-3">
+                  <div class="col-12">
+                    <label>Joining Date</label>
+                    <input type="date" name="joiningDate" class="form-control" />
+                  </div>
                   <div class="col">
-                    <label>Admission Date</label>
-                    <input type="date" name="admissionDate" class="form-control" />
+                    <br>
+                    <label for="">Role</label>
+                    <br>
+                    <input type="radio" name="role" id="roleTeacher" value="teacher" checked />
+                    <label for="roleTeacher">Teacher</label>
+                    <input type="radio" name="role" id="roleStaff" value="staff" />
+
+                    <label for="roleStaff">Staff</label>
+
+                    <br>
+                    <div class="designationBox" id="designationBox" style="display: none;">
+                    <label for="">Designation</label>
+                    <input type="text" name="designation" id="designation"  class="form-control" />
+                    </div>
                   </div>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3" id="admissionTypeBox">
                   <label>Select Admission Type</label><br />
                   <div class="form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" name="admissionType" value="school" />
@@ -148,6 +166,11 @@
                   <select name="computerCourse" id="computerCourse" class="form-select">
 
                   </select>
+                  <br>
+                      <label for="">Batch</label>
+                          <select name="computerCourseBatch" id="computerCourseBatch" class="form-select">
+
+                  </select>
 
                   <br>
                     <button type="button" id="addCompCourseBtn" class="btn btn-success">Add</button>
@@ -158,6 +181,7 @@
                     <thead>
                       <tr>
                         <th>Course</th>
+                        <th>Batch</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -172,6 +196,10 @@
                   <label>English Course</label>
                   <select name="engCourse" id="engCourse" class="form-select">
                   </select>
+                   <br>
+                      <label for="">Batch</label>
+                            <select name="engCourseBatch" id="engCourseBatch" class="form-select">
+                  </select>
                   <br>
                     <button type="button" id="addEngCourseBtn" class="btn btn-success">Add</button>
               
@@ -181,6 +209,7 @@
                     <thead>
                       <tr>
                         <th>Course</th>
+                        <th>Batch</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -271,8 +300,8 @@
 <div class="mb-3">
   <label class="form-label">Status</label><br>
 
-  <input type="radio" name="status" id="available" value="available" checked>
-  <label for="available">Available</label>
+  <input type="radio" name="status" id="active" value="active" checked>
+  <label for="active">Active</label>
 
   <input type="radio" name="status" id="left" value="left">
   <label for="left">Left</label>
@@ -307,74 +336,97 @@
   <!-- JS Logic -->
   <script>
         const statusRadios = document.querySelectorAll('input[name="status"]');
+        const roleRadios = document.querySelectorAll('input[name="role"]');
   const leaveReasonBox = document.getElementById('leaveReasonBox');
+  const designationBox = document.getElementById('designationBox');
   const leaveReasonInput = document.getElementById('leaveReason');
-  
+  const admissionTypeBox = document.getElementById('admissionTypeBox');
+  const computerCourseBatchSelect = document.getElementById('computerCourseBatch');
+  const engCourseBatchSelect = document.getElementById('engCourseBatch');
+      // var campusDropdown = document.getElementById("campusDropdown");
+
   // Show/hide Leave Reason box
   statusRadios.forEach(radio => {
     radio.addEventListener('change', () => {
       leaveReasonBox.style.display = document.getElementById('left').checked ? 'block' : 'none';
+
+    });
+  });
+
+    // Show/hide Designation box
+  roleRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      designationBox.style.display = document.getElementById('roleStaff').checked ? 'block' : 'none';
+      if(document.getElementById('roleStaff').checked){
+        admissionTypeBox.style.display = 'none';
+         document.querySelectorAll('input[name="admissionType"]').forEach(cb => cb.checked = false);
+         updateFormDisplay()
+      }
+      else{
+        admissionTypeBox.style.display = 'block';
+
+      }
     });
   });
     const user = JSON.parse(localStorage.getItem("userData")) || [];
     const imageBox = document.getElementById("teacherImageBox");
-
-    const isSuperAdmin = user[0]?.designation === "superadmin";
+    var campusId = user[0]?.campus?._id || null;
+    const isSuperAdmin = user[0]?.designation === "supremeadmin";
     var schoolId = isSuperAdmin ? null : user[0].school._id;
     var isEdit = false
 
     var imageUrl
-    const sidebar = document.getElementById("sidebar");
+    // const sidebar = document.getElementById("sidebar");
     var editingTeacherId = ''
-    const allLinks = {
-      // dashboard: { name: "Dashboard", file: "Dashboard.html" },
-      addclass: { name: "Add Class", file: "classform.html", active: false },
-      addsection: { name: "Add Section", file: "section.html", active: false },
-      addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active: false },
-      addstudent: { name: "Student Form", file: "student.html", active: false },
-      studentlist: { name: "Student List", file: "studentlist.html", active: false },
-      addteacher: { name: "Teacher Form", file: "teacher.html", active: true },
-      teacherlist: { name: "Teacher List", file: "teacherlist.html", active: false },
-  teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" , active:false},
+  //   const allLinks = {
+  //     // dashboard: { name: "Dashboard", file: "Dashboard.html" },
+  //     addclass: { name: "Add Class", file: "classform.html", active: false },
+  //     addsection: { name: "Add Section", file: "section.html", active: false },
+  //     addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active: false },
+  //     addstudent: { name: "Student Form", file: "student.html", active: false },
+  //     studentlist: { name: "Student List", file: "studentlist.html", active: false },
+  //     addteacher: { name: "Teacher Form", file: "teacher.html", active: true },
+  //     teacherlist: { name: "Teacher List", file: "teacherlist.html", active: false },
+  // teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" , active:false},
 
-      adduser: { name: "Add User", file: "userform.html", active: false }
+  //     adduser: { name: "Add User", file: "userform.html", active: false }
 
-    };
+  //   };
  if(user.length <= 0){
      window.location.href= 'Dashboard.html'
         
   }
-    function renderSidebar(user) {
-      // console.log(user[0].allowPages)
-      // Always show Dashboard and Logout
-      sidebar.innerHTML = `<a class='' href="Dashboard.html">Dashboard</a>`;
-      if (isSuperAdmin) {
-        sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
+    // function renderSidebar(user) {
+    //   // console.log(user[0].allowPages)
+    //   // Always show Dashboard and Logout
+    //   sidebar.innerHTML = `<a class='' href="Dashboard.html">Dashboard</a>`;
+    //   if (isSuperAdmin) {
+    //     sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
 
-      }
+    //   }
 
-      for (const key in allLinks) {
-        console.log(key)
-        if (isSuperAdmin) {
-          sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active ? 'active' : ''}">${allLinks[key].name}</a>`;
+    //   for (const key in allLinks) {
+    //     console.log(key)
+    //     if (isSuperAdmin) {
+    //       sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active ? 'active' : ''}">${allLinks[key].name}</a>`;
 
-        }
+    //     }
 
-        else {
-          if (user[0].allowedPages.includes(key)) {
-            sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active ? 'active' : ''}">${allLinks[key].name}</a>`;
-          }
-          else {
-            if (allLinks[key].active) {
-              window.location.href = 'Dashboard.html'
-            }
-          }
-        }
-      }
+    //     else {
+    //       if (user[0].allowedPages.includes(key)) {
+    //         sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active ? 'active' : ''}">${allLinks[key].name}</a>`;
+    //       }
+    //       else {
+    //         if (allLinks[key].active) {
+    //           window.location.href = 'Dashboard.html'
+    //         }
+    //       }
+    //     }
+    //   }
 
-      sidebar.innerHTML += `<a href="#">Logout</a>`;
-    }
-    renderSidebar(user)
+    //   sidebar.innerHTML += `<a href="#">Logout</a>`;
+    // }
+    // renderSidebar(user)
     const checkboxes = document.querySelectorAll('input[name="admissionType"]');
     const classSectionFields = document.getElementById('classSectionFields');
     const computerCourseField = document.getElementById('computerCourseField');
@@ -406,10 +458,10 @@
 
       const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
       // classSectionFields.style.display = (selected.includes('school') || selected.includes('tuition')) ? 'flex' : 'none';
-      computerCourseField.style.display = selected.includes('computer') ? 'block' : 'none';
-      teacherSchoolClassFields.style.display = selected.includes('school') ? 'block' : 'none';
-      teacherTuitionClassFields.style.display = selected.includes('tuition') ? 'block' : 'none';
-      engCourseField.style.display = selected.includes('english') ? 'block' : 'none';
+      // computerCourseField.style.display = selected.includes('computer') ? 'block' : 'none';
+      // teacherSchoolClassFields.style.display = selected.includes('school') ? 'block' : 'none';
+      // teacherTuitionClassFields.style.display = selected.includes('tuition') ? 'block' : 'none';
+      // engCourseField.style.display = selected.includes('english') ? 'block' : 'none';
 
     }
 
@@ -429,10 +481,17 @@
       }
 
       data.admissionTypes = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-      data.schoolClassesRec = teacherSchoolClassRecords || []
-      data.schooltuitionRec = teacherTuitionClassRecords || []
-      data.englishCourses = teacherEnglishCourses || []
-      data.computerCourses = teacherCompCourses || []
+      if(document.getElementById('roleStaff').checked && !data.designation){
+        alert('Enter designation for staff')
+        return
+      }
+      if(document.getElementById('roleTeacher').checked){
+      //    data.schoolClassesRec = teacherSchoolClassRecords || []
+      // data.schooltuitionRec = teacherTuitionClassRecords || []
+      // data.englishCourses = teacherEnglishCourses || []
+      // data.computerCourses = teacherCompCourses || []
+      }
+     
        delete data.schoolclass;
         delete data.schoolsection;
         delete data.schoolsubject;
@@ -455,12 +514,25 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
            data.leftReason = ''
 
         }
-   
-      data.schoolId = isSuperAdmin
-        ? document.getElementById("schoolDropdown")?.value
-        : schoolId;
+
+        if(document.getElementById('roleStaff').checked){
+          data.role = 'staff'
+          data.designation = document.getElementById('designation').value || ''
+        }
+        else{
+          data.role = 'teacher'
+          data.designation = 'teacher'
+
+        }
+  
       const submitBtn = document.querySelector('button[type="submit"]');
       delete data.admissionType
+      data.campus = isSuperAdmin
+        ? document.getElementById("campusDropdown")?.value
+        : campusId;
+        data.schoolId = user[0]?.school?._id || schoolId;
+    const createdBy = user[0]._id
+        data.createdBy = createdBy
       try {
         if (isEdit) {
           submitBtn.textContent = 'updating...'
@@ -504,7 +576,6 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
 
     var queryParams = new URLSearchParams(window.location.search)
     var isViewmode = queryParams.get('view') === 'true'
-
     const form = document.getElementById("admissionForm");
    async function loadData() {
       var teacherData = JSON.parse(localStorage.getItem('viewteacherData'))
@@ -512,42 +583,44 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
       editingTeacherId = teacherData?._id
 
       if (isViewmode && teacherData) {
-        if(teacherData.schoolClassesRec.length > 0){
-        teacherSchoolClassRecords = teacherData.schoolClassesRec
-        renderSchoolClass()
-      }
+  //       if(teacherData.schoolClassesRec.length > 0){
+  //       teacherSchoolClassRecords = teacherData.schoolClassesRec
+  //       renderSchoolClass()
+  //     }
 
       
-          if(teacherData.schooltuitionRec.length > 0){
-        teacherTuitionClassRecords = teacherData.schooltuitionRec
-        renderTuitionClass()
-      }
-             if(teacherData.computerCourses.length > 0){
-        teacherCompCourses = teacherData.computerCourses
-        renderCompCourse()
-      }
+  //         if(teacherData.schooltuitionRec.length > 0){
+  //       teacherTuitionClassRecords = teacherData.schooltuitionRec
+  //       renderTuitionClass()
+  //     }
+  //            if(teacherData.computerCourses.length > 0){
+  //       teacherCompCourses = teacherData.computerCourses
+  //       renderCompCourse()
+  //     }
      
-        if(teacherData.englishCourses.length > 0){
-        teacherEnglishCourses = teacherData.englishCourses
-        renderEngCourse()
-      }
+  //       if(teacherData.englishCourses.length > 0){
+  //       teacherEnglishCourses = teacherData.englishCourses
+  //       renderEngCourse()
+  //     }
 
      
 
-          if (teacherData.schoolId) {
+  //         if (teacherData.schoolId) {
     if(isSuperAdmin){
-    schoolDropdown.value = teacherData.schoolId;
+      console.log(campusDropdown)
+    campusDropdown.value = teacherData.campus._id;
     schoolId = teacherData.schoolId;
+    campusId = teacherData.campus._id;
     }
     schoolId = teacherData.schoolId;
 
-    await Promise.all([
-      loadClasses(),
-      loadSections(),
-      loadCourses(),
-      loadEngCourses()
-    ]);
-  }
+    // await Promise.all([
+    //   loadClasses(),
+    //   loadSections(),
+    //   loadCourses(),
+    //   loadEngCourses()
+    // ]);
+  // }
 
 
         for (let key in teacherData) {
@@ -562,7 +635,7 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
           if (!el || key === "admissionTypes") continue;
 
 
-          if (key === "dob" || key === 'admissionDate') {
+          if (key === "dob" || key === 'joiningDate') {
             const dateValue = teacherData[key]?.slice(0, 10);
             console.log("Setting DOB:", dateValue);
             el.value = teacherData[key].slice(0, 10);
@@ -587,6 +660,7 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
         updateFormDisplay()
 
         Array.from(form.elements).forEach(el => el.disabled = true)
+        console.log(campusDropdown)
 
         document.getElementById('uploadImage').disabled = true
         document.getElementById('teacherImage').disabled = true
@@ -645,61 +719,109 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
     const classSelect = document.getElementById("admissionClass");
     const sectionSelect = document.getElementById("admissionSection");
     const courseSelect = document.getElementById("computerCourse");
+
+    courseSelect.addEventListener('change', (e)=>{
+      const selectedCourse = allCourses.find(c => c._id === e.target.value);
+      console.log(selectedCourse)
+      if(selectedCourse){
+        const batches = allComputerBatches.filter(b => b.courseName.name === selectedCourse.name) || []
+        computerCourseBatchSelect.innerHTML = `<option value="">Select Batch</option>`;
+        console.log(batches)
+        batches.forEach(batch => {
+          const option = document.createElement("option");
+          option.value = batch._id;
+          option.textContent = batch.name;
+
+          computerCourseBatchSelect.appendChild(option);
+        });
+      }
+      else{
+          computerCourseBatchSelect.innerHTML = `<option value="">Select Batch</option>`;
+
+      }
+    })
+
+    engcourseSelect.addEventListener('change', (e)=>{
+      const selectedCourse = engCourses.find(c => c._id === e.target.value);
+      console.log(selectedCourse)
+      if(selectedCourse){
+        const batches = allEnglishBatches.filter(b => b.courseName.name === selectedCourse.name) || []
+        engCourseBatchSelect.innerHTML = `<option value="">Select Batch</option>`;
+        console.log(batches)
+        batches.forEach(batch => {
+          const option = document.createElement("option");
+          option.value = batch._id;
+          option.textContent = batch.name;
+
+          engCourseBatchSelect.appendChild(option);
+        });
+      }
+      else{
+          engCourseBatchSelect.innerHTML = `<option value="">Select Batch</option>`;
+
+      }
+    })
+
     let allClasses = [];
     let allSections = [];
     let allCourses = [];
 
     // Load data on page load
     window.addEventListener("DOMContentLoaded", async () => {
+    //   i
       await Promise.all([
-        loadSchools(),
-        loadClasses(),
-        loadSections(),
-        loadCourses(),
-      loadEngCourses()
+        loadCampuses()
+        // loadClasses(),
+        // loadSections(),
+        // loadCourses(),
+        // loadEngCourses(),
+        // loadComputerBatches(),
+        // loadEnglishBatches()
 
       ]);
+    // 
       loadData()
     });
 
-    let schoolList = [];
+    let campusList = [];
 
   // 🔽 Inject dropdown if superadmin
   
     // 🟢 Fetch and populate schools dropdown
-    async function loadSchools() {
+    async function loadCampuses() {
       if (isSuperAdmin) {
-    const schoolDropdown = document.createElement("select");
-    schoolDropdown.className = "form-select mb-3";
-    schoolDropdown.id = "schoolDropdown";
-    schoolDropdown.required = true;
-    schoolDropdown.addEventListener('change', async(e)=>{
-      schoolId = e.target.value
+    const campusDropdown = document.createElement("select");
+    campusDropdown.className = "form-select mb-3";
+    campusDropdown.id = "campusDropdown";
+    campusDropdown.required = true;
+    campusDropdown.addEventListener('change', async(e)=>{
+      campusId = e.target.value
       loadClasses()
       loadCourses()
       loadEngCourses()
       loadSections()
       // loadData()
+
     })
     const label = document.createElement("label");
-    label.textContent = "Select School";
-    label.setAttribute("for", "schoolDropdown");
+    label.textContent = "Select Campus";
+    label.setAttribute("for", "campusDropdown");
     label.className = "form-label";
 
     // const form = document.getElementById("classForm");
     form.insertBefore(label, form.children[2]); // Insert before fee input
-    form.insertBefore(schoolDropdown, form.children[3]);
+    form.insertBefore(campusDropdown, form.children[3]);
   
-      try {
-        const res = await axios.get("http://localhost:3000/api/school/get");
-        schoolList = res.data.data;
-      schoolDropdown.innerHTML = `<option value="">Select School</option>`;
+      try {        const res = await axios.get(`http://localhost:3000/api/campus/getBySchool/${user[0].school._id}`);
 
-        schoolList.forEach(school => {
+        campusList = res.data;
+      campusDropdown.innerHTML = `<option value="">Select Campus</option>`;
+
+        campusList.forEach(campus => {
           const option = document.createElement("option");
-          option.value = school._id;
-          option.textContent = school.name;
-          schoolDropdown.appendChild(option);
+          option.value = campus._id;
+          option.textContent = campus.name;
+          campusDropdown.appendChild(option);
         });
       } catch (err) {
         console.error("Error fetching schools:", err);
@@ -707,7 +829,7 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
     }
     }
 
-    // loadSchools();
+    // loadCampuses();
   
 
   async function loadEngCourses() {
@@ -717,15 +839,15 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
         return
       }
     try {
-      const url =`http://localhost:3000/api/english-courses/school/${schoolId}`;
+      const url =`http://localhost:3000/api/english-courses/getByCampus/${user[0].school._id}/${campusId}`;
       const res = await axios.get(url);
       engCourses = res.data.data;
       console.log(engCourses)
       engcourseSelect.innerHTML = `<option value="">Select Course</option>`;
       engCourses.forEach(course => {
         const option = document.createElement("option");
-        option.value = course.levelName;
-        option.textContent = course.levelName;
+        option.value = course._id;
+        option.textContent = course.name;
 
         engcourseSelect.appendChild(option);
       });
@@ -745,14 +867,14 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
       }
 
       try {
-        const url =  `http://localhost:3000/api/class/getBySchool/${schoolId}`;
+        const url =  `http://localhost:3000/api/class/getByCampus/${user[0].school._id}/${campusId}`;
         const res = await axios.get(url);
         allClasses = res.data.data;
         teacherSchoolClassDropdown.innerHTML = `<option value="">Select Class</option>`;
         teacherTuitionClassDropdown.innerHTML = `<option value="">Select Class</option>`;
         allClasses.forEach(cls => {
           const option = document.createElement("option");
-          option.value = cls.name;
+          option.value = cls._id;
           option.textContent = cls.name;
           option.setAttribute("data-id", cls._id); // store ID in data attribute
 
@@ -760,7 +882,7 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
         });
              allClasses.forEach(cls => {
           const option = document.createElement("option");
-          option.value = cls.name;
+          option.value = cls._id;
           option.textContent = cls.name;
           option.setAttribute("data-id", cls._id); // store ID in data attribute
 
@@ -777,13 +899,13 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
         return
       }
       try {
-        const url =  `http://localhost:3000/api/section/school/${schoolId}`;
+        const url =  `http://localhost:3000/api/section/getByCampus/${user[0].school._id}/${campusId}`;
         const res = await axios.get(url);
         allSections = res.data.data;
         teacherSchoolSectionDropdown.innerHTML = `<option value="">Select Section</option>`;
         allSections.forEach(sec => {
           const option = document.createElement("option");
-          option.value = sec.name;
+          option.value = sec._id;
           option.textContent = sec.name;
           teacherSchoolSectionDropdown.appendChild(option);
         });
@@ -798,13 +920,13 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
         return
       }
       try {
-        const url = `http://localhost:3000/api/course/school/${schoolId}`;
+        const url = `http://localhost:3000/api/course/getbyCampus/${user[0].school._id}/${campusId}`;
         const res = await axios.get(url);
         allCourses = res.data.data;
         courseSelect.innerHTML = `<option value="">Select Course</option>`;
         allCourses.forEach(course => {
           const option = document.createElement("option");
-          option.value = course.name;
+          option.value = course._id;
           option.textContent = course.name;
           option.setAttribute("data-id", course._id); // store ID in data attribute
 
@@ -814,7 +936,34 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
         console.error("Error loading computer courses:", err);
       }
     }
+    var allComputerBatches = []
+    async function loadComputerBatches(){
+      try {
+        const url = `http://localhost:3000/api/batch/getAllComputerBatchesByCampus/${user[0].school._id}/${campusId}`;
+        const res = await axios.get(url);
+        allComputerBatches = res.data.data;
+        console.log(allComputerBatches)
+        
+      } catch (err) {
+        console.error("Error loading computer courses:", err);
+      }
+    }
 
+    var allEnglishBatches = []
+     async function loadEnglishBatches(){
+      try {
+        const url = `http://localhost:3000/api/batch/getAllEnglishBatchesByCampus/${user[0].school._id}/${campusId}`;
+        const res = await axios.get(url);
+        allEnglishBatches = res.data.data;
+       
+        
+      } catch (err) {
+        console.error("Error loading computer courses:", err);
+      }
+    }
+
+    console.log(allComputerBatches)
+    console.log(allEnglishBatches)
 
     var teacherSchoolClassRecords = []
 
@@ -878,16 +1027,17 @@ addTeacherTuitionClassBtn.addEventListener("click", () => {
 var teacherEnglishCourses = []
 
 addTeacherCoursebtn.addEventListener("click", () => {
-  const courseName = engcourseSelect.value;
+  const courseId = engcourseSelect.value;
+  const batchId = engCourseBatchSelect.value;
  
-  if (!courseName) {
+  if (!courseId || !batchId) {
     alert("Please fill all fields.");
     return;
   }
 
   const entry = {
-    courseName: courseName
-    
+    courseId: courseId,
+    batchId: batchId
   };
 
   teacherEnglishCourses.push(entry);
@@ -897,26 +1047,26 @@ addTeacherCoursebtn.addEventListener("click", () => {
   renderEngCourse()
 
   // Reset fields
-  courseName.value=""
 
 });
 
 var teacherCompCourses = []
 
 addTeacherCompCoursebtn.addEventListener("click", () => {
-  const courseName = courseSelect.value;
- 
-  if (!courseName) {
+  const courseId = courseSelect.value;
+  const batchId = computerCourseBatchSelect.value;
+  if (!courseId || !batchId) {
     alert("Please fill all fields.");
     return;
   }
 
   const entry = {
-    courseName: courseName
+    courseId: courseId,
+    batchId: batchId
     
   };
 
- var isCourseExist = teacherCompCourses.find(course => course.courseName == entry.courseName)
+ var isCourseExist = teacherCompCourses.find(course => course.courseId == entry.courseId && course.batchId == entry.batchId)
   if(isCourseExist) return alert('course already exist')
   teacherCompCourses.push(entry);
   console.log(teacherCompCourses)
@@ -925,16 +1075,18 @@ addTeacherCompCoursebtn.addEventListener("click", () => {
  
 
   // Reset fields
-  courseName.value=""
 
 });
 
   function renderCompCourse(){
     teachercomputerCourseTableBody.innerHTML = ''
     teacherCompCourses.map((course , index)=>{
+      const courseDetail = allCourses.find(c => c._id === course.courseId)
+      const batchDetail = allComputerBatches.find(b => b._id === course.batchId)
       const row = document.createElement("tr");
   row.innerHTML = `
-    <td>${course.courseName}</td>
+    <td>${courseDetail?.name || course.courseId}</td>
+    <td>${batchDetail?.name || course.batchId}</td>
     <td><button type="button" class="btn btn-danger btn-sm delete-teacher-class">Delete</button></td>
   `;
 
@@ -955,9 +1107,12 @@ addTeacherCompCoursebtn.addEventListener("click", () => {
   function renderEngCourse(){
     teacherEngCourseTableBody.innerHTML = ''
     teacherEnglishCourses.map((course , index)=>{
+      const courseDetail = engCourses.find(c => c._id === course.courseId)
+      const batchDetail = allEnglishBatches.find(b => b._id === course.batchId)
       const row = document.createElement("tr");
   row.innerHTML = `
-    <td>${course.courseName}</td>
+    <td>${courseDetail?.name || course.courseId}</td>
+    <td>${batchDetail?.name || course.batchId}</td>
     <td><button type="button" class="btn btn-danger btn-sm delete-teacher-class">Delete</button></td>
   `;
 
@@ -978,9 +1133,10 @@ addTeacherCompCoursebtn.addEventListener("click", () => {
   function renderTuitionClass(){
     teacherTuitionClassTableBody.innerHTML = ''
     teacherTuitionClassRecords.map((tuition , index)=>{
+      const classDetail = allClasses.find(c => c._id === tuition.class)
       const row = document.createElement("tr");
   row.innerHTML = `
-    <td>${tuition.class}</td>
+    <td>${classDetail?.name || tuition.class}</td>
     <td>${tuition.subject}</td>
     <td><button type="button" class="btn btn-danger btn-sm delete-teacher-class">Delete</button></td>
   `;
@@ -1002,10 +1158,12 @@ addTeacherCompCoursebtn.addEventListener("click", () => {
   function renderSchoolClass(){
     teacherSchoolClassRecords.innerHTML = ''
     teacherSchoolClassRecords.map((classData , index)=>{
+      const classDetail = allClasses.find(c => c._id === classData.class)
+      const sectionDetail = allSections.find(s => s._id === classData.section)
       const row = document.createElement("tr");
   row.innerHTML = `
-    <td>${classData.class}</td>
-    <td>${classData.section}</td>
+    <td>${classDetail?.name || classData.class}</td>
+    <td>${sectionDetail?.name || classData.section}</td>
     <td>${classData.subject}</td>
     <td>${classData.isClassTeacher ? "Yes" : "No"}</td>
     <td><button type="button" class="btn btn-danger btn-sm delete-teacher-class">Delete</button></td>
@@ -1026,7 +1184,7 @@ addTeacherCompCoursebtn.addEventListener("click", () => {
   }
 
   </script>
-
+  <script src="index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

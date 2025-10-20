@@ -8,7 +8,7 @@ const userForReqSchema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   verificationToken: String,
     verificationTokenExpires: Date,
-
+   
 });
 
 const UserForReq = new mongoose.model("UserForReq", userForReqSchema);

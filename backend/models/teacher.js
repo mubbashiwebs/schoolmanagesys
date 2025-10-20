@@ -10,6 +10,9 @@ const teacherSchema = new mongoose.Schema({
   phone: String,
   gender: { type: String, enum: ["Male", "Female"] },
   address: String,
+  designation: String,
+  role: String,
+    staffCode: { type: String, unique: true }, // e.g. CS-NTH-TCH-001
 
   lastQualification: String,
   lastSchool: String,
@@ -19,43 +22,55 @@ const teacherSchema = new mongoose.Schema({
 
   
     Salary : {type: Number , required:true},
-      schoolClassesRec: [
-    {
-      class: String,
-      section: String,
-      subject: String,
-      isClassTeacher: Boolean,
-    },
-  ],
-    schooltuitionRec: [
-    {
-      class: String,
-      subject: String,
+  //     schoolClassesRec: [
+  //   {
+  //     class: String,
+  //     section: String,
+  //     subject: String,
+  //     isClassTeacher: Boolean,
+  //   },
+  // ],
+  //   schooltuitionRec: [
+  //   {
+  //     class: String,
+  //     subject: String,
       
-    },
-  ],
+  //   },
+  // ],
 
-    englishCourses: [
-    {
-      courseName: String,
+  //   englishCourses: [
+  //   {
+  //     courseId: String,
+  //     batchId: String,
       
-    },
-  ],
+  //   },
+  // ],
 
-     computerCourses: [
-    {
-      courseName: String,
+  //    computerCourses: [
+  //   {
+  //     courseId: String,
+  //     batchId: String,
       
-    },
-  ],
+  //   },
+  // ],
 
   schoolId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "school",
     required: true
   },
-    status:{type:String , required: true , default:'Available'},
-  leftReason:{type:String }
+  campus: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Campus",
+    required: true
+  },
+    status:{type:String , required: true , default:'Active'},
+  leftReason:{type:String },
+   createdBy:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      }
 });
 
 const Teacher = mongoose.model("Teacher", teacherSchema);

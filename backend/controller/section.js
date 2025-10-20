@@ -1,43 +1,77 @@
 import Section from "../models/section.js";
 // Add Section
+// section.js
+
+// Add Section
 export const addSection = async (req, res) => {
   try {
-    const isSectionExist = await Section.find({ schoolId: req.body.schoolId, name: req.body.name });
+    // Check if section already exists
+    const isSectionExist = await Section.findOne({
+      schoolId: req.body.schoolId,
+      name: req.body.name,
+      campusId: req.body.campusId,
+    });
 
-    if (isSectionExist.length > 0) {
-      return res.json({ data: [], message: "Section Already Exist" });
+    if (isSectionExist) {
+      return res.json({ message: "Section Already Exist" });
     }
 
-    const newSectionEntry = new Section(req.body);
-    await newSectionEntry.save();
-            var newSection = await Section.findOne({name : newSectionEntry.name, schoolId : newSectionEntry.schoolId}).populate('schoolId', 'name')
-    
-    res.json({ data: newSection, message: 'Successfully added' });
+    // Save new section
+    const sectionData = new Section(req.body);
+    await sectionData.save();
+
+    // Fetch newly added section with populated school & campus
+    const newSection = await Section.findOne({
+      name: sectionData.name,
+      schoolId: sectionData.schoolId,
+      campusId: sectionData.campusId,
+    })
+      .populate("schoolId", "name")
+      .populate("campusId", "name");
+
+    res.json({ data: newSection, message: "Successfully added" });
   } catch (error) {
     console.error("Add Section Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-// Get All Sections by School
+// Get All Sections by School (Admin)
 export const getSectionsBySchool = async (req, res) => {
   try {
-    const sections = await Section.find({ schoolId: req.params.schoolId });
-    res.json({ data: sections });
+    const sections = await Section.find({ schoolId: req.params.schoolId })
+      .populate("schoolId", "name")
+      .populate("campusId", "name");
+
+    if (sections.length > 0) {
+      res.json({ data: sections, message: "Successfully Found" });
+    } else {
+      res.json({ data: [], message: "Data not Found" });
+    }
   } catch (error) {
+    console.error("Get Sections by School Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
 // Get All Sections (Super Admin)
-export const getAllSections = async (req, res) => {
+export const getAllSectionsByCampus = async (req, res) => {
   try {
-    const sections = await Section.find().populate('schoolId', 'name')
-    res.json({ data: sections });
+    const sections = await Section.find({ schoolId: req.params.schoolId, campusId: req.params.campusId })
+      .populate("schoolId", "name")
+      .populate("campusId", "name");
+
+    if (sections.length > 0) {
+      res.json({ data: sections, message: "Successfully Found" });
+    } else {
+      res.json({ data: [], message: "Data not Found" });
+    }
   } catch (error) {
+    console.error("Get All Sections Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 // Delete Section
 export const deleteSection = async (req, res) => {
@@ -71,7 +105,7 @@ export const updateSection = async (req, res) => {
       id,
       { name, schoolId },
       { new: true }
-    ).populate('schoolId', 'name');
+    ).populate('schoolId', 'name').populate('campusId', 'name');
 
     if (!updatedSection) {
       return res.status(404).json({ message: "Section not found" });

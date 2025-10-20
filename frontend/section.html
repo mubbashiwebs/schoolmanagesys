@@ -14,6 +14,38 @@
       right: 20px;
       z-index: 1055;
     }
+    .minimalist-input {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: none;
+    font-size: 0.95rem;
+    padding: 10px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .minimalist-input:focus {
+    border-color: #000;
+    box-shadow: none; /* Removes Bootstrap outline */
+  }
+
+  .modal-content {
+    background: #fff;
+  }
+
+  .modal-header,
+  .modal-footer {
+    background: #f9f9f9;
+  }
+
+  .btn-dark {
+    background-color: #000;
+    border: none;
+    border-radius: 8px;
+  }
+
+  .btn-dark:hover {
+    background-color: #333;
+  }
   </style>
 </head>
 
@@ -25,7 +57,9 @@
         <nav id="sidebar" class="nav flex-column"></nav>
       </div>
 
-      <div class="col main-content">
+       <div class="col  main-content p-0">
+        
+        <div id="navContent"></div>
         <div class="row justify-content-center align-items-center min-vh-100">
           <div class="col-10 bg-white p-5 mb-5 border rounded-3">
             <h2 class="mb-4">Add Section</h2>
@@ -35,9 +69,9 @@
             <div class="row">
               <div class="col-3">
                 <label for="">Enter Name</label>
-                <input type="text" class="form-control" placeholder="Search by Section Name" id="searchSection">
+                <input type="text" class="minimalist-input" placeholder="Search by Section Name" id="searchSection">
               </div>
-              <div class="col-3" id="schoolSelectBox1"></div>
+              <div class="col-3" id="campusSelectBox1"></div>
             </div>
 
             <div class="table-responsive mt-3" style="max-height: 600px; overflow-y: auto;">
@@ -46,7 +80,7 @@
                   <tr>
                     <th>#</th>
                     <th>Section Name</th>
-                    <th id="adminth" style="display: none;">School</th>
+                    <th id="adminth" style="display: none;">campus</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -69,14 +103,14 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
-            <div id="schoolSelectBox2"></div>
+            <div id="campusSelectBox2"></div>
             <div class="mb-3">
               <label class="form-label">Section Name</label>
-              <input type="text" class="form-control" id="sectionName" placeholder="Enter section name" required>
+              <input type="text" class="minimalist-input form-control" id="sectionName" placeholder="Enter section name" required>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" id="formSubmitBtn">Add Section</button>
+            <button type="submit" class="btn btn-dark" id="formSubmitBtn">Add Section</button>
           </div>
         </form>
       </div>
@@ -106,17 +140,17 @@
     const toastBody = document.getElementById("toastBody");
     const toastElement = document.getElementById("toastMessage");
     const searchSectionInput = document.getElementById("searchSection");
-    const sidebar = document.getElementById("sidebar");
+    // const sidebar = document.getElementById("sidebar");
 
     const user = JSON.parse(localStorage.getItem("userData")) || [];
-    const isSuperAdmin = user[0]?.designation === "superadmin";
+    const isSuperAdmin = user[0]?.designation === "supremeadmin";
 
     let isEditing = false;
     let editingId = null;
     let sectionList = [];
     let originalSectionList = [];
-    let schoolList = [];
-    let selectedSchoolId = '';
+    // let campusList = [];
+    let selectedcampusId = '';
 
     function showToast(message, isSuccess = true) {
       toastBody.textContent = message;
@@ -125,88 +159,88 @@
       toast.show();
     }
 
-    const allLinks = {
-      addclass: { name: "Add Class", file: "classform.html", active: false },
-      addsection: { name: "Add Section", file: "section.html", active: true },
-      addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active: false },
-      addenglangcourse: { name: "Add English lang Course", file: "englangcourse.html", active: false },
-      addstudent: { name: "Student Form", file: "student.html", active: false },
-      studentlist: { name: "Student List", file: "studentlist.html", active: false },
-      addteacher: { name: "Teacher Form", file: "teacher.html", active: false },
-      teacherlist: { name: "Teacher List", file: "teacherlist.html", active: false },
-      teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html", active: false },
-      adduser: { name: "Add User", file: "userform.html", active: false },
-    };
+    // const allLinks = {
+    //   addclass: { name: "Add Class", file: "classform.html", active: false },
+    //   addsection: { name: "Add Section", file: "section.html", active: true },
+    //   addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active: false },
+    //   addenglangcourse: { name: "Add English lang Course", file: "englangcourse.html", active: false },
+    //   addstudent: { name: "Student Form", file: "student.html", active: false },
+    //   studentlist: { name: "Student List", file: "studentlist.html", active: false },
+    //   addteacher: { name: "Teacher Form", file: "teacher.html", active: false },
+    //   teacherlist: { name: "Teacher List", file: "teacherlist.html", active: false },
+    //   teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html", active: false },
+    //   adduser: { name: "Add User", file: "userform.html", active: false },
+    // };
 
     if (!user.length) window.location.href = "Dashboard.html";
 
-    function renderSidebar(user) {
-      sidebar.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
-      if (isSuperAdmin) sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
-      for (const key in allLinks) {
-        if (isSuperAdmin || user[0].allowedPages.includes(key)) {
-          sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active ? 'active' : ''}">${allLinks[key].name}</a>`;
-        } else if (allLinks[key].active) {
-          window.location.href = 'Dashboard.html';
-        }
-      }
-      sidebar.innerHTML += `<a href="#">Logout</a>`;
-    }
+    // function renderSidebar(user) {
+    //   sidebar.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
+    //   if (isSuperAdmin) sidebar.innerHTML += `<a href="campusform.html">Add campus</a>`;
+    //   for (const key in allLinks) {
+    //     if (isSuperAdmin || user[0].allowedPages.includes(key)) {
+    //       sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active ? 'active' : ''}">${allLinks[key].name}</a>`;
+    //     } else if (allLinks[key].active) {
+    //       window.location.href = 'Dashboard.html';
+    //     }
+    //   }
+    //   sidebar.innerHTML += `<a href="#">Logout</a>`;
+    // }
 
-    renderSidebar(user);
+    // renderSidebar(user);
 
-    const schoolSelectBox1 = document.getElementById('schoolSelectBox1');
-    const schoolSelectBox2 = document.getElementById('schoolSelectBox2');
+    // const campusSelectBox1 = document.getElementById('campusSelectBox1');
+    // const campusSelectBox2 = document.getElementById('campusSelectBox2');
 
-    if (isSuperAdmin) {
-      const schoolDropdown = document.createElement("select");
-      schoolDropdown.className = "form-select mb-3";
-      schoolDropdown.id = "schoolDropdown";
-      schoolDropdown.required = true;
+    // if (isSuperAdmin) {
+    //   const campusDropdown = document.createElement("select");
+    //   campusDropdown.className = "form-select mb-3";
+    //   campusDropdown.id = "campusDropdown";
+    //   campusDropdown.required = true;
 
-      const label = document.createElement("label");
-      label.textContent = "Select School";
-      label.setAttribute("for", "schoolDropdown");
-      label.className = "form-label";
+    //   const label = document.createElement("label");
+    //   label.textContent = "Select campus";
+    //   label.setAttribute("for", "campusDropdown");
+    //   label.className = "form-label";
 
-      const schoolDropdownFilter = document.createElement("select");
-      schoolDropdownFilter.className = "form-select mb-3";
-      schoolDropdownFilter.id = "schoolDropdownfilter";
+    //   const campusDropdownFilter = document.createElement("select");
+    //   campusDropdownFilter.className = "form-select mb-3";
+    //   campusDropdownFilter.id = "campusDropdownfilter";
 
-      const label2 = document.createElement("label");
-      label2.textContent = "Select School";
-      label2.setAttribute("for", "schoolDropdownfilter");
-      label2.className = "form-label";
+    //   const label2 = document.createElement("label");
+    //   label2.textContent = "Select campus";
+    //   label2.setAttribute("for", "campusDropdownfilter");
+    //   label2.className = "form-label";
 
-      schoolSelectBox2.appendChild(label);
-      schoolSelectBox2.appendChild(schoolDropdown);
-      schoolSelectBox1.appendChild(label2);
-      schoolSelectBox1.appendChild(schoolDropdownFilter);
+    //   campusSelectBox2.appendChild(label);
+    //   campusSelectBox2.appendChild(campusDropdown);
+    //   campusSelectBox1.appendChild(label2);
+    //   campusSelectBox1.appendChild(campusDropdownFilter);
 
-      async function loadSchools() {
-        const res = await axios.get("http://localhost:3000/api/school/get");
-        schoolList = res.data.data;
+    //   async function loadcampuss() {
+    //     const res = await axios.get("http://localhost:3000/api/campus/get");
+    //     campusList = res.data.data;
 
-        schoolDropdown.innerHTML = `<option value="">Select School</option>`;
-        schoolDropdownFilter.innerHTML = `<option value="">Select School</option>`;
+    //     campusDropdown.innerHTML = `<option value="">Select campus</option>`;
+    //     campusDropdownFilter.innerHTML = `<option value="">Select campus</option>`;
 
-        schoolList.forEach(school => {
-          const opt = new Option(school.name, school._id);
-          schoolDropdown.appendChild(opt.cloneNode(true));
-          schoolDropdownFilter.appendChild(opt);
-        });
-      }
-      loadSchools();
+    //     campusList.forEach(campus => {
+    //       const opt = new Option(campus.name, campus._id);
+    //       campusDropdown.appendChild(opt.cloneNode(true));
+    //       campusDropdownFilter.appendChild(opt);
+    //     });
+    //   }
+    //   loadcampuss();
 
-      document.getElementById('schoolDropdownfilter').addEventListener('change', filterSection);
-    }
+      campusSelectBox1.addEventListener('change', filterSection);
+    // }
 
     function filterSection() {
-      selectedSchoolId = isSuperAdmin ? document.getElementById('schoolDropdownfilter').value : '';
+      selectedcampusId = isSuperAdmin ? document.getElementById('campusDropdownfilter').value : '';
       const searchTerm = searchSectionInput.value.toLowerCase().trim();
 
       const filtered = originalSectionList.filter(sec =>
-        (selectedSchoolId === '' || sec.schoolId._id === selectedSchoolId) &&
+        (selectedcampusId === '' || sec.campusId._id === selectedcampusId) &&
         sec.name.toLowerCase().includes(searchTerm)
       );
 
@@ -217,7 +251,7 @@
     searchSectionInput.addEventListener('input', filterSection);
 
     async function fetchSections() {
-      const endpoint = isSuperAdmin ? 'http://localhost:3000/api/section/all' : `http://localhost:3000/api/section/school/${user[0].school._id}`;
+      const endpoint = isSuperAdmin ? `http://localhost:3000/api/section/school/${user[0].school._id}` : `http://localhost:3000/api/section/getByCampus/${user[0].school._id}/${user[0].campus._id}`;
       const res = await axios.get(endpoint);
       originalSectionList = res.data.data;
       sectionList = [...originalSectionList];
@@ -235,7 +269,7 @@
         row.innerHTML = `
           <td>${index + 1}</td>
           <td>${sec.name}</td>
-          <td>${isSuperAdmin ? sec.schoolId.name : ''}</td>
+          <td>${isSuperAdmin ? sec.campusId.name : ''}</td>
           <td>
             <button class="btn btn-info btn-sm me-1" onclick="editSection('${sec._id}')">Edit</button>
             <button class="btn btn-danger btn-sm" onclick="deleteSection('${sec._id}')">Delete</button>
@@ -250,7 +284,7 @@
       isEditing = true;
       editingId = id;
       sectionNameInput.value = section.name;
-      if (isSuperAdmin) document.getElementById('schoolDropdown').value = section.schoolId._id;
+      if (isSuperAdmin) document.getElementById('campusDropdown').value = section.campusId._id;
       document.getElementById("sectionModalLabel").textContent = "Update Section";
       addButton.textContent = "Update Section";
       modal.show();
@@ -270,10 +304,12 @@ sectionForm.addEventListener('submit', async (e) => {
   const name = sectionNameInput.value.trim();
   if (!name) return showToast("Enter section name", false);
 
-  let schoolId = isSuperAdmin ? document.getElementById("schoolDropdown").value : user[0].school._id;
-  if (isSuperAdmin && !schoolId) return showToast("Please select a school", false);
+  let campusId = isSuperAdmin ? document.getElementById("campusDropdown").value : user[0].campus._id;
+  if (isSuperAdmin && !campusId) return showToast("Please select a campus", false);
+  var schoolId = user[0].school._id;
+    const createdBy = user[0]._id
 
-  const body = { name, schoolId };
+  const body = { name, campusId, schoolId , createdBy };
 
   try {
     if (isEditing) {
@@ -315,13 +351,15 @@ document.getElementById("sectionModal").addEventListener("hidden.bs.modal", clos
   sectionForm.reset();
   isEditing = false;
   editingId = null;
-  addButton.textContent = "Add School";
-  document.getElementById("sectionModalLabel").textContent = "Add New School";
+  addButton.textContent = "Add campus";
+  document.getElementById("sectionModalLabel").textContent = "Add New campus";
 }
 
 
     fetchSections();
   </script>
+<script src="index.js"></script>
+<script src="dropdown.js"></script>
 </body>
 
 </html>

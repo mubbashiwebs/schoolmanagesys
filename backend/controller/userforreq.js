@@ -42,7 +42,7 @@ export const verifyEmail = async (req, res) => {
     const { token } = req.query;
     console.log(token)
     // Check if token exists
-    if (!token || token != null) {
+    if (!token || token == null) {
       console.log('token nhi hai')
       return res.status(400).json({ message: "Verification token is missing." });
     }

@@ -1,7 +1,7 @@
 import express from 'express';
 import {
   createEnglishCourse,
-  getAllEnglishCourses,
+  getAllEnglishCoursesByCampus,
   getEnglishCourseById,
   getEnglishCoursesBySchool,
   updateEnglishCourse,
@@ -14,7 +14,7 @@ const router = express.Router();
 router.post('/add', createEnglishCourse);
 
 // Get all courses
-router.get('/all', getAllEnglishCourses);
+router.get('/getByCampus/:schoolId/:campusId', getAllEnglishCoursesByCampus);
 router.get('/school/:schoolId', getEnglishCoursesBySchool);
 
 // Get a course by ID

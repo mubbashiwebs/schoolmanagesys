@@ -1,10 +1,12 @@
+import campus from "../models/campus.js";
 import Class from "../models/class.js";
 
 export const addClass = async(req,res)=>{
     try {
         const isClassExist = await Class.findOne({
             schoolId: req.body.schoolId,
-            name: req.body.name
+            name: req.body.name,
+            campusId: req.body.campusId
         });
 
         if (isClassExist) {
@@ -13,7 +15,7 @@ export const addClass = async(req,res)=>{
 
         const classData = new Class(req.body);
         await classData.save();
-        var newClass = await Class.findOne({name : classData.name, schoolId : classData.schoolId}).populate('schoolId', 'name')
+        var newClass = await Class.findOne({name : classData.name, schoolId : classData.schoolId , campusId:classData.campusId}).populate('schoolId', 'name').populate('campusId','name')
             
         res.json({ data: newClass, message: 'Successfully added' });
     } catch (error) {
@@ -25,9 +27,10 @@ export const addClass = async(req,res)=>{
 
 // for super admin
 export const getAllClasses = async (req,res)=>{
-    console.log(req.body)
+    console.log(req.params.schoolId)
     try {
-           var allClasses = await Class.find({}).populate('schoolId',"name")
+           var allClasses = await Class.find({schoolId:req.params.schoolId}).populate('campusId','name')
+           console.log(allClasses)
     if(allClasses.length >0){
      res.json({data:allClasses,message:'sucessfully Found'})
 
@@ -42,11 +45,11 @@ export const getAllClasses = async (req,res)=>{
  
 }
 
-export const getAllClassesBySchool = async (req,res)=>{
+export const getAllClassesByCampus = async (req,res)=>{
     console.log(123)
 
     try {
-           var allClasses = await Class.find({schoolId:req.params.schoolId})
+           var allClasses = await Class.find({schoolId:req.params.schoolId,campusId:req.params.campusId})
     if(allClasses.length >0){
      res.json({data:allClasses,message:'sucessfully Found'})
         console.log(allClasses)
@@ -85,7 +88,7 @@ export const updateClass = async (req, res) => {
       id,
       req.body,
       { new: true, runValidators: true }
-    ).populate('schoolId',"name")   
+    ).populate('schoolId',"name").populate('campusId','name')
 
     if (!updatedClass) {
       return res.status(404).json({ message: "Class not found" });

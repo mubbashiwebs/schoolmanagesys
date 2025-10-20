@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Campus Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<style>
+   .minimalist-input {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: none;
+    font-size: 0.95rem;
+    padding: 10px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .minimalist-input:focus {
+    border-color: #000;
+    box-shadow: none; /* Removes Bootstrap outline */
+  }
+
+  .modal-content {
+    background: #fff;
+  }
+
+  .modal-header,
+  .modal-footer {
+    background: #f9f9f9;
+  }
+
+  .btn-dark {
+    background-color: #000;
+    border: none;
+    border-radius: 8px;
+  }
+
+  .btn-dark:hover {
+    background-color: #333;
+  }
+</style>
+
+<body>
+  <div class="container-fluid">
+    <div class="row flex-nowrap">
+      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar">
+        <h4>Admin Panel</h4>
+        <nav id="sidebar" class="nav flex-column"></nav>
+      </div>
+
+      <div class="col  main-content p-0">
+        
+        <div id="navContent"></div>
+        <div class="row justify-content-center align-items-center min-vh-100">
+          <div class="col-10 bg-white p-5 mb-5 border rounded-3">
+            <h2 class="mb-4">Add Campus</h2>
+            <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addCampusModal">Add New Campus</button>
+
+            <h4>All Campuses</h4>
+            <div class="row">
+              <div class="col-3">
+                <label>Enter Name</label>
+                <input type="text" class="form-control minimalist-input" placeholder="Search by Campus Name" id="searchCampus">
+              </div>
+              <div class="col-3" id="schoolSelectBox1"></div>
+            </div>
+
+            <div class="table-responsive mt-3" style="max-height: 600px; overflow-y: auto;">
+              <table class="table table-bordered table-hover" id="campusTable">
+                <thead class="table-light">
+                  <tr>
+                    <th>#</th>
+                    <th>Campus Name</th>
+                    <th>Campus Code</th>
+                    <th>Campus Email</th>
+                    <th>Campus Contact</th>
+                    <th>Campus Principal</th>
+                    <th>Address</th>
+                    
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Form -->
+  <div class="modal fade" id="addCampusModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="width: 100%; max-width: 600px; margin: auto;">
+        <form id="campusForm">
+          <div class="modal-header">
+            <h5 class="modal-title">Add New Campus</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <!-- <div id="schoolSelectBox2"></div> -->
+             <div class="row">
+            <div class="col-6 mb-3">
+              <label class="form-label">Campus Name</label>
+              <input type="text" class="form-control minimalist-input" id="campusName" placeholder="Enter campus name" required>
+            </div>
+             <div class="col-6 mb-3">
+              <label class="form-label">Campus Code</label>
+              <input type="text" class="form-control minimalist-input" id="campusCode" placeholder="Enter campus code" required>
+            </div>
+            <div class="col-6 mb-3">
+              <label class="form-label">Address</label>
+              <input type="text" class="form-control minimalist-input" id="campusAddress" placeholder="Enter campus address" required>
+            </div>
+              <div class="col-6 mb-3">
+              <label class="form-label">Email</label>
+              <input type="text" class="form-control minimalist-input" id="campusEmail" placeholder="Enter campus email" required>
+            </div>
+              <div class="col-6 mb-3">
+              <label class="form-label">Contact</label>
+              <input type="text" class="form-control minimalist-input" id="campusContact" placeholder="Enter campus contact" required>
+            </div>
+
+              <div class="col-6 mb-3">
+              <label class="form-label">Principal</label>
+              <input type="text" class="form-control minimalist-input" id="campusprincipalName" placeholder="Enter campus Principal name" >
+            </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-dark" id="formSubmitBtn">Add Campus</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const campusNameInput = document.getElementById("campusName");
+    const campusAddressInput = document.getElementById("campusAddress");
+    const campusEmailInput = document.getElementById("campusEmail");
+    const campusContactInput = document.getElementById("campusContact");
+    const campusprincipalNameInput = document.getElementById("campusprincipalName");
+    const campusCodeInput = document.getElementById("campusCode");
+    const addButton = document.getElementById("formSubmitBtn");
+    const tableBody = document.querySelector("#campusTable tbody");
+    const campusForm = document.getElementById("campusForm");
+
+    const user = JSON.parse(localStorage.getItem("userData")) || [];
+    console.log(user)
+    const isSuperAdmin = user[0]?.designation === "supremeadmin";
+    const modal = new bootstrap.Modal(document.getElementById("addCampusModal"));
+
+    let isEditing = false;
+    let editingId = null;
+    let originalCampusList = [];
+    let campusList = [];
+    let schoolList = [];
+
+    // const sidebar = document.getElementById("sidebar");
+    // const allLinks = {
+    //   addcampus: { name: "Add Campus", file: "campusform.html", active: true },
+    //   addclass: { name: "Add Class", file: "classform.html", active: false },
+    //   addsection: { name: "Add Section", file: "section.html", active: false }
+    // };
+
+    // function renderSidebar() {
+    //   sidebar.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
+    //   if (isSuperAdmin) sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
+    //   for (const key in allLinks) {
+    //     if (isSuperAdmin || user[0].allowedPages.includes(key)) {
+    //       sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active ? 'active' : ''}">${allLinks[key].name}</a>`;
+    //     }
+    //   }
+    //   sidebar.innerHTML += `<a href="#">Logout</a>`;
+    // }
+
+    function showAlert(message, type = "success") {
+      Swal.fire({
+        toast:true,
+        position: 'top-end',
+        
+        icon: type,
+        title: message,
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+
+    // Load school dropdown for superadmin
+
+    // Load campuses
+    window.addEventListener("DOMContentLoaded", loadCampuses);
+    async function loadCampuses() {
+      try {
+        let res;
+        
+         res = await axios.get(`http://localhost:3000/api/campus/getBySchool/${user[0].school._id}`);
+        console.log(res.data)
+        campusList = res.data;
+        originalCampusList = [...campusList];
+        renderTable();
+      } catch (err) {
+        console.error("Error loading campuses:", err);
+      }
+    }
+
+    function renderTable() {
+      tableBody.innerHTML = "";
+      if (campusList.length > 0) {
+        campusList.forEach((campus, i) => {
+          tableBody.innerHTML += `
+            <tr>
+              <td>${i + 1}</td>
+              <td>${campus.name}</td>
+              <td>${campus.code}</td>
+              <td>${campus.email}</td>
+              <td>${campus.contact}</td>
+              <td>${campus.principalName}</td>
+              <td>${campus.address}</td>
+
+              <td>
+                <button class="btn btn-sm btn-info me-1" onclick="editCampus('${campus._id}')">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteCampus('${campus._id}')">Delete</button>
+              </td>
+            </tr>`;
+        });
+      } else {
+        tableBody.innerHTML = `<tr><td colspan="5" class="text-center">No campuses found</td></tr>`;
+      }
+    }
+
+    // Add/Edit campus
+    campusForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = campusNameInput.value.trim();
+      const address = campusAddressInput.value.trim();
+      const email = campusEmailInput.value.trim();
+      const contact = campusContactInput.value.trim();
+      const principalName = campusprincipalNameInput.value.trim();
+      const code = campusCodeInput.value.trim();
+    const createdBy = user[0]._id
+
+      console.log(name,address,email,contact)
+      if (!name || !address || !code || !email || !contact || !principalName) return showAlert("Please fill all fields", "error");
+
+      var schoolId = user[0].school._id;
+      try {
+        if (isEditing) {
+          const res = await axios.put(`http://localhost:3000/api/campus/update/${editingId}`, { name, address, code, schoolId , contact,email,principalName });
+          const index = campusList.findIndex(c => c._id === editingId);
+          campusList[index] = res.data.data;
+          originalCampusList[index] = res.data.data;
+          showAlert("Campus updated successfully");
+        } else {
+          const res = await axios.post("http://localhost:3000/api/campus/add", { name, address, code, schoolId , contact,email,principalName , createdBy});
+          if (res.data.campus && res.data.campus._id) {
+            console.log('reach')
+            campusList.push(res.data.campus);
+            originalCampusList.push(res.data.campus);
+            showAlert("Campus added successfully");
+          }
+        }
+        campusForm.reset();
+        modal.hide();
+        isEditing = false;
+        editingId = null;
+        renderTable();
+      } catch (err) {
+        console.error(err);
+        showAlert("Error saving campus", "error");
+      }
+    });
+
+    window.deleteCampus = async function (id) {
+      if (!confirm("Are you sure you want to delete this campus?")) return;
+      try {
+        await axios.delete(`http://localhost:3000/api/campus/delete/${id}`);
+        campusList = campusList.filter(c => c._id !== id);
+        originalCampusList = originalCampusList.filter(c => c._id !== id);
+        showAlert("Campus deleted successfully");
+        renderTable();
+      } catch (err) {
+        console.error(err);
+        showAlert("Failed to delete campus", "error");
+      }
+    };
+
+    window.editCampus = function (id) {
+      const campus = campusList.find(c => c._id === id);
+      if (!campus) return showAlert("Campus not found", "error");
+      isEditing = true;
+      editingId = id;
+      campusNameInput.value = campus.name;
+      campusAddressInput.value = campus.address;
+      campusEmailInput.value = campus.email;
+      campusContactInput.value = campus.contact;  
+      campusprincipalNameInput.value = campus.principalName;
+      campusCodeInput.value = campus.code;
+      // if (isSuperAdmin) document.getElementById("schoolDropdown").value = campus.schoolId?._id || "";
+      document.querySelector("#addCampusModal .modal-title").innerText = "Update Campus";
+      addButton.innerText = "Update Campus";
+      modal.show();
+    };
+
+    // Search filter
+    document.getElementById('searchCampus').addEventListener('input', () => {
+      const term = document.getElementById('searchCampus').value.toLowerCase();
+      campusList = originalCampusList.filter(c => c.name.toLowerCase().includes(term));
+      renderTable();
+    });
+
+    // School dropdown filter for superadmin
+    
+
+    // renderSidebar();
+  </script>
+  <script src="index.js"></script>
+</body>
+</html>

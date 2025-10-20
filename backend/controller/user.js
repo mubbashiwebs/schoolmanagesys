@@ -18,7 +18,7 @@ export const addUser = async (req, res) => {
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find().populate('school', 'name');
+    const users = await User.find().populate('school', 'name').populate('campus', 'name');
     res.json({ data: users });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
@@ -40,7 +40,7 @@ export const deleteUser = async (req, res) => {
 export const loginUser = async (req,res)=>{
     console.log(req.body)
     try {
-        const user = await User.find({email:req.body.email}).populate('school', 'name')
+        const user = await User.find({email:req.body.email}).populate('school', 'name').populate('campus', 'name');
         if(user.length >0){
             console.log(user)
             if(user[0].password === req.body.password){

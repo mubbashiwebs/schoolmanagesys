@@ -1,15 +1,15 @@
 var user = JSON.parse( localStorage.getItem('userData')) || []
 console.log(user)
 var mainHeading = document.getElementById('Main-Heading')
-mainHeading.innerHTML = user.length > 0 ? 'Welcome Back '+user[0]?.username : ' Welcome Guest'
+mainHeading.innerHTML = user.length > 0 ? user[0]?.username +' | ' + user[0].designation : ' Welcome Guest'
 // console.log(user[0].school.name)
-  const isSuperAdmin = user[0]?.designation === "superadmin";
+  const isSuperAdmin = user[0]?.designation === "supreradmin";
 
  const sidebar = document.getElementById("sidebar");
 
 const allLinks = {
   // dashboard: { name: "Dashboard", file: "Dashboard.html" },
-  addclass: { name: "Add Class", file: "classform.html", active:false },
+  addclass: { name: "Add Clas", file: "classform.html", active:false },
   addsection: { name: "Add Section", file: "section.html", active:false },
   addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active:false },
   addstudent: { name: "Student Form", file: "student.html", active:false },
@@ -53,6 +53,9 @@ return
   }
 
   sidebar.innerHTML += `<a href="#">Logout</a>`;
-}
 
+
+
+}
 renderSidebar(user);
+

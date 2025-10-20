@@ -1,25 +1,72 @@
+// import school from "../models/school.js";
 import School from "../models/school.js";
-// import User from "../models/User.js";
+import User from "../models/User.js";
 import UserForReq from "../models/userforreq.js";
 import { sendSchoolStatusEmail } from "../utils/sendMail.js";
 
 export const requestSchool = async (req, res) => {
-  const { userId, schoolName, address, contact, campus } = req.body;
+  const { userId, name, address, contact , features, password } = req.body;
 
   const user = await UserForReq.findOne({userId});
   if (!user || !user.isVerified) return res.status(403).json({ message: "User not verified" });
-  const isRequestExist = await School.findOne({name: schoolName , campus})
+  const isRequestExist = await School.findOne({name , campus})
   if (isRequestExist) return res.status(403).json({ message: "School has been already registered" });
+  const allowedPages = []
+  var schoolLinks = ['addclass','addsection' , 'addstudent' , 'addsubject' , 'addCampus' ,'studentlist','addteacher' , 'teacherlist','teacherSalary']
+  var computerCourseLinks = ['addcomputercourse']
+  var englishLangCourseLinks =['addenglangcourse']
 
-  await School.create({
-    userId,
-    schoolName,
+  if(features.includes('school')){
+    allowedPages.push(...schoolLinks)
+  }
+  if(features.includes('computer')){
+    allowedPages.push(...computerCourseLinks)
+  }
+ if(features.includes('english')){
+    allowedPages.push(...englishLangCourseLinks)
+  }
+    allowedPages.push('adduser')
+  console.log(allowedPages)
+  var campus = 'main'
+  if(campus == ''){
+    // campus = initialcampus
+  }
+  const newSchool = new School({ userId,
+    name,
     address,
     contact,
-    campus,
-  });
+    campus})
+    
+   await newSchool.save()
 
-  res.json({ message: "Submitted! We will inform you through email." });
+   if(!newSchool._id){
+   return res.json({message:'something went wrong try again'})
+   }
+    
+  const userData = {
+    username : user.name,
+    email :user.email,
+    password,
+    contactNo:user.contact,
+    designation : 'supremeadmin',
+    allowedPages,
+    school:newSchool._id
+    
+    
+
+  }
+
+
+  const newUser = new User(userData)
+  await newUser.save()
+
+  
+
+
+
+
+  res.json({ message: "Your are successfully registered." });
+
 };
 
 export const listPendingSchools = async (req, res) => {

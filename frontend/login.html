@@ -1,135 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <!-- Font Awesome -->
-<link
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-rel="stylesheet"
-/>
-<!-- Google Fonts -->
-<link
-href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-rel="stylesheet"
-/>
-<!-- MDB -->
-<link
-href="https://cdn.jsdelivr.net/npm/mdb-ui-kit@9.0.0/css/mdb.min.css"
-rel="stylesheet"
-/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | EduManage</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600&display=swap" rel="stylesheet">
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f9fafb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .login-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      width: 100%;
+      max-width: 380px;
+    }
+    .login-card h2 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: #111827;
+    }
+    .input-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: #374151;
+    }
+    input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      background: #f9fafb;
+      transition: border-color 0.2s ease;
+    }
+    input:focus {
+      border-color: #3b82f6;
+      outline: none;
+      background: white;
+    }
+    button {
+      width: 100%;
+      padding: 0.8rem;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    .link {
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: #3b82f6;
+      text-decoration: none;
+    }
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    /* Loader Styles */
+    .loader-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .spinner {
+      width: 50px; height: 50px;
+      border: 6px solid #ccc;
+      border-top-color: #3498db;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
-<style>
-  body{
-    background-color: whitesmoke;
-  }
-</style>
 <body>
 
-    
-<!-- Pills navs -->
- <div class="container position-absolute top-50 start-50 translate-middle ">
-    <div class="row">
-        <div class="col">
+<!-- Loader -->
+<div id="loader" class="loader-overlay">
+  <div class="spinner"></div>
+</div>
 
-     
-                <div class="container-fluid h-custom ">
-                  <div class="row d-flex justify-content-center align-items-center h-100 border py-5 bg-white rounded-2">
-                    <div class="col-md-9 col-lg-6 col-xl-5">
-                      <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
-                        class="img-fluid" alt="Sample image">
-                    </div>
-                    <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1 ">
-                      <!-- <form> -->
-                        <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
-                          <p class="lead fw-normal mb-0 me-3">Sign in with</p>
-                          <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1">
-                            <i class="fab fa-facebook-f"></i>
-                          </button>
-              
-                          <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1">
-                            <i class="fab fa-twitter"></i>
-                          </button>
-              
-                          <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1">
-                            <i class="fab fa-linkedin-in"></i>
-                          </button>
-                        </div>
-              
-                        <div class="divider d-flex align-items-center my-4">
-                          <p class="text-center fw-bold mx-3 mb-0">Or</p>
-                        </div>
-              
-                        <!-- Email input -->
-                        <div data-mdb-input-init class="form mb-4">
-                          <input type="email" id="loginemail" class="form-control form-control-lg"
-                            placeholder="Enter a valid email address" />
-                        </div>
-              
-                        <!-- Password input -->
-                        <div data-mdb-input-init class="form mb-3">
-                          <input type="password" id="loginpassword" class="form-control form-control-lg"
-                            placeholder="Enter password" />
-                        </div>
-              
-                        <div class="d-flex justify-content-between align-items-center">
-                          <!-- Checkbox -->
-                          <div class="form-check mb-0">
-                            <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
-                            <label class="form-check-label" for="form2Example3">
-                              Remember me
-                            </label>
-                          </div>
-                          <a href="#!" class="text-body">Forgot password?</a>
-                        </div>
-              
-                        <div class="text-center text-lg-start mt-4 pt-2">
-                          <button  type="button" id="login"  data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
-                            style="padding-left: 2.5rem; padding-right: 2.5rem;">Login</button>
-                          <p class="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <a href="./register.html"
-                              class="link-danger">Register</a></p>
-                        </div>
-              
-                      <!-- </form> -->
-                    </div>
-                  </div>
-                </div>
-               
+<div class="login-card">
+  <h2>Welcome Back</h2>
+
+  <div class="input-group">
+    <label for="loginemail">Email Address</label>
+    <input type="email" id="loginemail" placeholder="you@example.com" required>
+  </div>
+
+  <div class="input-group">
+    <label for="loginpassword">Password</label>
+    <input type="password" id="loginpassword" placeholder="••••••••" required>
+  </div>
+
+  <button id="login">Login</button>
+
+  <a href="./register.html" class="link">Don’t have an account? Register</a>
 </div>
-</div>
-</div>
-  <!-- Pills content -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <!-- <script src="./script.js"></script> -->
-    <!-- MDB -->
-<script
-type="text/javascript"
-src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/9.0.0/mdb.umd.min.js"
-></script>
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script>
-  
-  document.getElementById('login').addEventListener('click', async ()=>{
-    var email = document.getElementById('loginemail').value
-  var password = document.getElementById('loginpassword').value
-    console.log(email,password)
-    try {
-      var res = await axios.post('http://localhost:3000/api/user/login',{email,password})
-      alert(res.data.message)
-      var userData = res.data.data
-      if(userData){
-        localStorage.setItem('userData' , JSON.stringify(userData))
+  const loader = document.getElementById("loader");
 
-        window.location.href = 'dashboard.html'
+  const showLoader = () => loader.style.display = "flex";
+  const hideLoader = () => loader.style.display = "none";
+
+  // Hide loader after page load
+  window.addEventListener("load", () => setTimeout(hideLoader, 300));
+
+  const showToast = (icon, message) => {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: icon,
+      title: message,
+      showConfirmButton: false,
+      timer: 2500,
+      timerProgressBar: true
+    });
+  };
+
+  document.getElementById('login').addEventListener('click', async () => {
+    const email = document.getElementById('loginemail').value.trim();
+    const password = document.getElementById('loginpassword').value.trim();
+
+    if (!email || !password) {
+      return showToast('warning', 'Please enter email and password');
+    }
+
+    try {
+      showLoader();
+      const res = await axios.post('http://localhost:3000/api/user/login', { email, password });
+      const userData = res.data.data;
+
+      showToast('success', res.data.message || 'Login successful!');
+
+      if (userData) {
+        localStorage.setItem('userData', JSON.stringify(userData));
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 800);
       }
     } catch (error) {
-      
+      showToast('error', error.response?.data?.message || 'Login failed. Try again.');
+    } finally {
+      hideLoader();
     }
-  })
+  });
 </script>
+
 </body>
 </html>

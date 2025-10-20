@@ -12,6 +12,10 @@ import englishCourseRoutes from './routes/englang.js'
 import teacherSalaryRouter from './routes/teacherSalary.js'
 import feeReceiptRouter from './routes/stdFeeReceipt.js'
 import userForReqRouter from './routes/userforreq.js'
+import campusRouter from './routes/campus.js'
+import batchRouter from './routes/batch.js'
+import subjectRouter from './routes/subject.js'
+import subjectAllotmentRouter from './routes/subjectAllotments.js'
 const app = express()
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -29,6 +33,11 @@ app.use('/api/english-courses', englishCourseRoutes);
 app.use('/api/teacherSalary', teacherSalaryRouter);
 app.use('/api/feeReceipt', feeReceiptRouter);
 app.use('/api/auth',userForReqRouter)
+app.use("/api/campus", campusRouter);
+app.use('/api/batch',batchRouter)
+app.use('/api/subject', subjectRouter);
+app.use('/api/subject-allotments', subjectAllotmentRouter);
+
 app.listen(port,()=>{
     console.log(`server is running on port ${port}`)
 })

@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="index.css">
   <style>
 
- 
+
   </style>
 </head>
 
@@ -17,334 +17,369 @@
   <div class="container-fluid">
     <div class="row flex-nowrap">
       <!-- Sidebar -->
-      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar sticky-top" >
+      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar sticky-top">
         <h4>Admin Panel</h4>
         <nav id="sidebar" class="nav flex-column"></nav>
       </div>
 
       <!-- Main Content -->
-      <div class="col main-content">
-  <div class="row main-content-area d-flex justify-content-center align-items-center min-vh-100">
-    <div class="col-12 col-md-10 bg-white p-4 mb-5 border rounded-3">
-      <h2 class="mb-4">Add Teacher Salary</h2>
-
-      <div class="mb-3">
-        <label class="form-label">Teacher Email</label>
-        <input type="text" class="form-control" id="teacherEmail" required placeholder="Enter teacher email" />
-      </div>
-
-      <div id="schoolSelectContainer"></div>
-
-      <button id="getTeacher" class="btn btn-primary mb-3">Get Teacher</button>
-      <hr>
-
-      <div class="mb-3">
-        <label class="form-label">Teacher Name</label>
-        <input type="text" class="form-control" id="teachername" required placeholder="Teacher full name" />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Amount Paid</label>
-        <input type="number" class="form-control" id="amountPaid" required placeholder="e.g. 10000" />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Salary Month</label>
-        <select class="form-select" id="salaryMonth" required>
-          <option value="">Select Month</option>
-          <option>January</option>
-          <option>February</option>
-          <option>March</option>
-          <option>April</option>
-          <option>May</option>
-          <option>June</option>
-          <option>July</option>
-          <option>August</option>
-          <option>September</option>
-          <option>October</option>
-          <option>November</option>
-          <option>December</option>
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Year</label>
-        <input type="number" class="form-control" id="salaryYear" required placeholder="e.g. 2025" />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Payment Method</label>
-        <select class="form-select" id="paymentMethod" required>
-          <option value="">Select Method</option>
-          <option>Cash</option>
-          <option>Bank Transfer</option>
-          <option>Cheque</option>
-          <option>JazzCash</option>
-          <option>EasyPaisa</option>
-        </select>
-      </div>
-
-      <button type="submit" id="addSalary" class="btn btn-primary">Add Salary</button>
-
-      <hr class="my-4" />
-      <h4>Search Salary by Month & Year</h4>
-      <form class="row g-3 mb-4" id="searchForm">
-        <div class="col-md-4">
-          <select class="form-select" id="searchMonth">
-            <option value="">Month</option>
-            <option>January</option>
-            <option>February</option>
-            <option>March</option>
-            <option>April</option>
-            <option>May</option>
-            <option>June</option>
-            <option>July</option>
-            <option>August</option>
-            <option>September</option>
-            <option>October</option>
-            <option>November</option>
-            <option>December</option>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <input type="number" class="form-control" id="searchYear" placeholder="e.g. 2025" />
-        </div>
-        <div class="col-md-4">
-          <div id="schoolSelectTable"></div>
-        </div>
-        <div class="col-md-4">
-          <button type="submit" class="btn btn-success">Search</button>
-        </div>
-      </form>
-
-      <div class="table-responsive">
-        <table class="table table-bordered" id="salaryTable">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Teacher name</th>
-              <th>Teacher email</th>
-              <th>Amount</th>
-              <th>Month</th>
-              <th>Paid By</th>
-              <th>Method</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script>
-    const user = JSON.parse(localStorage.getItem("userData")) || [];
-    const isSuperAdmin = user[0]?.designation === "superadmin";
-    const schoolSelectContainer = document.getElementById("schoolSelectContainer");
-    const schoolSelectTable = document.getElementById("schoolSelectTable");
-const sidebar = document.getElementById("sidebar");
-
-const allLinks = {
-  // dashboard: { name: "Dashboard", file: "Dashboard.html" },
-  addclass: { name: "Add Class", file: "classform.html", active:false },
-  addsection: { name: "Add Section", file: "section.html", active:false },
-  addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active:false },
-  addenglangcourse: { name: "Add English lang Course", file: "englangcourse.html", active:false },
-
-  addstudent: { name: "Student Form", file: "student.html", active:false },
-  studentlist: { name: "Student List", file: "studentlist.html" , active:false},
-  addteacher: { name: "Teacher Form", file: "teacher.html",  active:false},
-  teacherlist: { name: "Teacher List", file: "teacherlist.html" , active:false},
-  teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" , active:true},
-
-  adduser: { name: "Add User", file: "userform.html" , active:false}
-
-
-
-};
-if(user.length  <=0 ){
-     window.location.href= 'Dashboard.html'
-
-}
-function renderSidebar(user) {
-  // console.log(user[0].allowPages)
-  // Always show Dashboard and Logout
-  sidebar.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
-   if(isSuperAdmin){
-  sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
-
-  }
-
-  for (const key in allLinks) {
-    console.log(key)
-    if(isSuperAdmin){
-      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
-
-    }
-    
-   else {
-   if (user[0].allowedPages.includes(key)) {
-      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
-    }
-     else{
-        if(allLinks[key].active){
-            window.location.href='Dashboard.html'
-        }
-      }
-    }
-  }
-
-  sidebar.innerHTML += `<a href="#">Logout</a>`;
-}
-
-renderSidebar(user);
-
-    let schoolList = [];
-
-    async function loadSchools() {
-      try {
-        const res = await axios.get("http://localhost:3000/api/school/get");
-        schoolList = res.data.data;
-
-        const label = document.createElement("label");
-        label.className = "form-label mt-2";
-        label.innerText = "Select School";
-
-        const select = document.createElement("select");
-        select.className = "form-select mb-3";
-        select.id = "schoolDropdown";
-        select.required = true;
-
-              const selectTable = document.createElement("select");
-        selectTable.className = "form-select mb-3";
-        selectTable.id = "schoolDropdownTable";
-        selectTable.required = true;
-
-        select.innerHTML = `<option value="">Select School</option>`;
-        selectTable.innerHTML = `<option value="">Select School</option>`;
-        schoolList.forEach(s => {
-          const opt = document.createElement("option");
-          opt.value = s._id;
-          opt.textContent = s.name;
-          select.appendChild(opt);
-        });
-
-           schoolList.forEach(s => {
-          const opt = document.createElement("option");
-          opt.value = s._id;
-          opt.textContent = s.name;
-          selectTable.appendChild(opt);
-        });
-
-
-        schoolSelectContainer.appendChild(label);
-        schoolSelectContainer.appendChild(select);
-
-        // schoolSelectTable.appendChild(label);
-        schoolSelectTable.appendChild(selectTable);
-      } catch (err) {
-        alert("Failed to load schools");
-        console.error(err);
-      }
-    }
-
-    if (isSuperAdmin) loadSchools();
-    
-    var teacher
-
-    document.getElementById('getTeacher').addEventListener('click',async()=>{
-      const teacherEmail = document.getElementById("teacherEmail").value;
-      const amountPaid = document.getElementById("amountPaid")
-
-      const teacherName = document.getElementById("teachername");
-        if(!teacherEmail) return alert('enter teacher email')
-      let schoolId;
-      if (isSuperAdmin) {
-        schoolId = document.getElementById("schoolDropdown").value;
-        if (!schoolId) return alert("Select school first");
-      } else {
-        schoolId = user[0].school._id;
-      }
-
-      var res = await axios.post('http://localhost:3000/api/teacher/getByEmail',{email:teacherEmail,schoolId})
-      teacher = res.data
-      teacherName.value = `${teacher.name}  ${teacher.fatherName} `
-      amountPaid.value = teacher.Salary
-
-
+          <div class="col  main-content p-0">
         
-    })
-    
+        <div id="navContent"></div>
+        <div class="row main-content-area d-flex justify-content-center align-items-center min-vh-100">
+          <div class="col-12 col-md-10 bg-white p-4 mb-5 border rounded-3">
+            <h2 class="mb-4">Add Teacher Salary</h2>
+            <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addTSModal">Add New Teacher
+              Salary </button>
 
-    document.getElementById("addSalary").addEventListener("click", async () => {
 
-      
-      const amountPaid = document.getElementById("amountPaid").value
-      const salaryMonth = document.getElementById("salaryMonth").value;
-      const salaryYear = document.getElementById("salaryYear").value;
-      const paymentMethod = document.getElementById("paymentMethod").value;
+            <h4>Search Salary by Month & Year</h4>
+            <form class="row g-3 mb-4" id="searchForm">
+              <div class="col-md-4">
+                <select class="form-select" id="searchMonth">
+                  <option value="">Month</option>
+                  <option>January</option>
+                  <option>February</option>
+                  <option>March</option>
+                  <option>April</option>
+                  <option>May</option>
+                  <option>June</option>
+                  <option>July</option>
+                  <option>August</option>
+                  <option>September</option>
+                  <option>October</option>
+                  <option>November</option>
+                  <option>December</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <input type="number" class="form-control minimalist-input minimalist-input" id="searchYear"
+                  placeholder="e.g. 2025" />
+              </div>
+          
+              <div class="col-md-4">
+                <button type="submit" class="btn btn-success">Search</button>
+              </div>
+            </form>
 
-      let schoolId;
-     if(teacher?.schoolId._id){
-        schoolId = teacher.schoolId._id
+            <!-- Modal Form -->
+            <div class="modal fade" id="addTSModal" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="width: 100%; max-width: 600px; margin: auto;">
+                  <form id="campusForm">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Add Teacher Salary</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                      <!-- <div id="schoolSelectBox2"></div> -->
+                      <div class="row gy-3">
+                        <div class="col-md-6">
+                          <label class="form-label small">Teacher ID</label>
+                          <div class="input-group">
+                            <input type="text" id="teacherIdInput" class="form-control minimalist-input"
+                              placeholder="Enter Teacher ID">
+                            <button type="button" class="btn btn-outline-secondary" id="getTeacherBtn">
+                              <span id="getTeacherSpinner" style="display:none;">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                              </span>
+                              Get Teacher
+                            </button>
+                          </div>
+                        </div>
+
+                        <div class="col-md-6">
+                          <label for="form-lable">Teacher Name</label>
+                          <input type="text" class="form-control minimalist-input" name="teachername" id="teachername" placeholder="Teacher Name">
+                        </div>
+                          <div class="col-md-6 mb-3">
+                            <label class="form-label">Salary Amount</label>
+                            <input type="number" class="form-control minimalist-input" id="amountPaid"
+                              required placeholder="e.g. 10000" />
+                          </div>
+
+
+
+                          <div class="col-md-6 mb-3">
+                            <label class="form-label">Salary Month</label>
+                            <select class="form-select" id="salaryMonth" required>
+                              <option value="">Select Month</option>
+                              <option>January</option>
+                              <option>February</option>
+                              <option>March</option>
+                              <option>April</option>
+                              <option>May</option>
+                              <option>June</option>
+                              <option>July</option>
+                              <option>August</option>
+                              <option>September</option>
+                              <option>October</option>
+                              <option>November</option>
+                              <option>December</option>
+                            </select>
+                          </div>
+
+                          <div class="col-md-6 mb-3">
+                            <label class="form-label">Year</label>
+                            <input type="number" class="form-control minimalist-input minimalist-input" id="salaryYear"
+                              required placeholder="e.g. 2025" />
+                          </div>
+
+                          <div class="col-md-6 mb-3">
+                            <label class="form-label">Payment Method</label>
+                            <select class="form-select" id="paymentMethod" required>
+                              <option value="">Select Method</option>
+                              <option>Cash</option>
+                              <option>Bank Transfer</option>
+                              <option>Cheque</option>
+                              <option>JazzCash</option>
+                              <option>EasyPaisa</option>
+                            </select>
+                          </div>
+
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="submit" class="btn btn-dark" id="addSalary">Add Teacher Salary </button>
+                      </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          
+
+
+          <div class="table-responsive">
+            <table class="table table-bordered" id="salaryTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Teacher name</th>
+                  <th>Teacher email</th>
+                  <th>Amount</th>
+                  <th>Month</th>
+                  <th>Paid By</th>
+                  <th>Method</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+      crossorigin="anonymous"></script>
+    <script>
+      const user = JSON.parse(localStorage.getItem("userData")) || [];
+      const isSuperAdmin = user[0]?.designation === "superadmin";
+      const schoolSelectContainer = document.getElementById("schoolSelectContainer");
+      const schoolSelectTable = document.getElementById("schoolSelectTable");
+      const modal = new bootstrap.Modal(document.getElementById("addTSModal"));
+      var teacherId
+      // const sidebar = document.getElementById("sidebar");
+
+      // const allLinks = {
+      //   // dashboard: { name: "Dashboard", file: "Dashboard.html" },
+      //   addclass: { name: "Add Class", file: "classform.html", active:false },
+      //   addsection: { name: "Add Section", file: "section.html", active:false },
+      //   addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active:false },
+      //   addenglangcourse: { name: "Add English lang Course", file: "englangcourse.html", active:false },
+
+      //   addstudent: { name: "Student Form", file: "student.html", active:false },
+      //   studentlist: { name: "Student List", file: "studentlist.html" , active:false},
+      //   addteacher: { name: "Teacher Form", file: "teacher.html",  active:false},
+      //   teacherlist: { name: "Teacher List", file: "teacherlist.html" , active:false},
+      //   teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" , active:true},
+
+      //   adduser: { name: "Add User", file: "userform.html" , active:false}
+
+
+
+      // };
+      // if(user.length  <=0 ){
+      //      window.location.href= 'Dashboard.html'
+
+      // }
+      // function renderSidebar(user) {
+      //   // console.log(user[0].allowPages)
+      //   // Always show Dashboard and Logout
+      //   sidebar.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
+      //    if(isSuperAdmin){
+      //   sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
+
+      //   }
+
+      //   for (const key in allLinks) {
+      //     console.log(key)
+      //     if(isSuperAdmin){
+      //       sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
+
+      //     }
+
+      //    else {
+      //    if (user[0].allowedPages.includes(key)) {
+      //       sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
+      //     }
+      //      else{
+      //         if(allLinks[key].active){
+      //             window.location.href='Dashboard.html'
+      //         }
+      //       }
+      //     }
+      //   }
+
+      //   sidebar.innerHTML += `<a href="#">Logout</a>`;
+      // }
+
+      // renderSidebar(user);
+
+      let schoolList = [];
+
+      async function loadSchools() {
+        try {
+          const res = await axios.get("http://localhost:3000/api/school/get");
+          schoolList = res.data.data;
+
+          const label = document.createElement("label");
+          label.className = "form-label mt-2";
+          label.innerText = "Select School";
+
+          const select = document.createElement("select");
+          select.className = "form-select col-md-6 mb-3";
+          select.id = "schoolDropdown";
+          select.required = true;
+
+          const selectTable = document.createElement("select");
+          selectTable.className = "form-select col-md-6 mb-3";
+          selectTable.id = "schoolDropdownTable";
+          selectTable.required = true;
+
+          select.innerHTML = `<option value="">Select School</option>`;
+          selectTable.innerHTML = `<option value="">Select School</option>`;
+          schoolList.forEach(s => {
+            const opt = document.createElement("option");
+            opt.value = s._id;
+            opt.textContent = s.name;
+            select.appendChild(opt);
+          });
+
+          schoolList.forEach(s => {
+            const opt = document.createElement("option");
+            opt.value = s._id;
+            opt.textContent = s.name;
+            selectTable.appendChild(opt);
+          });
+
+
+          schoolSelectContainer.appendChild(label);
+          schoolSelectContainer.appendChild(select);
+
+          // schoolSelectTable.appendChild(label);
+          schoolSelectTable.appendChild(selectTable);
+        } catch (err) {
+          alert("Failed to load schools");
+          console.error(err);
+        }
+      }
+
+      if (isSuperAdmin) loadSchools();
+
+      var teacher
+
+      document.getElementById('getTeacherBtn').addEventListener('click', async () => {
+        const teacherIdInput = document.getElementById("teacherIdInput").value;
+        const amountPaid = document.getElementById("amountPaid")
+
+        const teacherName = document.getElementById("teachername");
+        if (!teacherIdInput) return alert('enter teacher ID')
+        let schoolId;
+       
+
+        var res = await axios.post('http://localhost:3000/api/teacher/getById', { id: teacherIdInput, })
+        teacher = res.data
+        teacherName.value = `${teacher.name}  ${teacher.fatherName} `
+        amountPaid.value = teacher.Salary
         teacherId = teacher._id
-     }
-     else{
-        alert('fisrt get teacher data')
-        return
-     }
-     
-     paidBy = user[0].email
-      try {
-        const res = await axios.post("http://localhost:3000/api/teacherSalary/add", {
-          teacherId, amountPaid,
-          salaryMonth: `${salaryMonth} ${salaryYear}`,
-          paymentMethod, paidBy,schoolId
-        });
 
-        alert("Salary added successfully");
-        // document.getElementById("salaryForm").reset();
-        if (isSuperAdmin) document.getElementById("schoolDropdown").value = "";
-      } catch (err) {
-        alert("Failed to add salary");
-        console.error(err);
-      }
-    });
 
-    document.getElementById("searchForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const searchMonth = document.getElementById("searchMonth").value;
-      const searchYear = document.getElementById("searchYear").value;
 
-      if (!searchMonth || !searchYear) return alert("Please select month and year");
+      })
 
-      let schoolId;
-      if (isSuperAdmin) {
-        schoolId = document.getElementById("schoolDropdownTable")?.value;
-        if (!schoolId) return alert("Select school to search");
-      } else {
-        schoolId = user[0].school._id;
-      }
-      if(!schoolId) return alert('select school')
 
-      try {
-        const res = await axios.get(`http://localhost:3000/api/teacherSalary/getByMonthYear?month=${searchMonth}&year=${searchYear}&schoolId=${schoolId}`);
-        const salaryList = res.data;
-        const tbody = document.querySelector("#salaryTable tbody");
-        tbody.innerHTML = "";
+      document.getElementById("addSalary").addEventListener("click", async () => {
 
-        if (salaryList.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="7" class="text-center">No records found</td></tr>`;
-          return;
+
+        const amountPaid = document.getElementById("amountPaid").value
+        const salaryMonth = document.getElementById("salaryMonth").value;
+        const salaryYear = document.getElementById("salaryYear").value;
+        const paymentMethod = document.getElementById("paymentMethod").value;
+
+        let schoolId;
+        if (teacher?.schoolId._id) {
+          schoolId = teacher.schoolId._id
+          teacherId = teacher._id
+        }
+        else {
+          alert('fisrt get teacher data')
+          return
         }
 
-        salaryList.forEach((item, i) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
+        paidBy = user[0].email
+        try {
+          const res = await axios.post("http://localhost:3000/api/teacherSalary/add", {
+            teacherId, amountPaid,
+            salaryMonth: `${salaryMonth} ${salaryYear}`,
+            paymentMethod, paidBy, schoolId
+          });
+          modal.hide()
+
+
+          alert("Salary added successfully");
+          // document.getElementById("salaryForm").reset();
+          if (isSuperAdmin) document.getElementById("schoolDropdown").value = "";
+        } catch (err) {
+          alert("Failed to add salary");
+          console.error(err);
+        }
+      });
+
+      document.getElementById("searchForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const searchMonth = document.getElementById("searchMonth").value;
+        const searchYear = document.getElementById("searchYear").value;
+
+        if (!searchMonth || !searchYear) return alert("Please select month and year");
+
+        let schoolId;
+        if (isSuperAdmin) {
+          schoolId = document.getElementById("schoolDropdownTable")?.value;
+          if (!schoolId) return alert("Select school to search");
+        } else {
+          schoolId = user[0].school._id;
+        }
+        if (!schoolId) return alert('select school')
+
+        try {
+          const res = await axios.get(`http://localhost:3000/api/teacherSalary/getByMonthYear?month=${searchMonth}&year=${searchYear}&schoolId=${schoolId}`);
+          const salaryList = res.data;
+          const tbody = document.querySelector("#salaryTable tbody");
+          tbody.innerHTML = "";
+
+          if (salaryList.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center">No records found</td></tr>`;
+            return;
+          }
+
+          salaryList.forEach((item, i) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
             <td>${i + 1}</td>
             <td>${item.teacherId.name} ${item.teacherId.fatherName}</td>
             <td>${item.teacherId.email}</td>
@@ -354,14 +389,16 @@ renderSidebar(user);
             <td>${item.paymentMethod}</td>
             <td>${new Date(item.paymentDate).toLocaleDateString()}</td>
           `;
-          tbody.appendChild(row);
-        });
-      } catch (err) {
-        alert("Error fetching salary data");
-        console.error(err);
-      }
-    });
-  </script>
+            tbody.appendChild(row);
+          });
+        } catch (err) {
+          alert("Error fetching salary data");
+          console.error(err);
+        }
+      });
+    </script>
+    <script src="index.js"></script>
+
 </body>
 
 </html>

@@ -33,7 +33,12 @@ const teacherSalarySchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "school",
       required: true
-    }
+    },
+     createdBy:{
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        }
 
 });
 

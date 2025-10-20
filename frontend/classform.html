@@ -8,6 +8,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <link rel="stylesheet" href="index.css">
+    <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+/>
+
     <style>
        .toast-container {
       position: fixed;
@@ -16,6 +21,9 @@
       z-index: 1055;
     }
     </style>
+    <style>
+  
+</style>
 </head>
 
 <body>
@@ -27,8 +35,9 @@
         <nav id="sidebar" class="nav flex-column"></nav>
       </div>
 
-      <div class="col main-content">
-        <div class="row justify-content-center align-items-center min-vh-100">
+      <div class="col  main-content p-0">
+        <div id="navContent"></div>
+        <div class="row mt-md-0 mt-4 justify-content-center align-items-center min-vh-100">
           <div class="col-10 bg-white p-5 mb-5 border rounded-3">
             <h2 class="mb-4">Add Class</h2>
             <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addClassModal">Add New Class</button>
@@ -39,7 +48,7 @@
                 <label for="">Enter Name</label>
             <input type="text" class="form-control " placeholder="Search by Class Name" id="searchClass">
               </div>
-              <div class="col-3" id="schoolSelectBox1">
+              <div class="col-3" id="campusSelectBox1">
             
 
               </div>
@@ -53,7 +62,7 @@
                     <th>Class Fee</th>
                     <th>Tuition Fee</th>
                     <th>Admission Fee</th>
-                    <th id="adminth" style="display: none;">School</th>
+                    <th id="adminth" style="display: none;">campus</th>
 
                     <th>Actions</th>
                   </tr>
@@ -68,43 +77,57 @@
   </div>
 
   <!-- Modal Form -->
-  <div class="modal fade" id="addClassModal" tabindex="-1" aria-labelledby="addClassModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="width: 100%; max-width: 600px; margin: auto;">
-        <form id="classForm">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addClassModalLabel">Add New Class</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <div id="schoolDropdownContainer"></div>
-            <div class="mb-3">
-              <label class="form-label">Class Name</label>
-              <input type="text" class="form-control" id="className" placeholder="Enter class name" required>
+<div class="modal fade" id="addClassModal" tabindex="-1" aria-labelledby="addClassModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-sm border-0 rounded-3" style="width: 100%; max-width: 600px; margin: auto;">
+      <form id="classForm">
+        <!-- Modal Header -->
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-semibold" id="addClassModalLabel">Add New Class</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+          <div id="campusDropdownContainer" class="mb-3"></div>
+
+          <!-- Row 1 -->
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label small">Class Name</label>
+              <input type="text" class="form-control minimalist-input" id="className" placeholder="Enter class name" required>
             </div>
-            <div class="mb-3">
-              <label class="form-label">Class Fee</label>
-              <input type="number" class="form-control" id="classFee" placeholder="Enter class fee" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Tuition Fee</label>
-              <input type="number" class="form-control" id="tuitionFee" placeholder="Enter tuition fee" required>
-            </div>
-              <div class="mb-3">
-              <label class="form-label">Admission Fee</label>
-              <input type="number" class="form-control" id="admissionFee" placeholder="Enter Admission fee" required>
-            </div>
-               <div class="mb-3" id="schoolSelectBox2">
-                
+            <div class="col-md-6">
+              <label class="form-label small">Class Fee</label>
+              <input type="number" class="form-control minimalist-input" id="classFee" placeholder="Enter class fee" required>
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" id="formSubmitBtn">Add Class</button>
+
+          <!-- Row 2 -->
+          <div class="row g-3 mt-1">
+            <div class="col-md-6">
+              <label class="form-label small">Tuition Fee</label>
+              <input type="number" class="form-control minimalist-input" id="tuitionFee" placeholder="Enter tuition fee" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small">Admission Fee</label>
+              <input type="number" class="form-control minimalist-input" id="admissionFee" placeholder="Enter admission fee" required>
+            </div>
+              
           </div>
-        </form>
-      </div>
+
+          <!-- Optional Campus Select -->
+          <div class="mt-3" id="campusSelectBox2"></div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn btn-dark px-4" id="formSubmitBtn">Add Class</button>
+        </div>
+      </form>
     </div>
   </div>
+</div>
 
   <!-- Toast -->
   <div class="toast-container">
@@ -121,6 +144,7 @@
         crossorigin="anonymous"></script>
     <!-- <script src="./dashboard.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 <script>
   const classNameInput = document.getElementById("className");
   const classFeeInput = document.getElementById("classFee");
@@ -130,7 +154,8 @@
   const tableBody = document.querySelector("#classTable tbody");
   const classForm = document.getElementById('classForm')
   const adminTh = document.getElementById('adminth')
-  
+  // const teacherIdInput = document.getElementById("teacherId");
+  //     const teacherName = document.getElementById("teachername");
   const user = JSON.parse(localStorage.getItem("userData")) || [];
 
   const modal = new bootstrap.Modal(document.getElementById("addClassModal"));
@@ -138,7 +163,7 @@
 const toast = new bootstrap.Toast(document.getElementById("toastMessage"));
 const toastBody = document.getElementById("toastBody");
 const toastElement = document.getElementById("toastMessage");
-const searchSchoolInput = document.getElementById('searchClass')
+const searchcampusInput = document.getElementById('searchClass')
 function showToast(message, isSuccess = true) {
   console.log('toast is working')
   toastBody.textContent = message;
@@ -150,126 +175,149 @@ let isEditing = false;
 let editingId = null;
 
   console.log(user)
-  const isSuperAdmin = user[0]?.designation === "superadmin";
+  const isSuperAdmin = user[0]?.designation === "supremeadmin";
   console.log(isSuperAdmin)
-const sidebar = document.getElementById("sidebar");
 
-const allLinks = {
-  // dashboard: { name: "Dashboard", file: "Dashboard.html" },
-  addclass: { name: "Add Class", file: "classform.html", active:true },
-  addsection: { name: "Add Section", file: "section.html", active:false },
-  addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active:false },
-  addenglangcourse: { name: "Add English lang Course", file: "englangcourse.html", active:false },
+  // var classTeacherId
+// const sidebar = document.getElementById("sidebar");
 
-  addstudent: { name: "Student Form", file: "student.html", active:false },
-  studentlist: { name: "Student List", file: "studentlist.html" , active:false},
-  addteacher: { name: "Teacher Form", file: "teacher.html",  active:false},
-  teacherlist: { name: "Teacher List", file: "teacherlist.html" , active:false},
-  teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" , active:false},
-  adduser: { name: "Add User", file: "userform.html" , active:false}
+// const allLinks = {
+//   // dashboard: { name: "Dashboard", file: "Dashboard.html" },
+//   addclass: { name: "Add Class", file: "classform.html", active:true },
+//   addsection: { name: "Add Section", file: "section.html", active:false },
+//   addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active:false },
+//   addenglangcourse: { name: "Add English lang Course", file: "englangcourse.html", active:false },
+
+//   addstudent: { name: "Student Form", file: "student.html", active:false },
+//   studentlist: { name: "Student List", file: "studentlist.html" , active:false},
+//   addteacher: { name: "Teacher Form", file: "teacher.html",  active:false},
+//   teacherlist: { name: "Teacher List", file: "teacherlist.html" , active:false},
+//   teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" , active:false},
+//   adduser: { name: "Add User", file: "userform.html" , active:false}
 
 
 
-};
+// };
 if(user.length > 0 || !user == null){
-function renderSidebar(user) {
-  // console.log(user[0].allowPages)
-  // Always show Dashboard and Logout
-  sidebar.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
-   if(isSuperAdmin){
-  sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
+// function renderSidebar(user) {
+//   // console.log(user[0].allowPages)
+//   // Always show Dashboard and Logout
+//   sidebar.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
+//    if(isSuperAdmin){
+//   sidebar.innerHTML += `<a href="campusform.html">Add campus</a>`;
 
-  }
+//   }
 
-  for (const key in allLinks) {
-    console.log(key)
-    if(isSuperAdmin){
-      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
+//   for (const key in allLinks) {
+//     console.log(key)
+//     if(isSuperAdmin){
+//       sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
 
-    }
+//     }
     
-   else {
-   if (user[0].allowedPages.includes(key)) {
-      sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
-    }
-     else{
-        if(allLinks[key].active){
-            window.location.href='Dashboard.html'
-        }
-      }
-    }
-  }
+//    else {
+//    if (user[0].allowedPages.includes(key)) {
+//       sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
+//       if(allLinks[key].active){
+//         checkPermission(key)
+//       }
+//     }
+//      else{
+//         if(allLinks[key].active){
+//             window.location.href='Dashboard.html'
+//         }
+//       }
+//     }
+//   }
 
-  sidebar.innerHTML += `<a href="#">Logout</a>`;
+//   sidebar.innerHTML += `<a href="#">Logout</a>`;
+// }
+const permissions = [{page: 'addclass',  permissions: ['read']},
+{page: 'addsection', permissions: ['read']}
+]
+
+function checkPermission(currentPage){
+  console.log(currentPage)
+  const currentPagePerm= permissions.find(p=> p.page === currentPage)
+  console.log(currentPagePerm)
+  
+  // permissions.forEach(permission => {
+  //   if(permission.page== currentPage ){
+  //     if(permission.permissions.includes('read')){
+  //       console
+  //     }
+  //   }
+  // });
 }
-
-renderSidebar(user);
+// 
+// renderSidebar(user);
   let originalClassList = []
   let classList = [];
-  let schoolList = [];
-  var schoolSelectBox1 = document.getElementById('schoolSelectBox1')
-  var schoolSelectBox2 = document.getElementById('schoolSelectBox2')
-  // 🔽 Inject dropdown if superadmin
-  if (isSuperAdmin) {
-    const schoolDropdown = document.createElement("select");
-    schoolDropdown.className = "form-select mb-3";
-    schoolDropdown.id = "schoolDropdown";
-    schoolDropdown.required = true;
+  // let campusList = [];
+  // var campusSelectBox1 = document.getElementById('campusSelectBox1')
+  // var campusSelectBox2 = document.getElementById('campusSelectBox2')
+  // // 🔽 Inject dropdown if superadmin
+  // if (isSuperAdmin) {
+  //   const campusDropdown = document.createElement("select");
+  //   campusDropdown.className = "form-select mb-3";
+  //   campusDropdown.id = "campusDropdown";
+  //   campusDropdown.required = true;
 
-    const label = document.createElement("label");
-    label.textContent = "Select School";
-    label.setAttribute("for", "schoolDropdown");
-    label.className = "form-label";
+  //   const label = document.createElement("label");
+  //   label.textContent = "Select campus";
+  //   label.setAttribute("for", "campusDropdown");
+  //   label.className = "form-label";
 
-    const schoolDropdownfilter = document.createElement("select");
-    schoolDropdownfilter.className = "form-select mb-3";
-    schoolDropdownfilter.id = "schoolDropdownfilter";
-    schoolDropdownfilter.required = true;
+  //   const campusDropdownfilter = document.createElement("select");
+  //   campusDropdownfilter.className = "form-select mb-3";
+  //   campusDropdownfilter.id = "campusDropdownfilter";
+  //   campusDropdownfilter.required = true;
 
-    const label2 = document.createElement("label");
-    label2.textContent = "Select School";
-    label2.setAttribute("for", "schoolDropdown");
-    label2.className = "form-label";
+  //   const label2 = document.createElement("label");
+  //   label2.textContent = "Select campus";
+  //   label2.setAttribute("for", "campusDropdown");
+  //   label2.className = "form-label";
 
-    const form = document.getElementById("classForm");
-    schoolSelectBox1.appendChild(label2)
-    schoolSelectBox1.appendChild(schoolDropdownfilter)
+  //   const form = document.getElementById("classForm");
+  //   campusSelectBox1.appendChild(label2)
+  //   campusSelectBox1.appendChild(campusDropdownfilter)
 
-        schoolSelectBox2.appendChild(label)
-      schoolSelectBox2.appendChild(schoolDropdown)
-    // 🟢 Fetch and populate schools dropdown
-    async function loadSchools() {
-      try {
-        const res = await axios.get("http://localhost:3000/api/school/get");
-        schoolList = res.data.data;
-               const option = document.createElement("option");
-          option.value = "";
-          option.textContent = 'Select School';
-          schoolDropdown.appendChild(option);
-        schoolList.forEach(school => {
-          const option = document.createElement("option");
-          option.value = school._id;
-          option.textContent = school.name;
-          schoolDropdown.appendChild(option);
-        });
+  //   campusSelectBox2.appendChild(label)
+  //   campusSelectBox2.appendChild(campusDropdown)
+  //   // 🟢 Fetch and populate campuses dropdown
+  //   async function loadcampuses() {
+  //     try {
+  //       const res = await axios.get(`http://localhost:3000/api/campus/getBySchool/${user[0].school._id}`);
+  //       campusList = res.data;
+  //       console.log(campusList)
+  //              const option = document.createElement("option");
+  //         option.value = "";
+  //         option.textContent = 'Select campus';
+  //         campusDropdown.appendChild(option);
+  //       campusList.forEach(campus => {
+  //         const option = document.createElement("option");
+  //         option.value = campus._id;
+  //         option.textContent = campus.name;
+  //         campusDropdown.appendChild(option);
+  //       });
 
-          const option2 = document.createElement("option");
-          option2.value = "";
-          option2.textContent = 'Select School';
-          schoolDropdownfilter.appendChild(option2);
-        schoolList.forEach(school => {
-          const option2 = document.createElement("option");
-          option2.value = school._id;
-          option2.textContent = school.name;
-          schoolDropdownfilter.appendChild(option2);
-        });
-      } catch (err) {
-        console.error("Error fetching schools:", err);
-      }
-    }
+  //         const option2 = document.createElement("option");
+  //         option2.value = "";
+  //         option2.textContent = 'Select campus';
+  //         campusDropdownfilter.appendChild(option2);
+  //       campusList.forEach(campus => {
+  //         const option2 = document.createElement("option");
+  //         option2.value = campus._id;
+  //         option2.textContent = campus.name;
+  //         campusDropdownfilter.appendChild(option2);
+  //       });
+  //     } catch (err) {
+  //       console.error("Error fetching campuses:", err);
+  //     }
+  //   }
 
-    loadSchools();
-  }
+  //   loadcampuses();
+  // }
 
   // 🔁 Load classes on page load
   window.addEventListener("DOMContentLoaded", loadClasses);
@@ -278,11 +326,12 @@ renderSidebar(user);
     try {
       let res;
       if (isSuperAdmin) {
-        res = await axios.get("http://localhost:3000/api/class/all");
+        res = await axios.get(`http://localhost:3000/api/class/school/${user[0].school._id}`);
       } else {
-        res = await axios.get(`http://localhost:3000/api/class/getBySchool/${user[0].school._id}`);
+        res = await axios.get(`http://localhost:3000/api/class/getByCampus/${user[0].school._id}/${user[0].campus._id}`);
       }
       classList = res.data.data;
+      console.log(classList);
       originalClassList = [...res.data.data]
       renderTable();
     } catch (err) {
@@ -307,16 +356,8 @@ renderSidebar(user);
           <td>${cls.fee}</td>
           <td>${cls.tuitionFee}</td>
           <td>${cls.admissionFee || 'N/A'}</td>
-             <td>
-    ${
-      isSuperAdmin
-        ? 
-          
-            cls.schoolId.name
-          
-        : ''
-    }
-  </td>
+                 ${isSuperAdmin ? `<td>${cls.campusId?.name || 'N/A'}</td>` : ''}
+
           <td>
         <button class="btn btn-sm btn-info me-1" onclick="editClass('${cls._id}')">Edit</button>
 
@@ -331,7 +372,7 @@ renderSidebar(user);
   }
 
   async function deleteClass(id) {
-      if (!confirm("Are you sure you want to delete this school?")) return;
+      if (!confirm("Are you sure you want to delete this campus?")) return;
 
     try {
      var res = await axios.delete(`http://localhost:3000/api/class/delete/${id}`);
@@ -342,7 +383,7 @@ originalClassList = originalClassList.filter(cls => cls._id !== id);
       renderTable();
     } catch (err) {
       console.error("Failed to delete class:", err);
-    showToast("Failed to delete school", false);
+    showToast("Failed to delete campus", false);
 
     }
   }
@@ -361,23 +402,24 @@ originalClassList = originalClassList.filter(cls => cls._id !== id);
       return;
     }
 
-    let schoolId;
-
-    if (isSuperAdmin) {
-      const dropdown = document.getElementById("schoolDropdown");
-      schoolId = dropdown.value;
-      if (!schoolId) {
-        alert("Please select a school");
+    let campusId;
+    let schoolId = user[0]?.school?._id;
+    const createdBy = user[0]._id
+        if (isSuperAdmin) {
+      const dropdown = document.getElementById("campusDropdown");
+      campusId = dropdown.value;
+      if (!campusId) {
+        alert("Please select a campus");
         return;
       }
     } else {
-      schoolId = user[0].school._id;
+      campusId = user[0].campus._id;
     }
 
     try {
        if (isEditing) {
       const res = await axios.put(`http://localhost:3000/api/class/update/${editingId}`, {
-        name, fee, tuitionFee,admissionFee,schoolId
+        name, fee, tuitionFee,admissionFee,campusId , schoolId 
       });
 
       const { data, message } = res.data;
@@ -385,17 +427,17 @@ originalClassList = originalClassList.filter(cls => cls._id !== id);
       classList[index] = data;
       originalClassList[index] = data;
 
-      showToast(message || "School updated successfully");
+      showToast(message || "campus updated successfully");
 
     } else {
       const res = await axios.post("http://localhost:3000/api/class/add", {
-        name, fee, tuitionFee,admissionFee,schoolId
+        name, fee, tuitionFee,admissionFee,campusId , schoolId , createdBy
       });
 
       const { data, message } = res.data;
       showToast(message, data && data._id);
       console.log(data,message)
-      // Only push if school added
+      // Only push if campus added
       if (data && data._id) {
         classList.push(data);
         originalClassList.push(data)
@@ -404,19 +446,19 @@ originalClassList = originalClassList.filter(cls => cls._id !== id);
       console.log(originalClassList)
 
       // Don't close modal if already exists
-      if (message === "School Already Exists") return;
+      if (message === "campus Already Exists") return;
     }
 
     // Reset and close modal
     isEditing = false;
     editingId = null;
     classForm.reset();
-    addButton.textContent = "Add School";
-    document.getElementById("addClassModalLabel").textContent = "Add New School";
+    addButton.textContent = "Add campus";
+    document.getElementById("addClassModalLabel").textContent = "Add New campus";
     modal.hide();
 
 
-      if (isSuperAdmin) document.getElementById("schoolDropdown").value = "";
+      if (isSuperAdmin) document.getElementById("campusDropdown").value = "";
 
       renderTable();
     } catch (err) {
@@ -442,22 +484,24 @@ originalClassList = originalClassList.filter(cls => cls._id !== id);
   classFeeInput.value = classData.fee;
   tuitionFeeInput.value = classData.tuitionFee;
   admissionFeeInput.value = classData.admissionFee
-  if(isSuperAdmin) document.getElementById('schoolDropdown').value = classData.schoolId._id
+ 
 
-  document.getElementById("addClassModalLabel").innerText = "Update School";
-  formSubmitBtn.innerText = "Update School";
+  if(isSuperAdmin) document.getElementById('campusDropdown').value = classData.campusId._id
+
+  document.getElementById("addClassModalLabel").innerText = "Update campus";
+  formSubmitBtn.innerText = "Update campus";
   modal.show();
 }
-let selectedSchoolId = ''; // Store selected school
+let selectedcampusId = ''; // Store selected campus
 let filteredClasses = originalClassList;
 
 // 👇 Search filter
-searchSchoolInput.addEventListener('input', () => {
-  const searchTerm = searchSchoolInput.value.toLowerCase().trim();
+searchcampusInput.addEventListener('input', () => {
+  const searchTerm = searchcampusInput.value.toLowerCase().trim();
 
-  // Apply both filters: school + search text
+  // Apply both filters: campus + search text
   filteredClasses = originalClassList.filter(cls =>
-    (selectedSchoolId === '' || cls.schoolId._id === selectedSchoolId) &&
+    (selectedcampusId === '' || cls.campusId._id === selectedcampusId) &&
     cls.name.toLowerCase().includes(searchTerm)
   );
 
@@ -465,16 +509,17 @@ searchSchoolInput.addEventListener('input', () => {
   renderTable();
 });
 
-// 👇 School dropdown filter
+// 👇 campus dropdown filter
 if (isSuperAdmin) {
-  document.getElementById('schoolDropdownfilter').addEventListener('change', (e) => {
-    selectedSchoolId = e.target.value; // Save selected school
+  console.log(campusSelectBox1)
+  campusSelectBox1.addEventListener('change', (e) => {
+    selectedcampusId = e.target.value; // Save selected campus
+console.log(selectedcampusId)
+    const searchTerm = searchcampusInput.value.toLowerCase().trim();
 
-    const searchTerm = searchSchoolInput.value.toLowerCase().trim();
-
-    // Apply both filters: school + search text
+    // Apply both filters: campus + search text
     filteredClasses = originalClassList.filter(cls =>
-      (selectedSchoolId === '' || cls.schoolId._id === selectedSchoolId) &&
+      (selectedcampusId === '' || cls.campusId._id === selectedcampusId) &&
       cls.name.toLowerCase().includes(searchTerm)
     );
 
@@ -490,9 +535,30 @@ function closeModal() {
   classForm.reset();
   isEditing = false;
   editingId = null;
-  formSubmitBtn.textContent = "Add School";
-  document.getElementById("addClassModalLabel").textContent = "Add New School";
+  formSubmitBtn.textContent = "Add campus";
+  document.getElementById("addClassModalLabel").textContent = "Add New campus";
 }
+
+//  var teacher
+
+//     document.getElementById('getTeacher').addEventListener('click',async()=>{
+//       console.log(teacherIdInput)
+//         if(!teacherIdInput.value) return alert('enter teacher id')
+//       let schoolId;
+//       if (isSuperAdmin) {
+//         schoolId = document.getElementById("schoolDropdown").value;
+//         if (!schoolId) return alert("Select school first");
+//       } else {
+//         schoolId = user[0].school._id;
+//       }
+//       var campus = user[0].campus._id
+//       var res = await axios.post('http://localhost:3000/api/teacher/getById',{id:teacherIdInput.value,schoolId,campus})
+//       teacher = res.data
+//       teacherName.value = `${teacher.name}  ${teacher.fatherName} `
+//       classTeacherId= teacher._id
+
+        
+//     })
 
 }
 
@@ -503,8 +569,12 @@ else{
 
 
 
+
+
 // 
 </script>
+<script src="index.js"></script>
+<script src="dropdown.js"></script>
 
 </body>
 

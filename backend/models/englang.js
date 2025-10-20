@@ -5,21 +5,28 @@ import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 
 const EnglishCourseSchema = new Schema({
-  levelName: {
+  name: {
     type: String,
     required: true,
     trim: true
   },
-  fee: {
-    type: Number,
-    required: true,
-    min: 0
-  },
+
   schoolId: {
     type: Schema.Types.ObjectId,
     ref: 'school',
     required: true
-  }
+  },
+  campusId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Campus',
+    required: true
+  },
+   createdBy:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      }
+ 
 }, {
   timestamps: true
 });
