@@ -23,7 +23,9 @@
     }
 </style>
 <body>
-  <div class="container-fluid">
+  <div class="container-fluid px-0">
+        <div id="navContent"></div>
+
     <div class="row flex-nowrap">
       <!-- Sidebar -->
       <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar">
@@ -34,9 +36,8 @@
       </div>
 
       <!-- Main Content -->
-        <div class="col  main-content p-0">
+        <div class="col  main-content ">
         
-        <div id="navContent"></div>
    <div class="container bg-white mt-4 p-5">
   <h2>Student Data List</h2>
 
@@ -308,7 +309,7 @@ getStudents()
 
   }
   else{
-    var res= await axios.get(`http://localhost:3000/api/student/getByCampus/${user[0]?.school._id}/${user[0]?.campusId._id}`)
+    var res= await axios.get(`http://localhost:3000/api/student/getByCampus/${user[0]?.school._id}/${user[0]?.campus._id}`)
 
   }
     console.log(res.data)
