@@ -304,12 +304,12 @@ var studentList = []
 getStudents()
  async function getStudents(){
   if(isSuperAdmin){
-       var res= await axios.get(`http://localhost:3000/api/student/getBySchool/${user[0]?.school._id}`)
+       var res= await axios.get(`http://202.143.127.181:3001/api/student/getBySchool/${user[0]?.school._id}`)
 
 
   }
   else{
-    var res= await axios.get(`http://localhost:3000/api/student/getByCampus/${user[0]?.school._id}/${user[0]?.campus._id}`)
+    var res= await axios.get(`http://202.143.127.181:3001/api/student/getByCampus/${user[0]?.school._id}/${user[0]?.campus._id}`)
 
   }
     console.log(res.data)
@@ -324,7 +324,7 @@ async function loadEngCourses() {
       if (!campusId) return;
 
     try {
-      const url =`http://localhost:3000/api/english-courses/getByCampus/${user[0].school._id}/${campusId}`;
+      const url =`http://202.143.127.181:3001/api/english-courses/getByCampus/${user[0].school._id}/${campusId}`;
       const res = await axios.get(url);
       engCourses = res.data.data;
       console.log(engCourses)
@@ -351,7 +351,7 @@ async function loadEngCourses() {
      
 
       try {
-        const url =  `http://localhost:3000/api/class/getByCampus/${user[0].school._id}/${campusId}`;
+        const url =  `http://202.143.127.181:3001/api/class/getByCampus/${user[0].school._id}/${campusId}`;
         const res = await axios.get(url);
         allClasses = res.data.data;
         classSelect.innerHTML = `<option value="">Select Class</option>`;
@@ -383,7 +383,7 @@ async function loadEngCourses() {
       if (!campusId) return;
     
       try {
-        const url =  `http://localhost:3000/api/section/getByCampus/${user[0].school._id}/${campusId}`;
+        const url =  `http://202.143.127.181:3001/api/section/getByCampus/${user[0].school._id}/${campusId}`;
         const res = await axios.get(url);
         allSections = res.data.data;
         sectionSelect.innerHTML = `<option value="">Select Section</option>`;
@@ -403,7 +403,7 @@ async function loadEngCourses() {
       if (!campusId) return;
      
       try {
-        const url = `http://localhost:3000/api/course/getbyCampus/${user[0].school._id}/${campusId}`;
+        const url = `http://202.143.127.181:3001/api/course/getbyCampus/${user[0].school._id}/${campusId}`;
         const res = await axios.get(url);
         allCourses = res.data.data;
         computerCourseSelect.innerHTML = `<option value="">Select Course</option>`;
@@ -491,7 +491,7 @@ englishCourseSelect.addEventListener('change', updateEnglishCourseBatches);
 
     }
     function loadCampuses() {
-      return axios.get(`http://localhost:3000/api/campus/getBySchool/${user[0].school._id}`)
+      return axios.get(`http://202.143.127.181:3001/api/campus/getBySchool/${user[0].school._id}`)
         .then(response => {
           const campuses = response.data;
           console.log(campuses)
@@ -515,7 +515,7 @@ function viewStudent(data) {
 
 async function deleteStudent(id) {
   if (!confirm("Are you sure you want to delete this student?")) return;
-  await axios.delete(`http://localhost:3000/api/student/delete/${id}`);
+  await axios.delete(`http://202.143.127.181:3001/api/student/delete/${id}`);
   studentList = studentList.filter((st) => st._id !== id);
   renderTable();
 }
@@ -524,7 +524,7 @@ async function deleteStudent(id) {
     async function loadComputerBatches(){
       if (!campusId) return;
       try {
-        const url = `http://localhost:3000/api/batch/getAllComputerBatchesByCampus/${user[0].school._id}/${campusId}`;
+        const url = `http://202.143.127.181:3001/api/batch/getAllComputerBatchesByCampus/${user[0].school._id}/${campusId}`;
         const res = await axios.get(url);
         allComputerBatches = res.data.data;
         console.log(allComputerBatches)
@@ -538,7 +538,7 @@ async function deleteStudent(id) {
      async function loadEnglishBatches(){
       if (!campusId) return;
       try {
-        const url = `http://localhost:3000/api/batch/getAllEnglishBatchesByCampus/${user[0].school._id}/${campusId}`;
+        const url = `http://202.143.127.181:3001/api/batch/getAllEnglishBatchesByCampus/${user[0].school._id}/${campusId}`;
         const res = await axios.get(url);
         allEnglishBatches = res.data.data;
        

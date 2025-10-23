@@ -539,7 +539,7 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
           submitBtn.textContent = 'updating...'
           // UPDATE STUDENT
           const res = await axios.put(
-            `http://localhost:3000/api/teacher/update/${editingTeacherId}`,
+            `http://202.143.127.181:3001/api/teacher/update/${editingTeacherId}`,
             data
           );
           alert(res.data.message || " Teacher updated successfully");
@@ -551,7 +551,7 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
 
           // ADD STUDENT
           const res = await axios.post(
-            "http://localhost:3000/api/teacher/add",
+            "http://202.143.127.181:3001/api/teacher/add",
             data
           );
           alert(res.data.message || "teacher added successfully");
@@ -813,7 +813,7 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
     form.insertBefore(label, form.children[2]); // Insert before fee input
     form.insertBefore(campusDropdown, form.children[3]);
   
-      try {        const res = await axios.get(`http://localhost:3000/api/campus/getBySchool/${user[0].school._id}`);
+      try {        const res = await axios.get(`http://202.143.127.181:3001/api/campus/getBySchool/${user[0].school._id}`);
 
         campusList = res.data;
       campusDropdown.innerHTML = `<option value="">Select Campus</option>`;
@@ -840,7 +840,7 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
         return
       }
     try {
-      const url =`http://localhost:3000/api/english-courses/getByCampus/${user[0].school._id}/${campusId}`;
+      const url =`http://202.143.127.181:3001/api/english-courses/getByCampus/${user[0].school._id}/${campusId}`;
       const res = await axios.get(url);
       engCourses = res.data.data;
       console.log(engCourses)
@@ -868,7 +868,7 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
       }
 
       try {
-        const url =  `http://localhost:3000/api/class/getByCampus/${user[0].school._id}/${campusId}`;
+        const url =  `http://202.143.127.181:3001/api/class/getByCampus/${user[0].school._id}/${campusId}`;
         const res = await axios.get(url);
         allClasses = res.data.data;
         teacherSchoolClassDropdown.innerHTML = `<option value="">Select Class</option>`;
@@ -900,7 +900,7 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
         return
       }
       try {
-        const url =  `http://localhost:3000/api/section/getByCampus/${user[0].school._id}/${campusId}`;
+        const url =  `http://202.143.127.181:3001/api/section/getByCampus/${user[0].school._id}/${campusId}`;
         const res = await axios.get(url);
         allSections = res.data.data;
         teacherSchoolSectionDropdown.innerHTML = `<option value="">Select Section</option>`;
@@ -921,7 +921,7 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
         return
       }
       try {
-        const url = `http://localhost:3000/api/course/getbyCampus/${user[0].school._id}/${campusId}`;
+        const url = `http://202.143.127.181:3001/api/course/getbyCampus/${user[0].school._id}/${campusId}`;
         const res = await axios.get(url);
         allCourses = res.data.data;
         courseSelect.innerHTML = `<option value="">Select Course</option>`;
@@ -940,7 +940,7 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
     var allComputerBatches = []
     async function loadComputerBatches(){
       try {
-        const url = `http://localhost:3000/api/batch/getAllComputerBatchesByCampus/${user[0].school._id}/${campusId}`;
+        const url = `http://202.143.127.181:3001/api/batch/getAllComputerBatchesByCampus/${user[0].school._id}/${campusId}`;
         const res = await axios.get(url);
         allComputerBatches = res.data.data;
         console.log(allComputerBatches)
@@ -953,7 +953,7 @@ const selectedStatus = document.querySelector('input[name="status"]:checked').va
     var allEnglishBatches = []
      async function loadEnglishBatches(){
       try {
-        const url = `http://localhost:3000/api/batch/getAllEnglishBatchesByCampus/${user[0].school._id}/${campusId}`;
+        const url = `http://202.143.127.181:3001/api/batch/getAllEnglishBatchesByCampus/${user[0].school._id}/${campusId}`;
         const res = await axios.get(url);
         allEnglishBatches = res.data.data;
        

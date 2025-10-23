@@ -342,7 +342,7 @@ function renderSidebar(user){
   }
   console.log(isAllowed)
   if (!isAllowed && currentPage !== "dashboard.html") {
-    window.location.href = "Dashboard.html";
+    // window.location.href = "Dashboard.html";
   }
 }
 

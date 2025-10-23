@@ -346,7 +346,7 @@ document.getElementById("submit").addEventListener("click", async function () {
 
   try {
     showLoader();
-    const res = await axios.post("http://localhost:3000/api/user/add", {
+    const res = await axios.post("http://202.143.127.181:3001/api/user/add", {
        email, username, password, designation, allowedPages, school, contactNo , campus, createdBy
     });
     hideLoader();
@@ -361,7 +361,7 @@ document.getElementById("submit").addEventListener("click", async function () {
 async function getUsers() {
 
   try {
-    const res = await axios.get("http://localhost:3000/api/user/get");
+    const res = await axios.get("http://202.143.127.181:3001/api/user/get");
     const users = res.data.data;
     console.log(users)
     const tableBody = document.querySelector("#classTable tbody");
@@ -401,7 +401,7 @@ async function deleteUser(id) {
 
   try {
     showLoader();
-    const res = await axios.delete(`http://localhost:3000/api/user/delete/${id}`);
+    const res = await axios.delete(`http://202.143.127.181:3001/api/user/delete/${id}`);
     hideLoader();
     showToast('success', res.data.message || "User deleted");
     getUsers();
@@ -433,7 +433,7 @@ function renderCampusSelect(){
     // 🟢 Fetch and populate campuses dropdown
     async function loadcampuses() {
       try {
-        const res = await axios.get(`http://localhost:3000/api/campus/getBySchool/${user[0].school._id}`);
+        const res = await axios.get(`http://202.143.127.181:3001/api/campus/getBySchool/${user[0].school._id}`);
         campusList = res.data;
         console.log(campusList)
                const option = document.createElement("option");

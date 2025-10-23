@@ -41,7 +41,7 @@
         <nav id="sidebar" class="nav flex-column  "></nav>
       </div>
 
-      <div class="col   main-content ">
+      <div class="col  ">
         <div class="row mt-md-0  ">
           <div class="col col-12 bg-white p-5  border rounded-3">
             <h2 class="mb-4">Add Class</h2>
@@ -292,7 +292,7 @@ function checkPermission(currentPage){
   //   // 🟢 Fetch and populate campuses dropdown
   //   async function loadcampuses() {
   //     try {
-  //       const res = await axios.get(`http://localhost:3000/api/campus/getBySchool/${user[0].school._id}`);
+  //       const res = await axios.get(`http://202.143.127.181:3001/api/campus/getBySchool/${user[0].school._id}`);
   //       campusList = res.data;
   //       console.log(campusList)
   //              const option = document.createElement("option");
@@ -331,9 +331,9 @@ function checkPermission(currentPage){
     try {
       let res;
       if (isSuperAdmin) {
-        res = await axios.get(`http://localhost:3000/api/class/school/${user[0].school._id}`);
+        res = await axios.get(`http://202.143.127.181:3001/api/class/school/${user[0].school._id}`);
       } else {
-        res = await axios.get(`http://localhost:3000/api/class/getByCampus/${user[0].school._id}/${user[0].campus._id}`);
+        res = await axios.get(`http://202.143.127.181:3001/api/class/getByCampus/${user[0].school._id}/${user[0].campus._id}`);
       }
       classList = res.data.data;
       console.log(classList);
@@ -380,7 +380,7 @@ function checkPermission(currentPage){
       if (!confirm("Are you sure you want to delete this campus?")) return;
 
     try {
-     var res = await axios.delete(`http://localhost:3000/api/class/delete/${id}`);
+     var res = await axios.delete(`http://202.143.127.181:3001/api/class/delete/${id}`);
       classList = classList.filter(cls => cls._id !== id);
 originalClassList = originalClassList.filter(cls => cls._id !== id);
     showToast(res.data.message || "Deleted successfully");
@@ -423,7 +423,7 @@ originalClassList = originalClassList.filter(cls => cls._id !== id);
 
     try {
        if (isEditing) {
-      const res = await axios.put(`http://localhost:3000/api/class/update/${editingId}`, {
+      const res = await axios.put(`http://202.143.127.181:3001/api/class/update/${editingId}`, {
         name, fee, tuitionFee,admissionFee,campusId , schoolId 
       });
 
@@ -435,7 +435,7 @@ originalClassList = originalClassList.filter(cls => cls._id !== id);
       showToast(message || "campus updated successfully");
 
     } else {
-      const res = await axios.post("http://localhost:3000/api/class/add", {
+      const res = await axios.post("http://202.143.127.181:3001/api/class/add", {
         name, fee, tuitionFee,admissionFee,campusId , schoolId , createdBy
       });
 
@@ -557,7 +557,7 @@ function closeModal() {
 //         schoolId = user[0].school._id;
 //       }
 //       var campus = user[0].campus._id
-//       var res = await axios.post('http://localhost:3000/api/teacher/getById',{id:teacherIdInput.value,schoolId,campus})
+//       var res = await axios.post('http://202.143.127.181:3001/api/teacher/getById',{id:teacherIdInput.value,schoolId,campus})
 //       teacher = res.data
 //       teacherName.value = `${teacher.name}  ${teacher.fatherName} `
 //       classTeacherId= teacher._id

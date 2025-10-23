@@ -219,11 +219,11 @@
     let subjectsList = [];
 
     // API endpoints (from your confirmation)
-    const API_CLASS = (schoolId, campusId) => `http://localhost:3000/api/class/getByCampus/${schoolId}/${campusId}`;
-    const API_SECTION = (schoolId, campusId) => `http://localhost:3000/api/section/getByCampus/${schoolId}/${campusId}`;
-    const API_SUBJECT = (schoolId, campusId) => `http://localhost:3000/api/subject/getByCampus/${schoolId}/${campusId}`;
-    const API_TEACHER = `http://localhost:3000/api/teacher/getById`;
-    const API_SUBJECT_ALLOT = "http://localhost:3000/api/subject-allotments";
+    const API_CLASS = (schoolId, campusId) => `http://202.143.127.181:3001/api/class/getByCampus/${schoolId}/${campusId}`;
+    const API_SECTION = (schoolId, campusId) => `http://202.143.127.181:3001/api/section/getByCampus/${schoolId}/${campusId}`;
+    const API_SUBJECT = (schoolId, campusId) => `http://202.143.127.181:3001/api/subject/getByCampus/${schoolId}/${campusId}`;
+    const API_TEACHER = `http://202.143.127.181:3001/api/teacher/getById`;
+    const API_SUBJECT_ALLOT = "http://202.143.127.181:3001/api/subject-allotments";
 
     // Elements
     const allotmentTbody = document.getElementById("allotmentTableBody");
@@ -329,7 +329,7 @@
       try {
         const schoolId = user[0]?.school?._id;
         if (!schoolId) return;
-        const res = await axios.get(`http://localhost:3000/api/campus/getBySchool/${schoolId}`);
+        const res = await axios.get(`http://202.143.127.181:3001/api/campus/getBySchool/${schoolId}`);
         const campuses = res.data ?? [];
         // populate top and modal campus dropdown
         fillSelect(campusDropdown, campuses, "name");

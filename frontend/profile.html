@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Profile — School Management</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <link rel="stylesheet" href="index.css">
+  <!-- Font Awesome (icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+  <style>
+    /* --------- Card Layout (Professional Left Avatar) --------- */
+    .profile-card {
+      /* max-width: 920px; */
+      /* margin: 28px auto; */
+      border-radius: 12px;
+      /* overflow: hidden; */
+    }
+
+    .profile-card .left {
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      padding: 28px;
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      min-height: 170px;
+    }
+
+    .avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 3px solid #fff;
+      box-shadow: 0 6px 18px rgba(35,47,63,0.08);
+      background: #f3f5f9;
+      flex-shrink: 0;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .profile-main h3 {
+      margin-bottom: 6px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+    }
+
+    .profile-main .muted {
+      color: #6b7280;
+    }
+
+    .designation-pill {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      background: rgba(58,66,201,0.08);
+      color: #3840c9;
+      border: 1px solid rgba(58,66,201,0.12);
+    }
+
+    .divider {
+      border-top: 1px solid #eef2f7;
+      margin: 0;
+    }
+
+    .info-grid .label {
+      color: #374151;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .info-grid .value {
+      color: #374151;
+      font-weight: 500;
+    }
+
+    .badge-pill-light {
+      display:inline-block;
+      margin: 4px 6px 4px 0;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #f7fafc;
+      color: #1f2937;
+      border: 1px solid #e6eef8;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    /* actions */
+    .card-actions {
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      padding: 18px;
+      align-items:center;
+    }
+
+    /* toast position */
+    .toast-wrap {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 1200;
+    }
+
+    /* responsive tweaks */
+    @media (max-width: 767px) {
+      .left { flex-direction: column; align-items: flex-start; gap: 12px; padding: 18px; }
+      .card-actions { justify-content: center; padding-bottom: 22px; }
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+  <div class="container-fluid">
+      <div class="row " id="navContent">
+                      
+                    </div>
+    <div class="row flex-nowrap ">
+          
+      <div class="col-auto col-md-3 col-xl-2  px-sm-2 px-0  sidebar">
+        <!-- <h4>Admin Panel</h4> -->
+        <nav id="sidebar" class="nav flex-column  "></nav>
+      </div>
+    
+
+   
+
+      <!-- put your sidebar column here if needed -->
+      <div class="col main-content">
+        <div class="row">
+            <div class="col-10">
+            
+        <!-- SINGLE PROFESSIONAL CARD -->
+        <div class="card profile-card shadow-sm border-0">
+
+          <!-- left area: avatar + name/role -->
+          <div class="left d-flex">
+            <div class="avatar" id="avatarWrapper">
+              <img id="avatarImg" src="https://i.pravatar.cc/300?u=default" alt="Avatar">
+            </div>
+
+            <div class="profile-main ">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <h3 id="username">username</h3>
+                  <div class="d-flex gap-2 align-items-center">
+                    <span id="designation" class="designation-pill">Admin</span>
+                    <!-- <small class="muted" id="campusSchool">School • Campus</small> -->
+                  </div>
+                </div>
+
+                <!-- small stats placeholders (optional) -->
+                <div class="text-end d-none d-md-block">
+                  <div class="small muted">Last login</div>
+                  <div class="fw-semibold" id="lastLogin">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- divider -->
+          <hr class="divider">
+
+          <!-- right area: details, allowed pages and actions -->
+          <div class="px-4 py-3">
+            <div class="row info-grid g-3">
+              <div class="col-md-4 col-6">
+                <div class="label">Email</div>
+                <div class="value" id="email">email@domain.com</div>
+              </div>
+              <div class="col-md-4 col-6">
+                <div class="label">Contact</div>
+                <div class="value" id="contactNo">0300-0000000</div>
+              </div>
+              <div class="col-md-4 col-6">
+                <div class="label">Role</div>
+                <div class="value" id="role">Admin</div>
+              </div>
+              <div class="col-md-4 col-6">
+                <div class="label">Campus</div>
+                <div class="value" id="campusName">Campus name</div>
+              </div>
+              <div class="col-md-4 col-6">
+                <div class="label">School</div>
+                <div class="value" id="schoolName">School name</div>
+              </div>
+              <div class="col-md-4 col-6">
+                <div class="label">Created By</div>
+                <div class="value" id="createdBy">—</div>
+              </div>
+            </div>
+
+            <hr class="divider my-3">
+
+            <div class="d-flex align-items-center justify-content-between flex-column flex-md-row">
+              <div>
+                <div class="label mb-2">Allowed Pages</div>
+                <div id="allowedPagesContainer" class="mb-2">
+                  <!-- pills will be inserted here -->
+                </div>
+              </div>
+
+              <div class="card-actions">
+                <!-- Edit (solid dark) & Change Password (outline) -> Mixed as requested -->
+                <button id="editBtn" class="btn btn-dark btn-sm px-4" data-bs-toggle="modal" data-bs-target="#editModal">
+                  <i class="fa-solid fa-pen-to-square me-1"></i> Edit Profile
+                </button>
+
+                <button id="changePassBtn" class="btn btn-outline-secondary btn-sm px-4" data-bs-toggle="modal" data-bs-target="#passwordModal">
+                  <i class="fa-solid fa-key me-1"></i> Change Password
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- /card -->
+
+      </div>
+    </div>
+  </div>
+  
+    
+            </div>
+        </div>
+  <!-- Edit Profile Modal -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content">
+        <form id="editForm" class="needs-validation" novalidate>
+          <div class="modal-header">
+            <h5 class="modal-title" id="editModalLabel"><i class="fa-regular fa-userData me-2"></i>Edit Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <div class="mb-3 text-center">
+              <label class="d-block mb-2 small fw-semibold">Profile Image</label>
+              <div class="d-flex justify-content-center">
+                <div style="width:96px; height:96px; border-radius:10px; overflow:hidden; box-shadow:0 6px 14px rgba(0,0,0,0.06);">
+                  <img id="editAvatarPreview" src="https://i.pravatar.cc/300?u=default" style="width:100%; height:100%; object-fit:cover;">
+                </div>
+              </div>
+              <div class="mt-2">
+                <input class="form-control form-control-sm mt-2" id="avatarInput" type="file" accept="image/*">
+                <small class="text-muted">Optional — Upload a new avatar (client-side only)</small>
+              </div>
+            </div>
+
+            <div class="row g-2">
+              <div class="col-12">
+                <label class="form-label">username</label>
+                <input id="inputusername" class="form-control" required>
+                <div class="invalid-feedback">username is required.</div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Email</label>
+                <input id="inputEmail" type="email" class="form-control" required>
+                <div class="invalid-feedback">Valid email is required.</div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Contact No</label>
+                <input id="inputContact" class="form-control" pattern="^[0-9+ -]{6,20}$">
+                <div class="invalid-feedback">Enter a valid phone number.</div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Designation</label>
+                <input id="inputDesignation" class="form-control" readonly>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">School</label>
+                <input id="inputSchool" class="form-control" readonly>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Campus</label>
+                <input id="inputCampus" class="form-control" readonly>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-dark btn-sm">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+        <form id="passForm" class="needs-validation" novalidate>
+          <div class="modal-header">
+            <h5 class="modal-title" id="passwordModalLabel"><i class="fa-solid fa-key me-2"></i>Change Password</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <div class="mb-2">
+              <label class="form-label">Old Password</label>
+              <input id="oldPassword" type="password" class="form-control" required>
+              <div class="invalid-feedback">Old password required.</div>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">New Password</label>
+              <input id="newPassword" type="password" class="form-control" minlength="6" required>
+              <div class="invalid-feedback">New password (min 6 characters).</div>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Confirm Password</label>
+              <input id="confirmPassword" type="password" class="form-control" required>
+              <div class="invalid-feedback">Passwords must match.</div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-outline-dark btn-sm">Update Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast wrapper -->
+  <div class="toast-wrap">
+    <div id="appToast" class="toast align-items-center text-bg-white border-0 shadow-sm" role="status" aria-live="polite" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="toastBody"></div>
+        <button type="button" class="btn-close btn-close-dark me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("userData")) || [];
+    const isSuperAdmin = user[0]?.designation === "supremeadmin";
+
+    /************************************************************************
+     * Data source: localStorage key "userDataData"
+     * Expected structure (example):
+     * [
+     *  {
+     *    _id: '68f81aa4a7bc8317300856dd',
+     *    username: 'a',
+     *    email: 'a@gmail.com',
+     *    contactNo: '0324567567',
+     *    designation: 'admin',
+     *    campus: { _id: '...', name: 'kma aagra taj' },
+     *    school: { _id: '...', name: 'kma' },
+     *    allowedPages: ['addclass','addsection',...],
+     *    createdBy: '68db44a2b0dc85951285f496',
+     *    password: '123', // for demo only — server-side recommended
+     *    profileImage: 'data:image/png;base64,...' // optional
+     *  }
+     * ]
+     ************************************************************************/
+
+    // Helper: safe parse
+    function getuserDataArray() {
+      try {
+        const raw = localStorage.getItem("userData");
+        if (!raw) return null;
+        const arr = JSON.parse(raw);
+        if (!Array.isArray(arr) || arr.length === 0) return null;
+        return arr;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function showToast(message) {
+      const toastEl = document.getElementById("appToast");
+      document.getElementById("toastBody").textContent = message;
+      const toast = new bootstrap.Toast(toastEl, { delay: 2400 });
+      toast.show();
+    }
+
+    // Populate UI from userDataData
+    function populateProfile() {
+      const arr = getuserDataArray();
+      if (!arr) {
+        // default fallback
+        document.getElementById("username").textContent = "Unknown";
+        document.getElementById("email").textContent = "—";
+        document.getElementById("contactNo").textContent = "—";
+        document.getElementById("role").textContent = "—";
+        document.getElementById("campusName").textContent = "—";
+        document.getElementById("schoolName").textContent = "—";
+        document.getElementById("createdBy").textContent = "—";
+        document.getElementById("allowedPagesContainer").innerHTML = '';
+        return;
+      }
+
+      const userData = arr[0];
+
+      // Basic fields
+      document.getElementById("username").textContent = userData.username || "—";
+      document.getElementById("email").textContent = userData.email || "—";
+      document.getElementById("contactNo").textContent = userData.contactNo || "—";
+      document.getElementById("role").textContent = (userData.designation || "—");
+      document.getElementById("campusName").textContent = userData.campus?.name || "—";
+      document.getElementById("schoolName").textContent = userData.school?.name || "—";
+      document.getElementById("createdBy").textContent = userData.createdBy || "—";
+
+      // lastLogin placeholder (if you have one)
+      document.getElementById("lastLogin").textContent = userData.lastLogin || "—";
+
+      // avatar
+      const avatarImg = document.getElementById("avatarImg");
+      if (userData.profileImage) {
+        avatarImg.src = userData.profileImage;
+      } else {
+        // use seeded pravatar by id to keep consistent avatar
+        const seed = userData._id ? encodeURIComponent(userData._id) : 'default';
+        avatarImg.src = `https://i.pravatar.cc/300?u=${seed}`;
+      }
+
+      // allowed pages
+      const pagesContainer = document.getElementById("allowedPagesContainer");
+      const pages = Array.isArray(userData.allowedPages) ? userData.allowedPages : [];
+      pagesContainer.innerHTML = pages.map(p => `<span class="badge-pill-light">${escapeHtml(p)}</span>`).join("");
+    }
+
+    // Escape HTML to avoid injection
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    // Initialize form values in Edit modal
+    function initEditModal() {
+      const arr = getuserDataArray();
+      if (!arr) return;
+      const userData = arr[0];
+
+      document.getElementById("editAvatarPreview").src = userData.profileImage || `https://i.pravatar.cc/300?u=${encodeURIComponent(userData._id||'default')}`;
+      document.getElementById("inputusername").value = userData.username || '';
+      document.getElementById("inputEmail").value = userData.email || '';
+      document.getElementById("inputContact").value = userData.contactNo || '';
+      document.getElementById("inputDesignation").value = userData.designation || '';
+      document.getElementById("inputSchool").value = userData.school?.name || '';
+      document.getElementById("inputCampus").value = userData.campus?.name || '';
+    }
+
+    // Validate bootstrap form (simple)
+    (function () {
+      'use strict';
+      window.addEventListener('load', function () {
+        // populate UI on load
+        populateProfile();
+        initEditModal();
+      }, false);
+    })();
+
+    // Avatar upload preview + read as data URL
+    const avatarInput = document.getElementById("avatarInput");
+    let avatarDataUrl = null;
+    avatarInput?.addEventListener('change', function (e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        showToast('Please select an image file.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        avatarDataUrl = ev.target.result;
+        document.getElementById("editAvatarPreview").src = avatarDataUrl;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Edit form submit
+    document.getElementById("editForm").addEventListener('submit', function (e) {
+      e.preventDefault();
+      const form = e.target;
+      // simple bootstrap validation
+      if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+      }
+
+      const arr = getuserDataArray() || [];
+      if (!arr) {
+        showToast("No userData data available to update.");
+        return;
+      }
+      const userData = arr[0];
+
+      const newusername = document.getElementById("inputusername").value.trim();
+      const newEmail = document.getElementById("inputEmail").value.trim();
+      const newContact = document.getElementById("inputContact").value.trim();
+
+      // basic checks
+      if (!newusername || !newEmail) {
+        showToast("username & email are required.");
+        return;
+      }
+
+      // update object
+      userData.username = newusername;
+      userData.email = newEmail;
+      userData.contactNo = newContact;
+      if (avatarDataUrl) {
+        userData.profileImage = avatarDataUrl;
+      }
+
+      // save
+      try {
+        localStorage.setItem("userDataData", JSON.stringify(arr));
+        populateProfile();
+        initEditModal();
+        // close modal
+        const modalEl = document.getElementById('editModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        modal.hide();
+        showToast("Profile updated successfully.");
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to save profile locally.");
+      }
+    });
+
+    // Password change submit
+    document.getElementById("passForm").addEventListener('submit', function (e) {
+      e.preventDefault();
+      const form = e.target;
+      if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+      }
+
+      const arr = getuserDataArray() || [];
+      if (!arr) {
+        showToast("No userData data available.");
+        return;
+      }
+      const userData = arr[0];
+
+      const oldPass = document.getElementById("oldPassword").value;
+      const newPass = document.getElementById("newPassword").value;
+      const confirmPass = document.getElementById("confirmPassword").value;
+
+      if (newPass !== confirmPass) {
+        showToast("New & Confirm passwords do not match.");
+        return;
+      }
+
+      // demo: comparing with stored plaintext password (server-side required in real app)
+      if (String(userData.password || '') !== String(oldPass)) {
+        showToast("Old password is incorrect.");
+        return;
+      }
+
+      // update
+      userData.password = newPass;
+      try {
+        localStorage.setItem("userDataData", JSON.stringify(arr));
+        // close modal
+        const modalEl = document.getElementById('passwordModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        modal.hide();
+        // clear fields
+        document.getElementById("oldPassword").value = '';
+        document.getElementById("newPassword").value = '';
+        document.getElementById("confirmPassword").value = '';
+        showToast("Password updated successfully.");
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to update password locally.");
+      }
+    });
+
+    // Re-init modal values when opened
+    const editModalEl = document.getElementById('editModal');
+    editModalEl.addEventListener('show.bs.modal', function () {
+      avatarDataUrl = null; // reset pending avatar upload
+      // remove previous validation classes
+      document.getElementById("editForm").classList.remove('was-validated');
+      initEditModal();
+    });
+
+    const passModalEl = document.getElementById('passwordModal');
+    passModalEl.addEventListener('show.bs.modal', function () {
+      // remove validation state
+      document.getElementById("passForm").classList.remove('was-validated');
+      document.getElementById("oldPassword").value = '';
+      document.getElementById("newPassword").value = '';
+      document.getElementById("confirmPassword").value = '';
+    });
+
+    // Initial populate on script load (again)
+    populateProfile();
+
+  </script>
+  <script src="index.js"></script>
+</body>
+</html>

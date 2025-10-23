@@ -104,7 +104,7 @@
 @media (max-width: 992px) {
   /* #appSidebar { width: 80%; max-width: 320px; } */
   .sidebar.open {
-  width: 100%;
+  width: 70%;
 
   /* transform: translateX(0); */
 }
@@ -146,6 +146,7 @@
 
     .main-content {
       padding: 2rem;
+      /* background-color: #000; */
     }
 
     .card-icon {
@@ -195,9 +196,4 @@
   .btn-dark:hover {
     background-color: #333;
   }
-    /* @media (max-width: 576px) { 
-      
-      .sidebar{
-        display: none !important;
-      }
-     } */
+ 

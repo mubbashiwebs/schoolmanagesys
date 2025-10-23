@@ -219,7 +219,7 @@
     //   campusSelectBox1.appendChild(campusDropdownFilter);
 
     //   async function loadcampuss() {
-    //     const res = await axios.get("http://localhost:3000/api/campus/get");
+    //     const res = await axios.get("http://202.143.127.181:3001/api/campus/get");
     //     campusList = res.data.data;
 
     //     campusDropdown.innerHTML = `<option value="">Select campus</option>`;
@@ -252,7 +252,7 @@
     searchSectionInput.addEventListener('input', filterSection);
 
     async function fetchSections() {
-      const endpoint = isSuperAdmin ? `http://localhost:3000/api/section/school/${user[0].school._id}` : `http://localhost:3000/api/section/getByCampus/${user[0].school._id}/${user[0].campus._id}`;
+      const endpoint = isSuperAdmin ? `http://202.143.127.181:3001/api/section/school/${user[0].school._id}` : `http://202.143.127.181:3001/api/section/getByCampus/${user[0].school._id}/${user[0].campus._id}`;
       const res = await axios.get(endpoint);
       originalSectionList = res.data.data;
       sectionList = [...originalSectionList];
@@ -293,7 +293,7 @@
 
     window.deleteSection = async function(id) {
       if (!confirm("Are you sure you want to delete this section?")) return;
-      const res = await axios.delete(`http://localhost:3000/api/section/delete/${id}`);
+      const res = await axios.delete(`http://202.143.127.181:3001/api/section/delete/${id}`);
       showToast(res.data.message);
       originalSectionList = originalSectionList.filter(s => s._id !== id);
       sectionList = sectionList.filter(s => s._id !== id);
@@ -314,7 +314,7 @@ sectionForm.addEventListener('submit', async (e) => {
 
   try {
     if (isEditing) {
-      const res = await axios.put(`http://localhost:3000/api/section/update/${editingId}`, body);
+      const res = await axios.put(`http://202.143.127.181:3001/api/section/update/${editingId}`, body);
       const updated = res.data.data;
       console.log(updated)
       if (!updated) return showToast(res.data.message || "Update failed", false);
@@ -324,7 +324,7 @@ sectionForm.addEventListener('submit', async (e) => {
       originalSectionList[idx] = updated;
       showToast(res.data.message || "Section updated successfully");
     } else {
-      const res = await axios.post("http://localhost:3000/api/section/add", body);
+      const res = await axios.post("http://202.143.127.181:3001/api/section/add", body);
       const added = res.data.data;
       if (!added || !added._id) return showToast(res.data.message || "Add failed", false);
 

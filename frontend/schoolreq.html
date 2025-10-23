@@ -254,7 +254,7 @@
 
       try {
         showLoader();
-        const res = await axios.post("http://localhost:3000/api/school/request", data);
+        const res = await axios.post("http://202.143.127.181:3001/api/school/request", data);
 
         showToast('success', res.data.message || "Submitted successfully!");
         form.reset();

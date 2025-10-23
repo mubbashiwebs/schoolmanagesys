@@ -245,7 +245,7 @@
 
       async function loadSchools() {
         try {
-          const res = await axios.get("http://localhost:3000/api/school/get");
+          const res = await axios.get("http://202.143.127.181:3001/api/school/get");
           schoolList = res.data.data;
 
           const label = document.createElement("label");
@@ -303,7 +303,7 @@
         let schoolId;
        
 
-        var res = await axios.post('http://localhost:3000/api/teacher/getById', { id: teacherIdInput, })
+        var res = await axios.post('http://202.143.127.181:3001/api/teacher/getById', { id: teacherIdInput, })
         teacher = res.data
         teacherName.value = `${teacher.name}  ${teacher.fatherName} `
         amountPaid.value = teacher.Salary
@@ -334,7 +334,7 @@
 
         paidBy = user[0].email
         try {
-          const res = await axios.post("http://localhost:3000/api/teacherSalary/add", {
+          const res = await axios.post("http://202.143.127.181:3001/api/teacherSalary/add", {
             teacherId, amountPaid,
             salaryMonth: `${salaryMonth} ${salaryYear}`,
             paymentMethod, paidBy, schoolId
@@ -368,7 +368,7 @@
         if (!schoolId) return alert('select school')
 
         try {
-          const res = await axios.get(`http://localhost:3000/api/teacherSalary/getByMonthYear?month=${searchMonth}&year=${searchYear}&schoolId=${schoolId}`);
+          const res = await axios.get(`http://202.143.127.181:3001/api/teacherSalary/getByMonthYear?month=${searchMonth}&year=${searchYear}&schoolId=${schoolId}`);
           const salaryList = res.data;
           const tbody = document.querySelector("#salaryTable tbody");
           tbody.innerHTML = "";

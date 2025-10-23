@@ -213,7 +213,7 @@
 
       try {
         showLoader()
-        const res = await axios.post("http://localhost:3000/api/auth/register", body);
+        const res = await axios.post("http://202.143.127.181:3001/api/auth/register", body);
         const data = res.data;
 
         showToast('success', data.message || "Registered successfully! Check email.");

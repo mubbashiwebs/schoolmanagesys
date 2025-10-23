@@ -126,8 +126,8 @@
 
       async function loadSubjects() {
         const url = isSuperAdmin 
-          ? `http://localhost:3000/api/subject/school/${user[0].school._id}` 
-          : `http://localhost:3000/api/subject/getbyCampus/${user[0].school._id}/${user[0].campus._id}`;
+          ? `http://202.143.127.181:3001/api/subject/school/${user[0].school._id}` 
+          : `http://202.143.127.181:3001/api/subject/getbyCampus/${user[0].school._id}/${user[0].campus._id}`;
         const res = await axios.get(url);
         subjectList = res.data.data;
         filteredSubjects = [...subjectList];
@@ -180,7 +180,7 @@
 
         try {
           if (isEditing) {
-            const res = await axios.put(`http://localhost:3000/api/subject/update/${editingId}`, body);
+            const res = await axios.put(`http://202.143.127.181:3001/api/subject/update/${editingId}`, body);
             const updated = res.data.data;
             if (!updated || !updated._id) return showToast(res.data.message || "Update failed", "bg-danger");
             const idx = subjectList.findIndex(c => c._id === editingId);
@@ -188,7 +188,7 @@
             filteredSubjects[idx] = updated;
             showToast(res.data.message || "Subject updated successfully");
           } else {
-            const res = await axios.post("http://localhost:3000/api/subject/add", body);
+            const res = await axios.post("http://202.143.127.181:3001/api/subject/add", body);
             const added = res.data.data;
             if (!added || !added._id) return showToast(res.data.message || "Add failed", "bg-danger");
             subjectList.push(added);
@@ -227,7 +227,7 @@
       window.deleteSubject = async (id) => {
         if (!confirm("Are you sure you want to delete this subject?")) return;
         try {
-          await axios.delete(`http://localhost:3000/api/subject/delete/${id}`);
+          await axios.delete(`http://202.143.127.181:3001/api/subject/delete/${id}`);
           subjectList = subjectList.filter(cls => cls._id !== id);
           filteredSubjects = [...subjectList];
           renderTable();

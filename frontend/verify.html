@@ -110,7 +110,7 @@
 
       try {
         // showLoader()
-        const res = await axios.get(`http://localhost:3000/api/auth/verify-email?token=${token}`);
+        const res = await axios.get(`http://202.143.127.181:3001/api/auth/verify-email?token=${token}`);
         
         document.getElementById("icon").innerHTML = `<div class="success-icon">✅</div>`;
         document.getElementById("card-title").innerText = "Email Verified Successfully!";
