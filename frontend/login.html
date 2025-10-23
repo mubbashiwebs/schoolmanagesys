@@ -171,7 +171,7 @@
 
     try {
       showLoader();
-      const res = await axios.post('http://202.143.127.181:3001/api/user/login', { email, password });
+      const res = await axios.post('202.143.127.181:3001/api/user/login', { email, password });
       const userData = res.data.data;
 
       showToast('success', res.data.message || 'Login successful!');
