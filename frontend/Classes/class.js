@@ -191,9 +191,9 @@ function checkPermission(currentPage){
     try {
       let res;
       if (isSuperAdmin) {
-        res = await axios.get(`http://localhost:3000/api/class/school/${user[0].school._id}`);
+        res = await axios.get(`https://darkviolet-turkey-397111.hostingersite.com/api/class/school/${user[0].school._id}`);
       } else {
-        res = await axios.get(`http://localhost:3000/api/class/getByCampus/${user[0].school._id}/${user[0].campus._id}`);
+        res = await axios.get(`https://darkviolet-turkey-397111.hostingersite.com/api/class/getByCampus/${user[0].school._id}/${user[0].campus._id}`);
       }
       classList = res.data.data;
       console.log(classList);

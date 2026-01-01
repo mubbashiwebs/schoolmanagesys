@@ -1,7 +1,7 @@
 // import school from "../models/school.js";
 import Campus from "../models/campus.js";
 import School from "../models/school.js";
-import User from "../models/User.js";
+import User from "../models/user.js";
 import UserForReq from "../models/userforreq.js";
 import { sendSchoolStatusEmail } from "../utils/sendMail.js";
 
