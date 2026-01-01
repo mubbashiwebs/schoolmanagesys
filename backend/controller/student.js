@@ -5,7 +5,7 @@ import Course from "../models/computercourse.js";
 import EnglishCourse from "../models/englang.js";
 import Batch from "../models/batch.js";
 import ClassModel from "../models/class.js";
-import Section from "../models/Section.js";
+import Section from "../models/section.js";
 
 import Voucher from "../models/voucher.js";
 import Receipt from "../models/receipt.js";
