@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏫 Dashboard - Campus Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../index.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<style>
+  .minimalist-input {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: none;
+    font-size: 0.95rem;
+    padding: 10px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .minimalist-input:focus {
+    border-color: #000;
+    box-shadow: none;
+  }
+
+  .modal-content {
+    background: #fff;
+  }
+
+  .modal-header,
+  .modal-footer {
+    background: #f9f9f9;
+  }
+
+  .btn-dark {
+    background-color: #000;
+    border: none;
+    border-radius: 8px;
+  }
+
+  .btn-dark:hover {
+    background-color: #333;
+  }
+</style>
+
+<body>
+  <div class="container-fluid">
+    <div id="navContent"></div>
+
+    <div class="row flex-nowrap">
+      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar d-md-block d-none">
+        <h4>🛠️ Admin Panel</h4>
+        <nav id="sidebar d-md-block d-none" class="nav flex-column"></nav>
+      </div>
+
+      <div class="col main-content">
+        <div class="row">
+          <div class="col bg-white p-5 mb-5 border rounded-3">
+            <h2 class="mb-4 text-center">🏫 Campus Form</h2>
+
+            <div class="row align-items-center">
+              <div class="col-3">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCampusModal">➕ Add New Campus</button>
+              </div>
+              <div class="col-3">
+                <label>🔍 Enter Name</label>
+                <input type="text" class="form-control minimalist-input" placeholder="Search by Campus Name" id="searchCampus">
+              </div>
+            </div>
+
+            <div class="table-responsive mt-3" style="max-height: 600px; overflow-y: auto;">
+              <table class="table table-bordered table-hover" id="campusTable">
+                <thead class="table-light">
+                  <tr>
+                    <th>#️⃣</th>
+                    <th>🏫 Campus Name</th>
+                    <th>🔢 Campus Code</th>
+                    <th>📧 Campus Email</th>
+                    <th>📞 Campus Contact</th>
+                    <th>👨‍🏫 Campus Principal</th>
+                    <th>📍 Address</th>
+                    <th>⚙️ Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Form -->
+  <div class="modal fade" id="addCampusModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="width: 100%; max-width: 600px; margin: auto;">
+        <form id="campusForm">
+          <div class="modal-header">
+            <h5 class="modal-title">🏫 Add New Campus</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label class="form-label">🏫 Campus Name</label>
+                <input type="text" class="form-control minimalist-input" id="campusName" placeholder="Enter campus name" required>
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label">🔢 Campus Code</label>
+                <input type="text" class="form-control minimalist-input" id="campusCode" placeholder="Enter campus code" required>
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label">📍 Address</label>
+                <input type="text" class="form-control minimalist-input" id="campusAddress" placeholder="Enter campus address" required>
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label">📧 Email</label>
+                <input type="text" class="form-control minimalist-input" id="campusEmail" placeholder="Enter campus email" required>
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label">📞 Contact</label>
+                <input type="text" class="form-control minimalist-input" id="campusContact" placeholder="Enter campus contact" required>
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label">👨‍🏫 Principal</label>
+                <input type="text" class="form-control minimalist-input" id="campusprincipalName" placeholder="Enter campus principal name">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-dark" id="formSubmitBtn">💾 Add Campus</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="./campus.js"></script>
+  <script src="../index.js"></script>
+</body>
+
+</html>

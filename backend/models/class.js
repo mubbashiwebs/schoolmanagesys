@@ -13,8 +13,13 @@ const classSchema = new mongoose.Schema({
     required: true
   },
   fee:{type:Number , required:true},
-  tuitionFee:{type:Number , required:true},
+
   admissionFee:{type:Number , required:true},
+  generalRegister:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'GeneralRegister',
+      required:true
+  },
  createdBy:{
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

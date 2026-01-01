@@ -14,7 +14,7 @@ export const createTeacher = async (req, res) => {
       lastQualification,
       lastSchool,
       admissionDate,
-      admissionTypes,
+      employTypes,
      
       Salary,
       designation,
@@ -31,29 +31,6 @@ export const createTeacher = async (req, res) => {
 
         const staffCode = await generateStaffId(schoolId, campus, role);
 
-
-    // Check for duplicate subject assignments (same class+section+subject) for any teacher
-//     if(role === 'teacher') {
-// for (const entry of schoolClassesRec) {
-//   const conflict = await Teacher.findOne({
-//     schoolId,
-//     'schoolClassesRec': {
-//       $elemMatch: {
-//         class: entry.class,
-//         section: entry.section,
-//         subject: entry.subject
-//       }
-//     }
-//   });
-
-//   if (conflict) {
-//     return res.json({
-//       success: false,
-//       message: `Subject "${entry.subject}" already assigned in Class ${entry.class}, Section ${entry.section} to ${conflict.name}.`,
-//     });
-//   }
-// }
-//     }
   var data = req.body
   data.staffCode = staffCode
     const teacher = new Teacher(data);

@@ -1,0 +1,426 @@
+  body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden !important;
+      /* overflow: hidden !important; */
+    }
+
+    html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+    .sidebar {
+  position: sticky !important;
+  /* left: 0; */
+  top:2px !important;
+  height: auto;
+  width:0%;
+  background-color: white;
+  /* box-shadow: 2px 0 12px rgba(0,0,0,0.06); */
+  /* transform: translateX(-100%); */
+  transition: width 0.28s ease;
+  /* z-index: 1100; */
+  overflow-y: auto;
+}
+
+/* When open */
+.sidebar.open {
+  width: 20%;
+
+  /* transform: translateX(0); */
+}
+
+/* overlay */
+
+/* #sidebarOverlay.show {
+
+} */
+
+/* Hamburger fixed (SB-1) */
+/* #sidebarHamburger {
+  position: fixed;
+  left: 12px;
+  top: 12px;
+  z-index: 1150;
+  background: #0d6efd;
+  color: #fff;
+  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(13,110,253,0.15);
+} */
+
+/* Sidebar header (logo + close on mobile) */
+
+
+/* Links */
+.sidebar-body { padding: 10px 0;}
+.sidebar-link {
+  display:block;
+  padding: 10px 16px;
+  text-decoration:none;
+  color:#333;
+  font-size:14.5px;
+  border-bottom:1px solid #f6f6f6;
+}
+.sidebar-link .fa-fw { width:20px; text-align:center; margin-right:10px; }
+
+/* active */
+.sidebar-link.active {
+  background:#0d6efd;
+  color:#fff !important;
+  font-weight:600;
+}
+
+/* dropdown group header */
+.dropdown-header {
+  padding: 12px 16px;
+  cursor: pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:600;
+  border-bottom: 1px solid #f6f6f6;
+  background: transparent;
+}
+.dropdown-header:hover { background:#f8f9fa; }
+
+/* chevron rotate */
+.dropdown-header .chev { transition: transform .25s ease; }
+.dropdown-header.open .chev { transform: rotate(-180deg); }
+
+/* dropdown inner links (collapsed by default) */
+.dropdown-links {
+  display: none;
+  padding-left: 6px;
+  background: #fff;
+}
+.dropdown-links.open { display:block; background: black;}
+
+
+/* small visual indent for inner links */
+.dropdown-links .sidebar-link { padding-left: 36px; font-size:14px; }
+
+/* Make sure content under sidebar is padded on desktop when sidebar open? (optional) */
+/* Responsive tweaks */
+@media (max-width: 992px) {
+  /* #appSidebar { width: 80%; max-width: 320px; } */
+
+  /* #sidebarHamburger { left: 10px; top: 8px; } */
+}
+
+
+/* 
+    .sidebar {
+      height: 100%;
+      background-color: white;
+      color: black;
+      padding-top: 1rem;
+      position: sticky;
+      /* overflow-y: scroll; */
+    /* } */
+
+    /* /* .sidebar h4 {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: bold;
+    }
+
+    .sidebar a {
+      display: block;
+      color: black;
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      margin: 5px 0;
+    }
+
+    .sidebar a:hover, .sidebar a.active {
+      background-color: whitesmoke;
+      color: black;
+      font-weight: 500;
+      border-radius: 10px;
+    } */
+
+    .main-content {
+      padding: 2rem;
+      /* background-color: #000; */
+    }
+
+    .card-icon {
+      font-size: 2rem;
+      color: #0d6efd;
+    }
+
+    .dashboard-img {
+      width: 100%;
+      border-radius: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    .minimalist-input {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: none;
+    font-size: 0.95rem;
+    padding: 10px; 
+    transition: all 0.2s ease-in-out; 
+  }
+
+   .minimalist-input:focus {
+    border-color: #000;
+    box-shadow: none; /* Removes Bootstrap outline */
+  }
+  select:focus {
+    border-color: #000;
+    box-shadow: none; /* Removes Bootstrap outline */
+  }
+
+  .modal-content {
+    background: #fff;
+  }
+
+  .modal-header,
+  .modal-footer {
+    background: #f9f9f9;
+  }
+
+  .btn-dark {
+    background-color: #000;
+    border: none;
+    border-radius: 8px;
+  }
+
+  .btn-dark:hover {
+    background-color: #333;
+  }
+ .container-fluid{
+  padding-left:0px !important;
+  padding-right: 0px !important;
+ }
+
+ /* student html */
+
+  body {
+      background: #f7f9fc;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .form-section {
+      background: #fff;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    h2, h5 {
+      font-weight: 600;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    input, select, textarea {
+      border-radius: 10px !important;
+    }
+
+    .btn-primary {
+      border-radius: 12px;
+      padding: 0.6rem 1.4rem;
+      font-weight: 500;
+    }
+
+    .upload-box {
+      border: 2px dashed #ced4da;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      background: #fafafa;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .upload-box:hover {
+      border-color: #0d6efd;
+      background: #f0f7ff;
+    }
+
+    .student-img {
+      border-radius: 12px;
+      border: 1px solid #eee;
+    }
+       input[type='text'] ,  input[type='date'] , input[type='email'] , select , textarea    {
+      padding: 10px 14px;
+      /* width: 100%; */
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+      background-color: #fdfdfd;
+    }
+
+
+    input:focus {
+      border-color: #5c6ac4;
+      outline: none;
+    }
+       /* Loader styles */
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Spinner animation */
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 6px solid #ccc;
+  border-top-color: #3498db;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.form-container {
+      /* background: #fff; */
+      /* padding: 30px; */
+      border-radius: 12px;
+      /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); */
+      max-width: 800px;
+      margin: 0px auto;
+    }
+
+    /* Tabs styling */
+    .nav-tabs .nav-link {
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: #555;
+      font-weight: 500;
+      transition: all 0.3s;
+      padding: 10px 15px;
+    }
+
+    .nav-tabs .nav-link.active {
+      color: #007bff;
+      border-bottom: 3px solid #007bff;
+      font-weight: 600;
+    }
+
+    .nav-tabs .nav-link:hover {
+      color: #007bff;
+    }
+
+    .tab-pane {
+      padding-top: 20px;
+    }
+
+    /* Square image upload box */
+    .square-box {
+      width: 180px;
+      height: 180px;
+      border: 2px dashed #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin: 0 auto;
+      transition: border 0.3s, background 0.3s;
+    }
+
+    .square-box:hover {
+      border-color: #007bff;
+      background: rgba(0, 123, 255, 0.05);
+    }
+
+    .square-box i {
+      font-size: 40px;
+      color: #aaa;
+    }
+
+    #studentImage {
+      display: none;
+    }
+
+    .btn-next {
+      float: right;
+    }
+
+    .preview-img {
+      width: 200px;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+    }
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Minimalist Table Styling */
+#myTable {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+}
+
+#myTable th {
+  background-color: #f4f4f4; 
+  color: #333;
+  text-align: center;
+  padding: 12px 8px;
+  font-weight: 600;
+}
+
+#myTable td {
+  text-align: center;
+  padding: 10px 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+#myTable tbody tr:hover {
+  background-color: #f0f8ff; /* subtle hover */
+}
+
+#myTable tbody tr:nth-child(odd) {
+  /* keep default color for odd rows */
+  background-color: white !important;
+}
+
+#myTable thead th:first-child {
+  border-top-left-radius: 8px;
+}
+
+#myTable thead th:last-child {
+  border-top-right-radius: 8px;
+}
+.btn-success{
+  background-color: white !important;
+  color: #000;
+  border-color: #000 !important;
+
+}
+
+.btn-success:hover{
+  background-color: whitesmoke !important;
+  color: #000;
+  border-color: #000 !important;
+
+}

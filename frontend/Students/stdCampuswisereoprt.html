@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Class & Section Wise Report</title>
+
+  <!-- Axios CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+      background: #f7f7f7;
+    }
+    h1 {
+      background: #333;
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    h2 {
+      background: #444;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 30px;
+    }
+    h3 {
+      background: #666;
+      color: white;
+      padding: 8px;
+      border-radius: 5px;
+      margin-top: 15px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: white;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #eee;
+    }
+  </style>
+
+</head>
+<body>
+
+  <h1>Students Report (Class & Section Wise)</h1>
+
+  <div id="report"></div>
+
+  <script>
+    const apiURL = "http://localhost:3000/api/student/getStdSortedByCampus/68fa7661806efee8527bdc2d/68fa7662806efee8527bdc2f";
+
+    async function loadReport() {
+      try {
+        const res = await axios.get(apiURL);
+        const data = res.data;
+
+        const container = document.getElementById("report");
+        console.log(data);
+        data.forEach(cls => {
+
+          // Class Heading
+          const classDiv = document.createElement("div");
+          classDiv.innerHTML = `<h2>${cls.className}</h2>`;
+
+          // Loop Sections
+          cls.sections.forEach(sec => {
+            let sectionHtml = `
+              <h3>Section ${sec.sectionName}</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Father Name</th>
+                    <th>GR No</th>
+                    <th>Original Fee</th>
+                    <th>Discount</th>
+                    <th>Payable Fee</th>
+                  </tr>
+                </thead>
+                <tbody>
+            `;
+
+            sec.students.forEach(stu => {
+              sectionHtml += `
+                <tr>
+                  <td>${stu.name}</td>
+                  <td>${stu.fatherName}</td>
+                  <td>${stu.grNo}</td>
+                  <td>${stu.originalFee}</td>
+                  <td>${stu.discount}</td>
+                  <td>${stu.payableFee}</td>
+                </tr>
+              `;
+            });
+
+            sectionHtml += `</tbody></table>`;
+            classDiv.innerHTML += sectionHtml;
+          });
+
+          container.appendChild(classDiv);
+        });
+
+      } catch (err) {
+        console.error("Error loading report:", err);
+      }
+    }
+
+    loadReport();
+  </script>
+
+</body>
+</html>

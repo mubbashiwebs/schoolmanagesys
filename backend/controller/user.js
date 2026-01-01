@@ -25,6 +25,25 @@ export const getUsers = async (req, res) => {
   }
 };
 
+export const getUsersBySchool = async (req, res) => {
+  console.log('reach')
+  try {
+    const users = await User.find({school:req.params.schoolId}).populate('school', 'name').populate('campus', 'name');
+    res.json({ data: users });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+export const getUsersByCampus = async (req, res) => {
+  try {
+    const users = await User.find({campus:req.params.campusId}).populate('school', 'name').populate('campus', 'name');
+    res.json({ data: users });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
 export const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
@@ -40,7 +59,7 @@ export const deleteUser = async (req, res) => {
 export const loginUser = async (req,res)=>{
     console.log(req.body)
     try {
-        const user = await User.find({email:req.body.email}).populate('school', 'name').populate('campus', 'name');
+        const user = await User.find({email:req.body.email}).populate('school').populate('campus', 'name');
         if(user.length >0){
             console.log(user)
             if(user[0].password === req.body.password){
@@ -57,4 +76,17 @@ export const loginUser = async (req,res)=>{
     res.status(500).json({ message: 'Server error', error });
         
     }
+}
+
+export const editUser = async (req,res)=>{
+  try {
+    var existingUser = await User.findOne({_id : req.params.id})
+    if(!existingUser){
+     return res.json({message:'User not Found ', data : {}})
+    }
+    var user = await User.findByIdAndUpdate(req.params.id ,req.body ,{ new: true })
+    res.json({data:user , message:'User updated Successfully '})
+  } catch (error) {
+    res.status(500).json({message:error.message})
+  }
 }

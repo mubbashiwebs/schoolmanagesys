@@ -18,42 +18,8 @@ const teacherSchema = new mongoose.Schema({
   lastSchool: String,
   admissionDate: Date,
 
-  admissionTypes: [String], // ['school', 'computer', 'tuition', 'english']
-
-  
+  employTypes: [String], // ['school', 'computer', 'tuition', 'english']
     Salary : {type: Number , required:true},
-  //     schoolClassesRec: [
-  //   {
-  //     class: String,
-  //     section: String,
-  //     subject: String,
-  //     isClassTeacher: Boolean,
-  //   },
-  // ],
-  //   schooltuitionRec: [
-  //   {
-  //     class: String,
-  //     subject: String,
-      
-  //   },
-  // ],
-
-  //   englishCourses: [
-  //   {
-  //     courseId: String,
-  //     batchId: String,
-      
-  //   },
-  // ],
-
-  //    computerCourses: [
-  //   {
-  //     courseId: String,
-  //     batchId: String,
-      
-  //   },
-  // ],
-
   schoolId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "school",

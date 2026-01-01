@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Leisure Report</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    .table-summary th {
+      background-color: #212529;
+      color: white;
+    }
+
+    .highlight {
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+
+<body class="bg-light">
+
+  <div class="container my-5">
+    <div class="card shadow p-4">
+      <h3 class="text-center mb-4">📘 Student Leisure Report</h3>
+
+      <!-- Form -->
+      <form id="reportForm">
+        <div class="row g-3">
+          <div class="col-md-2">
+            <label class="form-label">GR No</label>
+            <input type="text" id="grNo" placeholder="Enter student grno" class="form-control" required />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Fee Type</label>
+            <select id="feeType" class="form-select" required>
+              <option value="">Select</option>
+              <option value="school">School</option>
+              <option value="tuition">Tuition</option>
+              <option value="computer">Computer</option>
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <div class="text-center mt-4">
+              <button type="submit" class="btn btn-primary px-4">Get Report</button>
+            </div>
+          </div>
+        </div>
+
+
+      </form>
+    </div>
+
+    <!-- Result Section -->
+    <div id="reportResult" class="mt-5" style="display:none;">
+      <div class="card shadow p-4">
+        <h4 class="mb-3 text-primary">👨‍🎓 Student Information</h4>
+        <div id="studentInfo" class="mb-4"></div>
+
+        <h5 class="text-success mb-3">📊 Monthly Leisure Report</h5>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped table-summary">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Month</th>
+                <th>Voucher Due Date</th>
+                <th>Voucher Amount</th>
+                <th>Late Fee</th>
+                <th>Receipt Amount</th>
+                <th>Receipt Paid Date</th>
+                <th>Paid Amount</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+            <tbody id="reportTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <script>
+    const user = JSON.parse(localStorage.getItem("userData")) || [];
+    const isSuperAdmin = user[0]?.designation === "supremeadmin";
+    document.getElementById("reportForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        grNo: document.getElementById("grNo").value.trim(),
+        feeType: document.getElementById("feeType").value,
+
+        campusId: user[0]?.campus._id || "",
+        schoolId: user[0]?.school._id || "",
+
+      };
+
+      try {
+        const res = await fetch("http://localhost:3000/api/student/leisurereport", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          alert(data.message || "Student not found!");
+          return;
+        }
+
+        document.getElementById("reportResult").style.display = "block";
+
+        // Student Info
+        const s = data.student;
+        console.log(s);
+        const feeType = payload.feeType;
+        document.getElementById("studentInfo").innerHTML = `
+          <p><strong>Name:</strong> ${s.name}</p>
+          <p><strong>Father Name:</strong> ${s.fatherName}</p>
+          <p><strong>Class:</strong> ${s.class.name || "N/A"}</p>
+          <p><strong>GR No:</strong> ${s.grNumbers[feeType]} </p>
+        `;
+        console.log(data.vouchers, data.receipts);
+
+        // Combine voucher + receipt data month-wise
+        const months = Array.from(
+          new Set([
+            ...data.vouchers.map(v => v.month),
+            ...data.receipts.map(r => r.month)
+          ])
+        ).sort();
+
+        const rows = [];
+        let index = 1;
+        months.forEach(month => {
+          console.log(month);
+          const voucher = data.vouchers.find(v => v.month === month);
+          const receipt = data.receipts.find(r => r.month === month);
+          console.log(voucher, receipt);
+          const voucherAmount = voucher ? voucher.totalPayable || 0 : 0;
+          const receiptAmount = receipt ? receipt.totalPayable || 0 : 0;
+          const dueDate = voucher && voucher.dueDate ? new Date(voucher.dueDate).toLocaleDateString() : "-";
+          const lateFee = receipt ? receipt.totalPayable - voucher.totalPayable || 0 : 0;
+
+          // 👇 if no receipt, show N/A instead of 0
+          const paidAmount = receipt ? receipt.amount || 0 : "N/A";
+          const paidDate = receipt && receipt.date ? new Date(receipt.date).toLocaleDateString() : "N/A";
+
+          const balance = receipt ? receipt.balanceAfterPayment : 'N/A';
+
+          rows.push(`
+            <tr class="${balance > 0 ? 'highlight' : ''}">
+              <td>${index++}</td>
+              <td>${month}</td>
+              <td>${dueDate}</td>
+              <td>${voucherAmount}</td>
+                <td>${lateFee}</td>
+
+                <td>${receiptAmount}</td>
+              <td>${paidDate}</td>
+              <td>${paidAmount}</td>
+              <td>${balance}</td>
+            </tr>
+          `);
+        });
+
+        document.getElementById("reportTable").innerHTML = rows.join("");
+
+      } catch (err) {
+        console.error(err);
+        alert("Error fetching report");
+      }
+    });
+  </script> -->
+  <script src="./ledgerReport.js"></script>
+</body>
+
+</html>

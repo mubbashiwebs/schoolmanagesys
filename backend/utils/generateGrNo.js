@@ -2,7 +2,8 @@
 import Student from "../models/student.js";
 import School from "../models/school.js";
 import Campus from "../models/campus.js";
-export const generateGR = async (schoolId, campusId, admissionType) => {
+export const generateGR = async (schoolId, campusId, admissionType , educationLevel) => {
+  console.log(schoolId, campusId, admissionType , educationLevel)
   try {
     let prefix = "";
     if (admissionType === "school") prefix = "SHH";
@@ -19,19 +20,24 @@ export const generateGR = async (schoolId, campusId, admissionType) => {
     const lastStudent = await Student.findOne({
       schoolId,
       campusId,
+      educationLevel,
       [`grNumbers.${admissionType}`]: { $exists: true, $ne: null },
     })
-      .sort({ createdAt: -1 })
+.sort({ [`grNumbers.${admissionType}`]: -1 }) 
+
       .lean();
+      const totalLength = School.find({schoolId,
+      campusId})
     console.log(lastStudent , 'last')
-    let nextNumber = "001";
-    if (lastStudent && lastStudent.grNumbers?.[admissionType]) {
-      const lastDigits = lastStudent.grNumbers[admissionType].slice(-3);
-      const newNum = parseInt(lastDigits) + 1;
-      nextNumber = String(newNum).padStart(3, "0");
-    }
-    console.log(schoolCode, campusCode, prefix, nextNumber, 'final')
-    return `${schoolCode}${campusCode}${prefix}${nextNumber}`;
+    let nextNumber 
+    // if (lastStudent && lastStudent.grNumbers?.[admissionType]) {
+    //   const lastDigits = lastStudent.grNumbers[admissionType].slice(-3);
+    //   const newNum = parseInt(lastDigits) + 1;
+    //   nextNumber = String(newNum).padStart(3, "0");
+    // }
+    console.log( nextNumber, 'final')
+    nextNumber = lastStudent?.grNumbers[admissionType] + 1 || 1;
+    return `${nextNumber}`
   } catch (err) {
     console.error("Error generating GR:", err.message);
     throw err;

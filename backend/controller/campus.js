@@ -55,7 +55,7 @@ export const updateCampus = async (req, res) => {
 
     res.status(200).json({ message: "Campus updated successfully.", campus: updatedCampus });
   } catch (error) {
-    console.error("Error updating campus:", error);
+    console.error("Error updating campus:", error); 
     res.status(500).json({ message: "Server error." });
   }
 };

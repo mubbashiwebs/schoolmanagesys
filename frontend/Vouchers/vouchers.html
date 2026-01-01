@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Voucher Generator — Simple UI</title>
+  <!-- Bootstrap 5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../index.css">
+  <style>
+    /* body { background: #f7f9fc; padding: 24px; } */
+    /* .card { box-shadow: 0 6px 18px rgba(18,38,63,0.06); } */
+    .extras-list .row+.row {
+      margin-top: 8px;
+    }
+
+    .spinner-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.65);
+      z-index: 1200;
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 1300;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid  px-0">
+    <div id="navContent">
+    </div>
+    <div class="row">
+      <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar d-md-block d-none">
+        <!-- <h4>Admin Panel</h4> -->
+        <nav id="sidebar d-md-block d-none" class="nav flex-column"></nav>
+      </div>
+
+      <div class="col main-content">
+
+
+
+        <div class="container">
+
+          <div class="card mb-4 p-3">
+            <div class="card-body">
+              <div id="voucherForm" class="row g-3">
+                <h3 class="mb-5 text-center">Voucher Generation</h3>
+
+                <!-- Fee type -->
+                <div class="col-12">
+                  <label class="form-label">Fee Type</label>
+                  <div id="feeTypeRadios" class="d-flex gap-3">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="feeType" id="fee_school" value="school"
+                        checked>
+                      <label class="form-check-label" for="fee_school">School</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="feeType" id="fee_tuition" value="tuition">
+                      <label class="form-check-label" for="fee_tuition">Tuition</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="feeType" id="fee_computer" value="computer">
+                      <label class="form-check-label" for="fee_computer">Computer</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="feeType" id="fee_english" value="english">
+                      <label class="form-check-label" for="fee_english">English</label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Selection Type -->
+                <div class="col-12">
+                  <label class="form-label">Selection Type</label>
+                  <div class="d-flex gap-3">
+                    <div class="form-check" id="singleWiseBox">
+                      <input class="form-check-input" type="radio" name="selectionType" id="sel_single" value="single"
+                        checked>
+                      <label class="form-check-label" for="sel_single">Single</label>
+                    </div>
+
+                    <div class="form-check" id="ClassWiseBox">
+                      <input class="form-check-input" type="radio" name="selectionType" id="sel_class" value="class">
+                      <label class="form-check-label" for="sel_class">Class Wise</label>
+                    </div>
+
+                    <div class="form-check" id="CourseWiseBox">
+                      <input class="form-check-input" type="radio" name="selectionType" id="sel_course" value="course">
+                      <label class="form-check-label" for="sel_course">Course Wise</label>
+                    </div>
+
+
+                    <div class="form-check" id="BatchWiseBox">
+                      <input class="form-check-input" type="radio" name="selectionType" id="sel_batch" value="batch">
+                      <label class="form-check-label" for="sel_batch">Batch Wise</label>
+                    </div>
+
+
+                    <div class="form-check" id="AllWiseBox">
+                      <input class="form-check-input" type="radio" name="selectionType" id="sel_all" value="all">
+                      <label class="form-check-label" for="sel_all">All</label>
+                    </div>
+                  </div>
+                </div>
+
+
+                <!-- Campus (shown when isSuperAdmin true) -->
+                <div class="col-md-4" id="campusWrap" style="display:none;">
+                  <label class="form-label">Campus</label>
+                  <select id="campusSelect" class="form-select"></select>
+                </div>
+                <!-- Class (shown for school) -->
+                <div class="col-md-4" id="grnoWrap">
+                  <label class="form-label">Grno</label>
+                  <input type="number" id="grNoInput" class="form-control" placeholder="e.g. 1234">
+                </div>
+                <!-- Class (shown for school) -->
+                <div class="col-md-4" id="classWrap">
+                  <label class="form-label">Class</label>
+                  <select id="classSelect" class="form-select"></select>
+                </div>
+
+                <!-- Coaching classes  -->
+                <div class="col-md-4" id="coachingClassesWrap" style="display:none;">
+                  <label class="form-label">Coaching Class</label>
+                  <select id="coachingClassSelect" class="form-select"></select>
+                </div>
+
+                <!-- Course & Batch (compuetr) -->
+                <div class="col-md-4" id="compcourseWrap" style="display:none;">
+                  <label class="form-label">Course</label>
+                  <select id="courseSelect" class="form-select"></select>
+                </div>
+
+                <div class="col-md-4" id="engcourseWrap" style="display:none;">
+                  <label class="form-label">Eng Course</label>
+                  <select id="engcourseSelect" class="form-select"></select>
+                </div>
+
+
+                <!-- Computer Course Batch -->
+                <div class="col-md-4" id="computerBatchWrap" style="display:none;">
+                  <label class="form-label">Computer Batch</label>
+                  <select id="computerCourseBatchSelect" class="form-select"></select>
+                </div>
+
+                <!-- English Course Batch -->
+                <div class="col-md-4" id="englishBatchWrap" style="display:none;">
+                  <label class="form-label">English Batch</label>
+                  <select id="engCourseBatchSelect" class="form-select"></select>
+                </div>
+
+
+                <!-- Month -->
+                <div class="col-md-3">
+                  <label class="form-label">Month</label>
+                  <input id="monthInput" type="month" class="form-control" required>
+                </div>
+
+
+                <!-- Issue Date -->
+                <div class="col-md-3">
+                  <label for="issueDate" class="form-label">Issue Date</label>
+                  <input type="date" id="issueDate" class="form-control" />
+                </div>
+
+                <!-- Due Date -->
+                <div class="col-md-3">
+                  <label for="dueDate" class="form-label">Due Date</label>
+                  <input type="date" id="dueDate" class="form-control" />
+                </div>
+
+                <!-- Expire Date -->
+                <div class="col-md-3">
+                  <label for="expireDate" class="form-label">Expire Date</label>
+                  <input type="date" id="expireDate" class="form-control" />
+                </div>
+
+
+
+                <!-- Extras dynamic -->
+                <div class="col-12">
+                  <label class="form-label">Extra Fee Fields (will apply every month)</label>
+                  <div class="extras-list" id="extrasList"></div>
+                  <div class="mt-2">
+                    <button id="addExtraBtn" type="button" class="btn btn-sm btn-outline-primary">+ Add Extra
+                      Field</button>
+                    <button id="clearExtrasBtn" type="button" class="btn btn-sm btn-outline-secondary ms-2">Clear
+                      Extras</button>
+                  </div>
+                </div>
+
+                <!-- Generate -->
+                <div class="col-12">
+                  <button id="generateBtn" onclick="onGenerate()" class="btn btn-primary">Generate Vouchers</button>
+                  <small class="text-muted ms-3">Selected students will have vouchers created. Existing vouchers for
+                    same month are skipped.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container">
+          <div class="card mb-4 p-3">
+            <div class="card-body">
+              <h4 class="mb-4"> Students found on Grno </h4>
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Student Name</th>
+                      <th>Father Name</th>
+                      <th>GR Number</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="resultsTableBody">
+                    <!-- Results will be appended here -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+
+  </div>
+
+
+
+  <!-- Loader overlay -->
+  <div id="loader" class="spinner-overlay" style="display:none;">
+    <div class="spinner-border" role="status" aria-hidden="true"></div>
+  </div>
+
+  <!-- Toasts -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Bootstrap JS + dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+  <script src="./voucher.js"></script>
+  <script src="../index.js"></script>
+</body>
+
+</html>

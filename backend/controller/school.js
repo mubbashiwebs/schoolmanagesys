@@ -1,17 +1,18 @@
 // import school from "../models/school.js";
+import Campus from "../models/campus.js";
 import School from "../models/school.js";
 import User from "../models/User.js";
 import UserForReq from "../models/userforreq.js";
 import { sendSchoolStatusEmail } from "../utils/sendMail.js";
 
 export const requestSchool = async (req, res) => {
-  const { userId, name, address, contact , features, password } = req.body;
-
+  var { userId, name, address, contact , features, password , campus } = req.body;
+console.log(campus)
   const user = await UserForReq.findOne({userId});
   if (!user || !user.isVerified) return res.status(403).json({ message: "User not verified" });
   const isRequestExist = await School.findOne({name , campus})
   if (isRequestExist) return res.status(403).json({ message: "School has been already registered" });
-  const allowedPages = []
+  var allowedPages = []
   var schoolLinks = ['addclass','addsection' , 'addstudent' , 'addsubject' , 'addCampus' ,'studentlist','addteacher' , 'teacherlist','teacherSalary']
   var computerCourseLinks = ['addcomputercourse']
   var englishLangCourseLinks =['addenglangcourse']
@@ -25,12 +26,19 @@ export const requestSchool = async (req, res) => {
  if(features.includes('english')){
     allowedPages.push(...englishLangCourseLinks)
   }
+   if(features.includes('tuition')){
+    allowedPages.push('addCoachClass')
+  }
+  if(features.includes('computer') || features.includes('english')){
+    allowedPages.push('addBatch')
+  }
     allowedPages.push('adduser')
   console.log(allowedPages)
-  var campus = 'main'
+  var campusName = 'main'
   if(campus == ''){
-    // campus = initialcampus
+    campus=campusName
   }
+
   const newSchool = new School({ userId,
     name,
     address,
@@ -43,6 +51,20 @@ export const requestSchool = async (req, res) => {
    return res.json({message:'something went wrong try again'})
    }
     
+        const newCampus = new Campus({
+          schoolId : newSchool._id,
+          name:campus,
+          address :newSchool.address,
+          contact:newSchool.contact,
+          email:user.email,
+          code:'main',
+          
+        });
+    
+        await newCampus.save();
+          if(!newCampus._id){
+   return res.json({message:'something went wrong try again'})
+   }
   const userData = {
     username : user.name,
     email :user.email,
@@ -50,8 +72,8 @@ export const requestSchool = async (req, res) => {
     contactNo:user.contact,
     designation : 'supremeadmin',
     allowedPages,
-    school:newSchool._id
-    
+    school:newSchool._id,
+    campus:newCampus._id
     
 
   }

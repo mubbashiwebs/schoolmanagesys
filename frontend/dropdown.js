@@ -2,8 +2,9 @@
   var campusSelectBox1 = document.getElementById('campusSelectBox1')
   var campusSelectBox2 = document.getElementById('campusSelectBox2')
   // 🔽 Inject dropdown if superadmin
-  if (isSuperAdmin) {
  console.log(123)
+
+  if (isSuperAdmin) {
 
     const campusDropdown = document.createElement("select");
     campusDropdown.className = "form-select mb-3";
@@ -31,6 +32,16 @@
 
     campusSelectBox2.appendChild(label)
     campusSelectBox2.appendChild(campusDropdown)
+
+    
+  if(!currentPage){
+const currentPage = window.location.pathname.split("/").pop().toLowerCase();
+console.log(currentPage)
+  }
+  else{
+console.log(currentPage)
+ 
+  }
     // 🟢 Fetch and populate campuses dropdown
     async function loadcampuses() {
       try {
@@ -41,6 +52,14 @@
           option.value = "";
           option.textContent = 'Select campus';
           campusDropdown.appendChild(option);
+
+    //          if(currentPage && currentPage == '/school/generalregister.html'){
+    //  const option = document.createElement("option");
+    //       option.value = "All";
+    //       option.textContent = 'All Campus';
+    //       campusDropdown.appendChild(option);
+    // }
+
         campusList.forEach(campus => {
           const option = document.createElement("option");
           option.value = campus._id;
@@ -64,9 +83,9 @@
     }
 
     loadcampuses();
-  }
+  
 
-const currentPage = window.location.pathname.split("/").pop().toLowerCase();
+  }
 
 // if(currentPage === 'compcourse.html' || currentPage === 'englangcourse.html'){
 //     if(isSuperAdmin){
