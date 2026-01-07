@@ -92,7 +92,7 @@
     //   campusSelectBox1.appendChild(campusDropdownFilter);
 
     //   async function loadcampuss() {
-    //     const res = await axios.get("http://localhost:3000/api/campus/get");
+    //     const res = await axios.get("${backendUrl}/api/campus/get");
     //     campusList = res.data.data;
 
     //     campusDropdown.innerHTML = `<option value="">Select campus</option>`;
@@ -125,7 +125,7 @@
     searchSectionInput.addEventListener('input', filterSection);
 
     async function fetchSections() {
-      const endpoint = isSuperAdmin ? `http://localhost:3000/api/section/school/${user[0].school._id}` : `http://localhost:3000/api/section/getByCampus/${user[0].school._id}/${user[0].campus._id}`;
+      const endpoint = isSuperAdmin ? `${backendUrl}/api/section/school/${user[0].school._id}` : `${backendUrl}/api/section/getByCampus/${user[0].school._id}/${user[0].campus._id}`;
       const res = await axios.get(endpoint);
       originalSectionList = res.data.data;
       sectionList = [...originalSectionList];
@@ -176,7 +176,7 @@
   });
   if (!result.isConfirmed) return;
 
-      const res = await axios.delete(`http://localhost:3000/api/section/delete/${id}`);
+      const res = await axios.delete(`${backendUrl}/api/section/delete/${id}`);
       showToast(res.data.message);
       originalSectionList = originalSectionList.filter(s => s._id !== id);
       sectionList = sectionList.filter(s => s._id !== id);
@@ -197,7 +197,7 @@ sectionForm.addEventListener('submit', async (e) => {
 
   try {
     if (isEditing) {
-      const res = await axios.put(`http://localhost:3000/api/section/update/${editingId}`, body);
+      const res = await axios.put(`${backendUrl}/api/section/update/${editingId}`, body);
       const updated = res.data.data;
       console.log(updated)
       if (!updated) return showToast(res.data.message || "Update failed", false);
@@ -207,7 +207,7 @@ sectionForm.addEventListener('submit', async (e) => {
       originalSectionList[idx] = updated;
       showToast(res.data.message || "Section updated successfully");
     } else {
-      const res = await axios.post("http://localhost:3000/api/section/add", body);
+      const res = await axios.post(`${backendUrl}/api/section/add`, body);
       const added = res.data.data;
       if (!added || !added._id) return showToast(res.data.message || "Add failed", false);
 

@@ -57,7 +57,7 @@
       try {
         let res;
         
-         res = await axios.get(`http://localhost:3000/api/campus/getBySchool/${user[0].school._id}`);
+         res = await axios.get(`${backendUrl}/api/campus/getBySchool/${user[0].school._id}`);
         console.log(res.data)
         campusList = res.data;
         originalCampusList = [...campusList];
@@ -109,14 +109,14 @@
       var schoolId = user[0].school._id;
       try {
         if (isEditing) {
-          const res = await axios.put(`http://localhost:3000/api/campus/update/${editingId}`, { name, address, code, schoolId , contact,email,principalName });
+          const res = await axios.put(`${backendUrl}/api/campus/update/${editingId}`, { name, address, code, schoolId , contact,email,principalName });
           console.log(res)
           const index = campusList.findIndex(c => c._id === editingId);
           campusList[index] = res.data.campus;
           originalCampusList[index] = res.data.campus;
           showAlert("Campus updated successfully");
         } else {
-          const res = await axios.post("http://localhost:3000/api/campus/add", { name, address, code, schoolId , contact,email,principalName , createdBy});
+          const res = await axios.post(`${backendUrl}/api/campus/add`, { name, address, code, schoolId , contact,email,principalName , createdBy});
           if (res.data.campus && res.data.campus._id) {
             console.log('reach')
             campusList.push(res.data.campus);
@@ -138,7 +138,7 @@
     window.deleteCampus = async function (id) {
       if (!confirm("Are you sure you want to delete this campus?")) return;
       try {
-        await axios.delete(`http://localhost:3000/api/campus/delete/${id}`);
+        await axios.delete(`${backendUrl}/api/campus/delete/${id}`);
         campusList = campusList.filter(c => c._id !== id);
         originalCampusList = originalCampusList.filter(c => c._id !== id);
         showAlert("Campus deleted successfully");

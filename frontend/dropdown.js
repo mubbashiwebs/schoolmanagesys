@@ -27,12 +27,14 @@
     label2.className = "";
 
     const form = document.getElementById("classForm");
+    if(campusSelectBox1){
     campusSelectBox1.appendChild(label2)
     campusSelectBox1.appendChild(campusDropdownfilter)
-
+    }
+    if(campusSelectBox2){
     campusSelectBox2.appendChild(label)
     campusSelectBox2.appendChild(campusDropdown)
-
+    }
     
   if(!currentPage){
 const currentPage = window.location.pathname.split("/").pop().toLowerCase();

@@ -84,7 +84,7 @@ let editingId = null;
     //   }
 
     //   async function loadcampuss() {
-    //     const res = await axios.get("http://localhost:3000/api/campus/get");
+    //     const res = await axios.get("${backendUrl}/api/campus/get");
     //     campusList = res.data.data;
     //     if (isSuperAdmin) {
     //       rendercampusDropdown(campusSelectBox1, "campusDropdownFilter");
@@ -94,7 +94,7 @@ let editingId = null;
     //   }
 
       async function loadCourses() {
-        const url = isSuperAdmin ? `http://localhost:3000/api/course/school/${user[0].school._id}` : `http://localhost:3000/api/course/getbyCampus/${user[0].school._id}/${user[0].campus._id}`;
+        const url = isSuperAdmin ? `${backendUrl}/api/course/school/${user[0].school._id}` : `${backendUrl}/api/course/getbyCampus/${user[0].school._id}/${user[0].campus._id}`;
         const res = await axios.get(url);
         courseList = res.data.data;
         filteredCourses = [...courseList];
@@ -158,7 +158,7 @@ var schoolId = user[0].school._id;
   try {
     if (isEditing) {
       // ✅ UPDATE COURSE
-      const res = await axios.put(`http://localhost:3000/api/course/update/${editingId}`, body);
+      const res = await axios.put(`${backendUrl}/api/course/update/${editingId}`, body);
       const updated = res.data.data;
 
       if (!updated || !updated._id) return showToast(res.data.message || "Update failed", "bg-danger");
@@ -170,7 +170,7 @@ var schoolId = user[0].school._id;
       showToast(res.data.message || "Course updated successfully");
     } else {
       // ✅ ADD COURSE
-      const res = await axios.post("http://localhost:3000/api/course/add", body);
+      const res = await axios.post(`${backendUrl}/api/course/add`, body);
       const added = res.data.data;
 
       if (!added || !added._id) return showToast(res.data.message || "Add failed", "bg-danger");
@@ -197,7 +197,7 @@ var schoolId = user[0].school._id;
 // async function fillBatchDropdown(campusId) {
 //     if (isSuperAdmin) {
 //         console.log(campusId)
-//         res = await axios.get(`http://localhost:3000/api/batch/getByCampus/${user[0].school._id}/${campusId}`);
+//         res = await axios.get(`${backendUrl}/api/batch/getByCampus/${user[0].school._id}/${campusId}`);
 //         var batchData = res.data.data;
 // const batchDropdown = document.getElementById("batchDropdown");
 //         batchDropdown.innerHTML = "";
@@ -240,7 +240,7 @@ var schoolId = user[0].school._id;
       window.deleteCourse = async (id) => {
         if (!confirm("Are you sure you want to delete this course?")) return;
         try {
-          await axios.delete(`http://localhost:3000/api/course/delete/${id}`);
+          await axios.delete(`${backendUrl}/api/course/delete/${id}`);
           courseList = courseList.filter(cls => cls._id !== id);
           filteredCourses = [...courseList];
           renderTable();

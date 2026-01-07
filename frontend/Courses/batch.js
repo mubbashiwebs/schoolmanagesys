@@ -42,10 +42,10 @@
         let res;
         if (isSuperAdmin) {
           console.log('super')
-          res = await axios.get(`http://localhost:3000/api/batch/all/${user[0].school._id}`);
+          res = await axios.get(`${backendUrl}/api/batch/all/${user[0].school._id}`);
         } else {
           console.log('working')
-          res = await axios.get(`http://localhost:3000/api/batch/getByCampus/${user[0].school._id}/${user[0].campus._id}`);
+          res = await axios.get(`${backendUrl}/api/batch/getByCampus/${user[0].school._id}/${user[0].campus._id}`);
         }
         batchList = res.data.data;
         originalBatchList = [...batchList];
@@ -95,7 +95,7 @@ const result = await Swal.fire({
   if (!result.isConfirmed) return;
 
       try {
-        const res = await axios.delete(`http://localhost:3000/api/batch/delete/${id}`);
+        const res = await axios.delete(`${backendUrl}/api/batch/delete/${id}`);
         batchList = batchList.filter(b => b._id !== id);
         originalBatchList = originalBatchList.filter(b => b._id !== id);
         showToast(res.data.message || "Deleted successfully");
@@ -151,7 +151,7 @@ const result = await Swal.fire({
 
       try {
         if (isEditing) {
-          const res = await axios.put(`http://localhost:3000/api/batch/update/${editingId}`, {
+          const res = await axios.put(`${backendUrl}/api/batch/update/${editingId}`, {
             name, timings, fee, courseType, courseName, campusId, schoolId
           });
           const { data, message } = res.data;
@@ -160,7 +160,7 @@ const result = await Swal.fire({
           originalBatchList[index] = data;
           showToast(message || "Batch updated successfully");
         } else {
-          const res = await axios.post("http://localhost:3000/api/batch/add", {
+          const res = await axios.post(`${backendUrl}/api/batch/add`, {
             name, timings, fee, courseType, courseName, campusId, schoolId , createdBy
           });
           const { data, message } = res.data;
@@ -260,8 +260,8 @@ const result = await Swal.fire({
     }
 
     // API endpoints
-    const computerCourseApi = `http://localhost:3000/api/course/getbyCampus/${user[0].school._id}/${user[0].campus?._id}`;
-    const englishCourseApi = `http://localhost:3000/api/english-courses/getByCampus/${user[0].school._id}/${user[0].campus?._id}`;
+    const computerCourseApi = `${backendUrl}/api/course/getbyCampus/${user[0].school._id}/${user[0].campus?._id}`;
+    const englishCourseApi = `${backendUrl}/api/english-courses/getByCampus/${user[0].school._id}/${user[0].campus?._id}`;
 
     // Function to fill dropdown
     async function fillDropdown(apiUrl, dropdownId) {
@@ -307,8 +307,8 @@ const result = await Swal.fire({
     });
 
    async function handlefillDropDown(selectedCampus){
-       await fillDropdown(`http://localhost:3000/api/course/getbyCampus/${user[0].school._id}/${selectedCampus}`, "computerCourse");
-       await fillDropdown(`http://localhost:3000/api/english-courses/getbyCampus/${user[0].school._id}/${selectedCampus}`, "englishCourse");
+       await fillDropdown(`${backendUrl}/api/course/getbyCampus/${user[0].school._id}/${selectedCampus}`, "computerCourse");
+       await fillDropdown(`${backendUrl}/api/english-courses/getbyCampus/${user[0].school._id}/${selectedCampus}`, "englishCourse");
     }
 
    async function handleDropDownDisplay(selectedType){

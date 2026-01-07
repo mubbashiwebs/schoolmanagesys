@@ -112,7 +112,7 @@ data.coachingClass = tuitionclass.options[tuitionclass.selectedIndex].value || '
         const selectedStatus = document.querySelector('input[name="status"]:checked').value;
     const leaveReason = leaveReasonInput.value;
 
-        if(selectedStatus == 'left'){ 
+        if(selectedStatus == 'Left'){ 
           data.status = selectedStatus
           data.leftReason = leaveReason
 
@@ -964,6 +964,7 @@ var selectedClass = allClasses.find(cls=> cls._id == e.target.value)
     });
 // getGrno()
    async function getGrno(selectedClass, type , input){
+    console.log(selectedClass , type)
       try {
         var res = await axios.get(`http://localhost:3000/api/student/getGrno/${user[0].school._id}/${campusId}/${type}/${selectedClass}`)
         console.log(res.data)

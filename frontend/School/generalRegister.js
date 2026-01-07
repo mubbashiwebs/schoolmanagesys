@@ -1,4 +1,4 @@
-const apiUrl = "http://localhost:3000/api/general-register";
+const apiUrl = `${backendUrl}/api/general-register`;
 
   const user = JSON.parse(localStorage.getItem("userData")) || [];
   const isSuperAdmin = user[0]?.designation === "supremeadmin";

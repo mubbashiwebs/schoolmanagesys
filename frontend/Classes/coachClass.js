@@ -1,4 +1,4 @@
-
+// import { backendUrl } from "../global";
   const classNameInput = document.getElementById("className");
   const classFeeInput = document.getElementById("classFee");
   const tuitionFeeInput = document.getElementById("tuitionFee");
@@ -183,9 +183,9 @@ function checkPermission(currentPage){
     try {
       let res;
       if (isSuperAdmin) {
-        res = await axios.get(`http://localhost:3000/api/coachingClass/school/${user[0].school._id}`);
+        res = await axios.get(`${backendUrl}/api/coachingClass/school/${user[0].school._id}`);
       } else {
-        res = await axios.get(`http://localhost:3000/api/coachingClass/getByCampus/${user[0].school._id}/${user[0].campus._id}`);
+        res = await axios.get(`${backendUrl}/api/coachingClass/getByCampus/${user[0].school._id}/${user[0].campus._id}`);
       }
       classList = res?.data?.data || [];
       console.log(classList);
@@ -241,7 +241,7 @@ function checkPermission(currentPage){
   if (!result.isConfirmed) return;
 
     try {
-     var res = await axios.delete(`http://localhost:3000/api/coachingClass/delete/${id}`);
+     var res = await axios.delete(`${backendUrl}/api/coachingClass/delete/${id}`);
       classList = classList.filter(cls => cls._id !== id);
 originalClassList = originalClassList.filter(cls => cls._id !== id);
     showToast(res.data.message || "Deleted successfully");
@@ -284,7 +284,7 @@ originalClassList = originalClassList.filter(cls => cls._id !== id);
 
     try {
        if (isEditing) {
-      const res = await axios.put(`http://localhost:3000/api/coachingClass/update/${editingId}`, {
+      const res = await axios.put(`${backendUrl}/api/coachingClass/update/${editingId}`, {
         name, fee,admissionFee,campusId , schoolId 
       });
 
@@ -296,7 +296,7 @@ originalClassList = originalClassList.filter(cls => cls._id !== id);
       showToast(message || "campus updated successfully");
 
     } else {
-      const res = await axios.post("http://localhost:3000/api/coachingClass/add", {
+      const res = await axios.post("${backendUrl}/api/coachingClass/add", {
         name, fee,admissionFee,campusId , schoolId , createdBy
       });
 

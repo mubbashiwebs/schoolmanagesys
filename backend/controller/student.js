@@ -10,6 +10,7 @@ import Section from "../models/section.js";
 import Voucher from "../models/voucher.js";
 import Receipt from "../models/receipt.js";
 import { generateGR } from "../utils/generateGrNo.js";
+import school from "../models/school.js";
 export const createStudent = async (req, res) => {
   console.log('student working')
   try {
@@ -21,7 +22,7 @@ export const createStudent = async (req, res) => {
 
         const selectedClass = await ClassModel.findById(req.body.class).populate('generalRegister')
         console.log(selectedClass , 'selected class')
-        let educationLevel = selectedClass.generalRegister.registerName
+        let educationLevel = selectedClass.generalRegister.registerName 
         ;
         const grNumbers = {};
         for (let type of req.body.admissionTypes) {
@@ -30,7 +31,7 @@ export const createStudent = async (req, res) => {
 
           console.log(grNumbers , 'gr number before')
           if(grNumbers['school'] && req.body.schoolGrno !== ''){
-            var isGrnoExist = await Student.findOne({ 'grNumbers.school': req.body.schoolGrno , schoolId: req.body.schoolId, campusId: req.body.campusId , class: req.body.class}); ;
+            var isGrnoExist = await Student.findOne({ 'grNumbers.school': req.body.schoolGrno , schoolId: req.body.schoolId, campusId: req.body.campusId , educationLevel }); ;
             console.log(isGrnoExist , 'is gr no exist')
             if(isGrnoExist){
               return res.status(400).json({message:'School Grno already exists'})
@@ -47,16 +48,11 @@ export const createStudent = async (req, res) => {
     const count = await Student.countDocuments();
     const masterId = `STU-${new Date().getFullYear()}-${String(count + 1).padStart(5, "0")}`;
 
-    // Generate GR numbers for each admission type
-    // for (const type of req.body.admissionTypes) {
-    //   grNumbers[type] = await generateGR(req.body.schoolId, req.body.campusId, type ,educationLevel);
-    // }
     req.body.masterId = masterId;
+
     req.body.grNumbers = grNumbers;
-    //   for (const type of req.body.admissionTypes) {
-    //   grNumbers[type] = await generateGR(req.body.schoolId, req.body.campusId, type ,educationLevel=student.educationLevel);
-    // }
-        
+      
+    req.body.educationLevel = educationLevel;
     const student = new Student(req.body);
     await student.save();
     res.json({ message: "Student created", student });
@@ -114,61 +110,145 @@ export const getStudentByCampusId = async (req, res) => {
 
 export const updateStudent = async (req, res) => {
   try {
-    // console.log(req.body)
-    const studentData = await Student.findById(req.params.id);
-    if (!studentData) {
-      return res.json({ message: "Student not found" });
+    const oldStudent = await Student.findById(req.params.id);
+    if (!oldStudent) {
+      return res.status(404).json({ message: "Student not found" });
     }
 
-    // Old and New Types
-    const oldTypes = studentData.admissionTypes || [];
+    /* ===============================
+       ADMISSION TYPE & GR LOGIC
+    =============================== */
+  /* ===============================
+       EDUCATION LEVEL CHECK
+    =============================== */
+
+    const newClass = await ClassModel
+      .findById(req.body.class)
+      .populate("generalRegister");
+
+    const newEducationLevel = newClass.generalRegister.registerName;
+    const oldEducationLevel = oldStudent.educationLevel;
+
+    const oldTypes = oldStudent.admissionTypes || [];
     const newTypes = req.body.admissionTypes || [];
-
-    // Find which types are newly added
-    const newAdmTypes = newTypes.filter(
-      (type) => !oldTypes.includes(type)
-    );
-
-    // Find which types are removed
-    const removedAdmTypes = oldTypes.filter(
-      (type) => !newTypes.includes(type)
-    );
-    console.log({...studentData.grNumbers})
-    // Copy old GR numbers
-    const updatedGRs = {...studentData.grNumbers.toObject()};
-    console.log(updatedGRs ,'updated Gr')
-    // ✅ 1. Delete GR for removed types
-    for (const removedType of removedAdmTypes) {
-      delete updatedGRs[removedType];
+    console.log(oldTypes , 'old types')
+    console.log(newTypes , 'new types')
+    const newAdmTypes = newTypes.filter(t => !oldTypes.includes(t));
+    console.log(newAdmTypes , 'new adm types here')
+    const removedAdmTypes = oldTypes.filter(t => !newTypes.includes(t));
+    console.log(removedAdmTypes , 'removed adm types here')
+    const updatedGRs = { ...oldStudent.grNumbers.toObject() };
+    console.log(updatedGRs , 'updated gr nos here')
+    // remove GRs
+    removedAdmTypes.forEach(type => delete updatedGRs[type]);
+    // generate new GRs
+    if (newAdmTypes.length === 0) {
+       if(newTypes.includes('school') || newTypes.includes('School') ){
+      console.log(req.body.schoolGrno , 'school gr no here')
+        var isGrnoExist = await Student.findOne({ 'grNumbers.school': req.body.schoolGrno , schoolId: req.body.schoolId, campusId: req.body.campusId , educationLevel: newEducationLevel }); ;
+        if(isGrnoExist){
+          return res.status(400).json({message:'School Grno already exists'})
+        }
+        else{
+        updatedGRs[newTypes[0]] = req.body.schoolGrno
+        }
+       
     }
 
-    console.log(updatedGRs ,'removing')
-
-   
-    for (const newType of newAdmTypes) {
-      console.log(newType)
-      updatedGRs[newType] = await generateGR(
+        else{
+         updatedGRs[newTypes[0]] = await generateGR(
         req.body.schoolId,
         req.body.campusId,
-        newType
+        newTypes[0]
+     
       );
     }
-    console.log(updatedGRs , 'new ')
-    // Set final GR object
-    req.body.grNumbers = updatedGRs;
-    // console.log(req.body.grNumbers , 'here is gr')
-    // ✅ 3. Update the student
+
+    }
+    else {
+
+    for (const type of newAdmTypes) {
+      console.log(type , 'type here in update')
+     if(type === 'school' || type === 'School' ){
+      console.log(req.body.schoolGrno , 'school gr no here')
+        var isGrnoExist = await Student.findOne({ 'grNumbers.school': req.body.schoolGrno , schoolId: req.body.schoolId, campusId: req.body.campusId , educationLevel: newEducationLevel }); ;
+        if(isGrnoExist){
+          return res.status(400).json({message:'School Grno already exists'})
+        }
+        else{
+        updatedGRs[type] = req.body.schoolGrno
+        }
+       
+   
+    }
+    else{
+         updatedGRs[type] = await generateGR(
+        req.body.schoolId,
+        req.body.campusId,
+        type
+     
+      );
+    }
+
+    }
+  }
+
+    /* ===============================
+       CASE 1: EDUCATION LEVEL CHANGED
+    =============================== */
+
+    if (newEducationLevel !== oldEducationLevel) {
+
+      // 1️⃣ Mark old student as Left
+      await Student.findByIdAndUpdate(
+        oldStudent._id,
+        { status: "Left" }
+      );
+
+      // 2️⃣ Create new student record
+      const newStudent = new Student({
+        ...oldStudent.toObject(),
+        _id: undefined,
+        class: req.body.class,
+        section: req.body.section,
+        admissionTypes: newTypes,
+        grNumbers: updatedGRs,
+        educationLevel: newEducationLevel,
+        status: "Active",
+        createdAt: new Date()
+      });
+
+      await newStudent.save();
+
+      return res.json({
+        message: `Student shifted from ${oldEducationLevel} to ${newEducationLevel}`,
+        student: newStudent
+      });
+    }
+
+    /* ===============================
+       CASE 2: SAME EDUCATION LEVEL
+    =============================== */
+
     const updatedStudent = await Student.findByIdAndUpdate(
-      req.params.id,
-      req.body,
+      oldStudent._id,
+      {
+        ...req.body,
+        grNumbers: updatedGRs
+      },
       { new: true }
     );
 
-    res.json({ message: "Student updated", student: updatedStudent });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    res.json({
+      message: "Student updated successfully",
+      student: updatedStudent
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
   }
+
 };
 
 export const deleteStudent = async (req, res) => {
@@ -414,30 +494,12 @@ export const getStdGr = async (req,res)=>{
   try {
      let educationLevel = "";
         let className = req.params.class
-const prePrimaryClasses = [
-  "Play Group",
-  "Kids Junior",
-  "Kids Senior",
-  "E.C.D."
-];
+        const classData = await ClassModel.findOne({ name: className }).populate('generalRegister')
+        educationLevel = classData.generalRegister.registerName
+        console.log(req.params.type , 'type here')
+        console.log(educationLevel , 'education level here')
+        console.log(className , 'class name here')
 
-const primaryClasses = [
-  "Class I",
-  "Class II",
-  "Class III",
-  "Class IV",
-  "Class V"
-];
-
-if (prePrimaryClasses.includes(className)) {
-  educationLevel = "pre-primary";
-} 
-else if (primaryClasses.includes(className)) {
-  educationLevel = "primary";
-} 
-else {
-  educationLevel = "secondary";
-}
     const lastGrno = await generateGR(req.params.schoolId, req.params.campusId, req.params.type ,educationLevel)
     res.json({message:'Successfuly get Last Grno' , Grno :lastGrno})
   } catch (error) {
@@ -536,5 +598,101 @@ export const getStudentSortedDataByCampus = async (req, res) => {
 
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+export const getStudentsByClass = async (req, res) => {
+  console.log('class id', req.params.classId)
+  try {
+    const students = await Student.find({ class: req.params.classId, status: 'Active' })
+      .populate("class", "name")
+      .populate("section", "name")
+      .populate("campusId", "name")
+      .populate("schoolId", "name");
+      if (!students || students.length === 0)
+      return res.status(404).json({ message: "No students found" });
+    res.status(200).json(students);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
+
+
+export const migrateClass = async (req, res) => {
+  try {
+    const { fromClassId, toClassId, studentIds, studentDiscounts } = req.body;
+
+    if (!fromClassId || !toClassId || !studentIds?.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Required data missing"
+      });
+    }
+
+    // 🔹 New class fee
+    const toClass = await ClassModel.findById(toClassId);
+    if (!toClass) {
+      return res.status(404).json({
+        success: false,
+        message: "Target class not found"
+      });
+    }
+
+    // 🔹 Map discounts for fast lookup
+    const discountMap = {};
+    studentDiscounts?.forEach(item => {
+      discountMap[item.studentId] = Number(item.discount) || 0;
+    });
+
+    // 🔹 Fetch students
+    const students = await Student.find({
+      _id: { $in: studentIds },
+      class: fromClassId
+    });
+
+    if (!students.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No students found for migration"
+      });
+    }
+
+    // 🔹 Bulk update operations
+    const bulkOps = students.map(student => {
+      const discount = discountMap[student._id.toString()] || student.feeDetails?.school?.discount ;
+      const payableFee = toClass.fee - discount;
+
+      return {
+        updateOne: {
+          filter: { _id: student._id },
+          update: {
+            $set: {
+              class: toClassId,
+              "feeDetails.school.originalFee": toClass.fee,
+              "feeDetails.school.discount": discount,
+              "feeDetails.school.payableFee": payableFee
+            }
+          }
+        }
+      };
+    });
+
+    await Student.bulkWrite(bulkOps);
+
+    return res.status(200).json({
+      success: true,
+      message: "Students migrated successfully",
+      migratedCount: bulkOps.length
+    });
+
+  } catch (error) {
+    console.error("Migrate Class Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
   }
 };

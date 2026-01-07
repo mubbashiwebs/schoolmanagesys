@@ -15,7 +15,7 @@ const campusSelect = document.getElementById('campusSelect');
       if (isSuperAdmin) {
 
       try {
-        const res = await axios.get(`http://localhost:3000/api/campus/getBySchool/${user[0].school._id}`);
+        const res = await axios.get(`${backendUrl}/api/campus/getBySchool/${user[0].school._id}`);
 
         campusList = res.data;
         console.log(campusList)
@@ -33,7 +33,7 @@ const campusSelect = document.getElementById('campusSelect');
     }
     }
 
-    const API_BASE = "http://localhost:3000/api";
+    const API_BASE = `${backendUrl}/api`;
     const voucherNoInput = document.getElementById('voucherNo');
     const feeTypeInput = document.getElementById('feeType');
     const getVoucherBtn = document.getElementById('getVoucherBtn');

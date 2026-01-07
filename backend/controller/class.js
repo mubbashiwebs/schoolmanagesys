@@ -239,6 +239,7 @@ export const updateClass = async (req, res) => {
       student.feeDetails['school'].originalFee = updatedClass.fee;
       student.feeDetails['school'].payableFee =
         updatedClass.fee - student.feeDetails['school'].discount;
+        student.educationLevel = updatedClass.generalRegister.registerName;
       await student.save();
     }
 

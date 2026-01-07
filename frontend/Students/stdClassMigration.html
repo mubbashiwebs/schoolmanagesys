@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bulk Student Class Replace</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f4f6f9;
+  padding: 20px;
+}
+
+.container {
+  background: #fff;
+  padding: 25px;
+  max-width: 1000px;
+  margin: auto;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+/* Input Row */
+.row {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  flex: 1;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Inputs */
+select {
+  width: 100%;
+  height: 42px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  font-size: 14px;
+}
+
+select:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13,110,253,.15);
+}
+
+/* Button */
+.action-btn {
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 6px;
+  background: #198754;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.action-btn:hover {
+  background: #157347;
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th, table td {
+  border: 1px solid #dee2e6;
+  padding: 10px;
+  font-size: 14px;
+}
+
+table th {
+  background:black;
+  color: white;
+}
+
+tbody tr:hover {
+  background: #f8f9fa;
+}
+.s-cell {
+  background-color: green;
+    color: white;
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>
+    <i class="fa-solid fa-right-left"></i>
+    Bulk Student Class Migration
+  </h2>
+
+  <!-- Dropdowns + Button -->
+  <div class="row">
+
+    <div class="form" id="campusWrap">
+      
+      <div id="campusSelectBox2"></div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        From Class
+      </label>
+      <select id="fromClass">
+        <option value="">Select Class</option>
+      </select>
+    </div>
+
+    <!-- Shift Icon in Center -->
+    <div style="display:flex;align-items:center;padding-top:22px;">
+      <i class="fa-solid fa-right-left" style="font-size:22px;color:black;"></i>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <i class="fa-solid fa-rotate"></i>
+        Replace To Class
+      </label>
+      <select id="toClass">
+        <option value="">Select Class</option>
+      </select>
+    </div>
+
+    <button class="action-btn" id="migrateButton">
+      <i class="fa-solid fa-arrows-rotate"></i>
+      Migrate Class
+    </button>
+  </div>
+
+  <!-- Student Table -->
+  <table>
+    <thead>
+      <tr>
+
+        <th width="50">
+          <input type="checkbox" id="selectAll">
+        </th>
+<th><i class="fa-solid fa-list-ol"></i> S.No</th>
+
+        <th><i class="fa-solid fa-user"></i> Name</th>
+        <th><i class="fa-solid fa-id-card"></i> GR No</th>
+        <th><i class="fa-solid fa-chalkboard-user"></i> Class</th>
+   <th><i class="fa-solid fa-money-bill-wave"></i> Class Fee</th>
+<th><i class="fa-solid fa-percent"></i> Discount</th>
+<th><i class="fa-solid fa-receipt"></i> Net Fee</th>
+           <th class="s-cell"><i class="fa-solid fa-money-bill-wave"></i> New Class Fee</th>
+<th class="s-cell"><i class="fa-solid fa-percent"></i> New Discount</th>
+<th class="s-cell"><i class="fa-solid fa-receipt"></i> New Net Fee</th>
+      </tr>
+    </thead>
+    <tbody id="studentBody"></tbody>
+  </table>
+</div>
+
+<script>
+    var currentPage = null
+      const user = JSON.parse(localStorage.getItem("userData")) || [];
+  const isSuperAdmin = user[0]?.designation === "supremeadmin";
+// ===== Dummy Data =====
+const classes = ['One', 'Two', 'Three', 'Four'];
+
+let students = [
+  { id:1, name:'Ali', gr:'101', class:'One' },
+  { id:2, name:'Ahmed', gr:'102', class:'One' },
+  { id:3, name:'Sara', gr:'201', class:'Two' },
+  { id:4, name:'Ayesha', gr:'202', class:'Two' },
+  { id:5, name:'Usman', gr:'301', class:'Three' }
+];
+
+// ===== Load Dropdowns =====
+const fromClass = document.getElementById('fromClass');
+const toClass = document.getElementById('toClass');
+
+
+
+// ===== Load Students =====
+fromClass.addEventListener('change', loadStudents);
+
+function loadStudents() {
+  const tbody = document.getElementById('studentBody');
+  tbody.innerHTML = '';
+
+  const selectedClass = fromClass.value;
+  const filtered = students.filter(s => s.class === selectedClass);
+
+  filtered.forEach(s => {
+    tbody.innerHTML += `
+      <tr>
+        <td><input type="checkbox" class="studentCheck" value="${s.id}"></td>
+        <td>${s.name}</td>
+        <td>${s.gr}</td>
+        <td>${s.class}</td>
+      </tr>
+    `;
+  });
+}
+
+// ===== Select All =====
+document.getElementById('selectAll').addEventListener('change', function(){
+  document.querySelectorAll('.studentCheck')
+    .forEach(cb => cb.checked = this.checked);
+});
+
+// ===== Replace Class =====
+function replaceClass() {
+  const newClass = toClass.value;
+  if (!newClass) {
+    alert('Please select replace class');
+    return;
+  }
+
+  const selected = document.querySelectorAll('.studentCheck:checked');
+
+  if (selected.length === 0) {
+    alert('Please select students');
+    return;
+  }
+
+  selected.forEach(cb => {
+    const student = students.find(s => s.id == cb.value);
+    student.class = newClass;
+  });
+
+  alert('Class replaced successfully');
+  loadStudents();
+}
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src ="../global.js"></script>
+
+<script src="./stdClassMigration.js"></script>
+<script src="../dropdown.js"></script>
+</body>
+</html>

@@ -52,6 +52,11 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
+app.get("/config", (req, res) => {
+  res.json({
+    apiKey: process.env.API_KEY
+  });
+});
 
 
 
