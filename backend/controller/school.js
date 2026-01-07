@@ -13,7 +13,7 @@ console.log(campus)
   const isRequestExist = await School.findOne({name , campus})
   if (isRequestExist) return res.status(403).json({ message: "School has been already registered" });
   var allowedPages = []
-  var schoolLinks = ['addclass','addsection' , 'addstudent' , 'addsubject' , 'addCampus' ,'studentlist','addteacher' , 'teacherlist','teacherSalary']
+  var schoolLinks = ['addclass','addsection' , 'addstudent' , 'addsubject' , 'addCampus' ,'studentlist','addteacher' , 'teacherlist','teacherSalary' ,'createVoucher', 'printVouchers' , 'stdlegderReport','CampusStdReport' ,'stdClassMigration' , 'receipt']
   var computerCourseLinks = ['addcomputercourse']
   var englishLangCourseLinks =['addenglangcourse']
 

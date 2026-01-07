@@ -155,7 +155,42 @@ const allLinks = {
     name: "Add User",
     file: "/user/userform.html",
     icon: "👤"
+  },
+
+  // ✅ VOUCHERS
+  createVoucher: {
+    name: "Create Voucher",
+    file: "/vouchers/vouchers.html",
+    icon: "🎟️"
+  },
+
+  printVouchers: {
+    name: "Print Vouchers",
+    file: "/vouchers/printVoucher.html",
+    icon: "🖨️"
+  },
+  stdlegderReport: {
+    name: "Ledger Report",
+    file: "/students/ledgerReport.html",
+    icon: "📒"
+  },
+  CampusStdReport: {
+    name: "Campus Std Report",
+    file: "/students/stdCampuswisereoprt.html",
+    icon: "📊"
+  },
+  stdClassMigration: {
+    name: "Student Migration",
+    file: "/students/stdClassMigration.html",
+    icon: "🔀"
+  },
+  receipt: {
+    name: "Receipt",
+    file: "/receipts/receipt.html",
+    icon: "🧾"
   }
+
+
 };
 
 /* --- categorized groups --- */
