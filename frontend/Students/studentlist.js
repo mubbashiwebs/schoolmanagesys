@@ -86,6 +86,7 @@ applyFilters()
 
           <th>Master ID</th>
           <th>Student Name</th>
+          <th>Father Name</th>
           <th>GR No</th>`;
 
       if (selectedTypes.includes("school")) {
@@ -100,7 +101,7 @@ applyFilters()
       if (selectedTypes.includes("tuition")) {
         headerHTML += `<th>Tuition</th>`;
       }
-        headerHTML += `<th>Status</th></tr>`;
+        headerHTML += `<th>Status</th>`;
       tableHead.innerHTML = headerHTML;
       headerHTML += `<th>Actions</th></tr>`;
       tableHead.innerHTML = headerHTML;
@@ -118,6 +119,7 @@ applyFilters()
 
           <td>${st.masterId || "N/A"}</td>
           <td>${st.name || "N/A"}</td>
+          <td>${st.fatherName || "N/A"}</td>
           <td>${[
             gr.school ? `School: ${gr.school}` : "",
   gr.computer ? `Computer: ${gr.computer}` : "",
@@ -384,15 +386,22 @@ function viewStudent(data) {
 }
 
 async function deleteStudent(id) {
-    const result = await Swal.fire({
-    title: 'Are you sure?',
-    text: "This action cannot be undone!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes, delete it!'
-  });
+ const result = await Swal.fire({
+  title: 'Are you sure?',
+  html: `
+    This will permanently delete the student and all associated records:<br>
+    <b>• Vouchers</b><br>
+    <b>• Receipts</b><br>
+    <b>• Related data</b><br><br>
+    <span style="color:red;">This action cannot be undone!</span>
+  `,
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#d33',
+  cancelButtonColor: '#3085d6',
+  confirmButtonText: 'Yes, delete it!'
+});
+
   if (!result.isConfirmed) return;
   await axios.delete(`http://localhost:3000/api/student/delete/${id}`);
   studentList = studentList.filter((st) => st._id !== id);
@@ -557,9 +566,86 @@ function applyFilters() {
 //     a.click();
 //   });
 
-  document.getElementById("exportBtn").addEventListener("click", () => {
-    const table = document.getElementById("myTable");
-    const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet 1" });
-    XLSX.writeFile(workbook, "table-data.xlsx");
-  })
+  // document.getElementById("exportBtn").addEventListener("click", () => {
+  //   const table = document.getElementById("myTable");
+  //   const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet 1" });
+  //   XLSX.writeFile(workbook, "table-data.xlsx");
+  // })
 
+const hasType = (student, type) => {
+   const seletedType = getSelectedTypes();
+  return seletedType.includes(type);
+}
+  document.getElementById("exportBtn").addEventListener("click", () => {
+const formattedData = studentList.map((s, index) => {
+  let row = {
+    "S.No": index + 1,
+    "Name": s.name || "",
+    "Father Name": s.fatherName || "",
+    "Phone": s.phone || "",
+    "Status": s.status || "",
+    "Address": s.address || "",
+    "Admission Types": (s.admissionTypes || []).join(", "),
+    "Master ID": s.masterId || "",
+    "Campus": s.campusId?.name || "",
+    "Email": s.email || "",
+    "Date of Birth": s.dob ? new Date(s.dob).toLocaleDateString() : "",
+    "Date of Admission": s.admissionDate ? new Date(s.admissionDate).toLocaleDateString() : "",
+   
+  };
+
+  /* ===================== 🏫 SCHOOL ===================== */
+  if (hasType(s, "school")) {
+    row["School GR No"] = s.grNumbers?.school || "";
+    row["School Class"] = s.class?.name || s.class || "";
+    row["School Section"] = s.section?.name || s.section || "";
+    row["Admission Class"] = s.admissionClass?.name || s.admissionClass || "";
+    row["Admission Section"] = s.admissionSection?.name || s.admissionSection || "";
+
+    row["School Original Fee"] = s.feeDetails?.school?.originalFee || 0;
+    row["School Discount"] = s.feeDetails?.school?.discount || 0;
+    row["School Payable Fee"] = s.feeDetails?.school?.payableFee || 0;
+  }
+
+  /* ===================== 📘 TUITION ===================== */
+  if (hasType(s, "tuition")) {
+    row["Tuition GR No"] = s.grNumbers?.tuition || "";
+    row["Coaching Class"] = s.coachingClass?.name || s.coachingClass || "";
+
+    row["Tuition Original Fee"] = s.feeDetails?.tuition?.originalFee || 0;
+    row["Tuition Discount"] = s.feeDetails?.tuition?.discount || 0;
+    row["Tuition Payable Fee"] = s.feeDetails?.tuition?.payableFee || 0;
+  }
+
+  /* ===================== 💻 COMPUTER ===================== */
+  if (hasType(s, "computer")) {
+    row["Computer GR No"] = s.grNumbers?.computer || "";
+    row["Computer Course"] = s.computerCourse?.name || s.computerCourse || "";
+    row["Computer Batch"] = s.computerCourseBatch?.name || s.computerCourseBatch || "";
+
+    row["Computer Original Fee"] = s.feeDetails?.computer?.originalFee || 0;
+    row["Computer Discount"] = s.feeDetails?.computer?.discount || 0;
+    row["Computer Payable Fee"] = s.feeDetails?.computer?.payableFee || 0;
+  }
+
+  /* ===================== 🇬🇧 ENGLISH ===================== */
+  if (hasType(s, "english")) {
+    row["English GR No"] = s.grNumbers?.english || "";
+    row["English Course"] = s.englishCourse?.name || s.englishCourse || "";
+    row["English Batch"] = s.engCourseBatch?.name || s.engCourseBatch || "";
+
+    row["English Original Fee"] = s.feeDetails?.english?.originalFee || 0;
+    row["English Discount"] = s.feeDetails?.english?.discount || 0;
+    row["English Payable Fee"] = s.feeDetails?.english?.payableFee || 0;
+  }
+
+  return row;
+});
+
+
+const worksheet = XLSX.utils.json_to_sheet(formattedData);
+const workbook = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
+XLSX.writeFile(workbook, "students-complete-record.xlsx");
+
+});

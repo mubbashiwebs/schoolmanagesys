@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Bulk Student Class Replace</title>
+<title>Bulk Fee Structure</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
@@ -110,7 +110,7 @@ tbody tr:hover {
 <div class="container">
   <h2>
     <i class="fa-solid fa-right-left"></i>
-    Bulk Student Class Migration
+    Bulk Student Fee Structure Update
   </h2>
 
   <!-- Dropdowns + Button -->
@@ -124,31 +124,39 @@ tbody tr:hover {
     <div class="form-group">
       <label>
         <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        From Class
+           Class
       </label>
-      <select id="fromClass">
+      <select id="Class">
         <option value="">Select Class</option>
       </select>
     </div>
 
-    <!-- Shift Icon in Center -->
-    <div style="display:flex;align-items:center;padding-top:22px;">
-      <i class="fa-solid fa-right-left" style="font-size:22px;color:black;"></i>
-    </div>
+    
+    <div class="form-group">
+      <label>
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+           Section
+      </label>
+      <select id="section">
+        <option value="">Select Section</option>
+        <option value="All">All</option>
 
+      </select>
+    </div>
+ 
     <div class="form-group">
       <label>
         <i class="fa-solid fa-rotate"></i>
-        Replace To Class
+        Fee Structure
       </label>
-      <select id="toClass">
-        <option value="">Select Class</option>
+      <select id="feeStr">
+        <option value="">Select Fee Structure</option>
       </select>
     </div>
 
-    <button class="action-btn" id="migrateButton">
+    <button class="action-btn" id="updateButton">
       <i class="fa-solid fa-arrows-rotate"></i>
-      Migrate Class
+      Update 
     </button>
   </div>
 
@@ -169,9 +177,7 @@ tbody tr:hover {
 <th><i class="fa-solid fa-percent"></i> Discount</th>
            <th><i class="fa-solid fa-money-bill-wave"></i>  Net Fee</th>
 <th><i class="fa-solid fa-money-bill-wave"></i> Fee Str</th>
-           <th class="s-cell"><i class="fa-solid fa-money-bill-wave"></i> New Class Fee</th>
-<th class="s-cell"><i class="fa-solid fa-percent"></i> New Discount</th>
-<th class="s-cell"><i class="fa-solid fa-receipt"></i> New Net Fee</th>
+          
       </tr>
     </thead>
     <tbody id="studentBody"></tbody>
@@ -181,80 +187,14 @@ tbody tr:hover {
 <script>
     var currentPage = null
       const user = JSON.parse(localStorage.getItem("userData")) || [];
+      console.log(user)
   const isSuperAdmin = user[0]?.designation === "supremeadmin";
-// ===== Dummy Data =====
-const classes = ['One', 'Two', 'Three', 'Four'];
 
-let students = [
-  { id:1, name:'Ali', gr:'101', class:'One' },
-  { id:2, name:'Ahmed', gr:'102', class:'One' },
-  { id:3, name:'Sara', gr:'201', class:'Two' },
-  { id:4, name:'Ayesha', gr:'202', class:'Two' },
-  { id:5, name:'Usman', gr:'301', class:'Three' }
-];
-
-// ===== Load Dropdowns =====
-const fromClass = document.getElementById('fromClass');
-const toClass = document.getElementById('toClass');
-
-
-
-// ===== Load Students =====
-fromClass.addEventListener('change', loadStudents);
-
-function loadStudents() {
-  const tbody = document.getElementById('studentBody');
-  tbody.innerHTML = '';
-
-  const selectedClass = fromClass.value;
-  const filtered = students.filter(s => s.class === selectedClass);
-
-  filtered.forEach(s => {
-    tbody.innerHTML += `
-      <tr>
-        <td><input type="checkbox" class="studentCheck" value="${s.id}"></td>
-        <td>${s.name}</td>
-        <td>${s.gr}</td>
-        <td>${s.class}</td>
-      </tr>
-    `;
-  });
-}
-
-// ===== Select All =====
-document.getElementById('selectAll').addEventListener('change', function(){
-  document.querySelectorAll('.studentCheck')
-    .forEach(cb => cb.checked = this.checked);
-});
-
-// ===== Replace Class =====
-function replaceClass() {
-  const newClass = toClass.value;
-  if (!newClass) {
-    alert('Please select replace class');
-    return;
-  }
-
-  const selected = document.querySelectorAll('.studentCheck:checked');
-
-  if (selected.length === 0) {
-    alert('Please select students');
-    return;
-  }
-
-  selected.forEach(cb => {
-    const student = students.find(s => s.id == cb.value);
-    student.class = newClass;
-  });
-
-  alert('Class replaced successfully');
-  loadStudents();
-}
 </script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src ="../global.js"></script>
 
-<script src="./stdClassMigration.js"></script>
+<script src="./bulkfeeStructure.js"></script>
 <script src="../dropdown.js"></script>
 </body>
 </html>

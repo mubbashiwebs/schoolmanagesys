@@ -57,19 +57,7 @@ function init() {
   // show campus if superadmin
   campusWrap.style.display = isSuperAdmin ? 'block' : 'none';
 
-  // populate dropdowns (from backend or mock)
-  //   if (USE_MOCK) {
-  //     populateCampuses(MOCK.campuses);
-  //     populateClasses(MOCK.classes);
-  //     populateCourses(MOCK.courses);
-  //     populateBatches(MOCK.batches);
-  //   } else {
-  //     // try to fetch lists from assumed endpoints; if fail, fallback graceful
-  //     fetch('/api/v1/meta/campuses').then(r => r.json()).then(r => populateCampuses(r)).catch(_ => {});
-  //     fetch('/api/v1/meta/classes').then(r => r.json()).then(r => populateClasses(r)).catch(_ => {});
-  //     fetch('/api/v1/meta/courses').then(r => r.json()).then(r => populateCourses(r)).catch(_ => {});
-  //     fetch('/api/v1/meta/batches').then(r => r.json()).then(r => populateBatches(r)).catch(_ => {});
-  //   }
+
 
   setupFeeTypeListeners();
   setupSelectionListeners();
@@ -247,8 +235,8 @@ let allCoachingClasses = [];
 let allSections = [];
 let allCourses = [];
 let engCourses = [];
-let schoolList = [];
-var schoolDropdown
+
+
 // 🔽 Inject dropdown if superadmin
 
 // 🟢 Fetch and populate schools dropdown
@@ -287,7 +275,7 @@ async function loadCampuses() {
 
 
     try {
-      const res = await axios.get(`http://localhost:3000/api/campus/getBySchool/${user[0].school._id}`);
+      const res = await api.get(`/campus/getBySchool`);
 
       campusList = res.data;
       console.log(campusList)
@@ -300,7 +288,7 @@ async function loadCampuses() {
         campusSelect.appendChild(option);
       });
     } catch (err) {
-      console.error("Error fetching schools:", err);
+      console.error("Error fetching campus:", err.response?.data || err.message);
     }
   }
 }
@@ -337,8 +325,8 @@ async function loadEngCourses() {
   if (!campusId) return;
 
   try {
-    const url = `http://localhost:3000/api/english-courses/getByCampus/${user[0].school._id}/${campusId}`;
-    const res = await axios.get(url);
+    const url = `/english-courses/getByCampus/${campusId}`;
+    const res = await api.get(url);
     engCourses = res.data.data;
     console.log(engCourses)
     engcourseSelect.innerHTML = `<option value="">Select Course</option>`;
@@ -350,7 +338,7 @@ async function loadEngCourses() {
       engcourseSelect.appendChild(option);
     });
   } catch (err) {
-    console.error("Error loading computer courses:", err);
+    console.error("Error loading english courses:", err);
   }
 }
 
@@ -364,8 +352,8 @@ async function loadClasses() {
 
 
   try {
-    const url = `http://localhost:3000/api/class/getByCampus/${user[0].school._id}/${campusId}`;
-    const res = await axios.get(url);
+    const url = `/class/getByCampus/${campusId}`;
+    const res = await api.get(url);
     allClasses = res.data.data;
     classSelect.innerHTML = `<option value="">Select Class</option>`;
     // currentClass.innerHTML = `<option value="">Select Class</option>`;
@@ -392,8 +380,8 @@ async function loadCoachingClasses() {
 
 
   try {
-    const url = `http://localhost:3000/api/coachingClass/getByCampus/${user[0].school._id}/${campusId}`;
-    const res = await axios.get(url);
+    const url = `/coachingClass/getByCampus/${campusId}`;
+    const res = await api.get(url);
     allCoachingClasses = res.data.data;
     coachingClassSelect.innerHTML = `<option value="">Select Class</option>`;
     // tuitionclass.innerHTML = `<option value="">Select Class</option>`;
@@ -411,40 +399,14 @@ async function loadCoachingClasses() {
     console.error("Error loading classes:", err);
   }
 }
-// Load Sections (independent of class)
-// async function loadSections() {
-//   if (!campusId) return;
 
-//   try {
-//     const url =  `http://localhost:3000/api/section/getByCampus/${user[0].school._id}/${campusId}`;
-//     const res = await axios.get(url);
-//     allSections = res.data.data;
-//     sectionSelect.innerHTML = `<option value="">Select Section</option>`;
-//            currentSection.innerHTML = `<option value="">Select Section</option>`;
-//     allSections.forEach(sec => {
-//       const option = document.createElement("option");
-//       option.value = sec._id;
-//       option.textContent = sec.name;
-//       sectionSelect.appendChild(option);
 
-//        const option2 = document.createElement("option");
-//       option2.value = sec._id;
-//       option2.textContent = sec.name;
-//       currentSection.appendChild(option2);
-//     });
-
-//   } catch (err) {
-//     console.error("Error loading sections:", err);
-//   }
-// }
-
-// Load Computer Courses
 async function loadCourses() {
   if (!campusId) return;
 
   try {
-    const url = `http://localhost:3000/api/course/getbyCampus/${user[0].school._id}/${campusId}`;
-    const res = await axios.get(url);
+    const url = `/course/getbyCampus/${campusId}`;
+    const res = await api.get(url);
     allCourses = res.data.data;
     courseSelect.innerHTML = `<option value="">Select Course</option>`;
     allCourses.forEach(course => {
@@ -515,13 +477,13 @@ var allComputerBatches = []
 async function loadComputerBatches() {
   if (!campusId) return;
   try {
-    const url = `http://localhost:3000/api/batch/getAllComputerBatchesByCampus/${user[0].school._id}/${campusId}`;
-    const res = await axios.get(url);
+    const url = `/batch/getAllComputerBatchesByCampus/${campusId}`;
+    const res = await api.get(url);
     allComputerBatches = res.data.data;
     console.log(allComputerBatches)
 
   } catch (err) {
-    console.error("Error loading computer courses:", err);
+    console.error("Error loading computer batches:", err.response?.data?.message || err.message);
   }
 }
 
@@ -529,13 +491,13 @@ var allEnglishBatches = []
 async function loadEnglishBatches() {
   if (!campusId) return;
   try {
-    const url = `http://localhost:3000/api/batch/getAllEnglishBatchesByCampus/${user[0].school._id}/${campusId}`;
-    const res = await axios.get(url);
+    const url = `/batch/getAllEnglishBatchesByCampus/${campusId}`;
+    const res = await api.get(url);
     allEnglishBatches = res.data.data;
 
 
   } catch (err) {
-    console.error("Error loading computer courses:", err);
+    console.error("Error loading english batches:", err.response?.data?.message || err.message);
   }
 }
 
@@ -692,7 +654,7 @@ async function onGenerate(studentId = null) {
     return toast('Select English course and batch', 'warning');
   }
 
-  payload.schoolId = user[0].school._id;
+ 
   // show loader
   showLoader(true);
   // noResults.style.display = 'none';
@@ -700,7 +662,7 @@ async function onGenerate(studentId = null) {
 
   try {
     studentResults.innerHTML = '';
-    let res = await axios.post('http://localhost:3000/api/voucher/generate', payload)
+    let res = await api.post('/voucher/generate', payload)
     console.log(res.data)
     if (res.data.students?.length > 0) {
       console.log(res.data.students)
@@ -724,7 +686,7 @@ async function onGenerate(studentId = null) {
     // renderResults(responseJson);
     toast('Voucher generation finished', 'success');
   } catch (err) {
-    console.error(err);
+    console.error(err.response?.data.message || err.message);
     toast('Failed to generate vouchers: ' + err.message, 'danger', 7000);
   } finally {
     showLoader(false);
@@ -733,37 +695,7 @@ async function onGenerate(studentId = null) {
 
 }
 
-// function renderResults(resp) {
-//     console.log(resp)
-//   resultsTable.innerHTML = '';
-//   if (!resp || !Array.isArray(resp.created) || resp.created.length === 0) {
-//     noResults.style.display = 'block';
-//     return;
-//   }
-//   noResults.style.display = 'none';
 
-//   // resp.created array: each item may be { student, voucherId, skipped, reason, amount, studentName, gr }
-//   resp.created.forEach(item => {
-//     // in real server you probably only get student id + voucher id + skipped; so UI may need another call to fetch student details
-//     const tr = document.createElement('tr');
-//     const studentName = item.studentName || item.studentName || item.student || 'Student';
-//     const gr = item.gr || item.grNumber || '';
-//     const feeType = document.querySelector('input[name="feeType"]:checked').value;
-//     const month = document.getElementById('monthInput').value;
-//     const amount = (typeof item.amount !== 'undefined') ? item.amount : (item.skipped ? '-' : 'See voucher');
-//     const status = item.skipped ? `<span class="badge bg-secondary">Skipped</span><br/><small>${escapeHtml(item.reason||'')}</small>` : `<span class="badge bg-success">Created</span>`;
-
-//     tr.innerHTML = `
-//       <td>${escapeHtml(studentName)}</td>
-//       <td>${escapeHtml(gr)}</td>
-//       <td>${escapeHtml(feeType)}</td>
-//       <td>${escapeHtml(month)}</td>
-//       <td>${escapeHtml(String(amount))}</td>
-//       <td>${status}</td>
-//     `;
-//     resultsTable.appendChild(tr);
-//   });
-// }
 
 /* Utility helpers */
 function escapeHtml(s) {

@@ -3,7 +3,7 @@
     // Configuration & state
     // -------------------------
     const user = JSON.parse(localStorage.getItem("userData")) || [];
-    const isSuperAdmin = user[0]?.designation === "superemeadmin";
+    const isSuperAdmin = user[0]?.designation === "supremeadmin";
     let currentCampusId = user[0]?.campus?._id || '';
     let allotments = [];
     let originalAllotments = [];
@@ -12,11 +12,11 @@
     let subjectsList = [];
 
     // API endpoints (from your confirmation)
-    const API_CLASS = (schoolId, campusId) => `http://202.143.127.181:3001/api/class/getByCampus/${schoolId}/${campusId}`;
-    const API_SECTION = (schoolId, campusId) => `http://202.143.127.181:3001/api/section/getByCampus/${schoolId}/${campusId}`;
-    const API_SUBJECT = (schoolId, campusId) => `http://202.143.127.181:3001/api/subject/getByCampus/${schoolId}/${campusId}`;
-    const API_TEACHER = `http://202.143.127.181:3001/api/teacher/getById`;
-    const API_SUBJECT_ALLOT = "http://202.143.127.181:3001/api/subject-allotments";
+    const API_CLASS = (schoolId, campusId) => `/class/getByCampus/${campusId}`;
+    const API_SECTION = (schoolId, campusId) => `/section/getByCampus/${campusId}`;
+    const API_SUBJECT = (schoolId, campusId) => `/subject/getByCampus/${campusId}`;
+    const API_TEACHER = `/teacher/getById`;
+    const API_SUBJECT_ALLOT = "/subject-allotments";
 
     // Elements
     const allotmentTbody = document.getElementById("allotmentTableBody");
@@ -93,9 +93,9 @@
     async function loadDropdownsForCampus(schoolId, campusId, forModal = true) {
       try {
         const [cRes, sRes, subRes] = await Promise.all([
-          axios.get(API_CLASS(schoolId, campusId)),
-          axios.get(API_SECTION(schoolId, campusId)),
-          axios.get(API_SUBJECT(schoolId, campusId)),
+          api.get(API_CLASS(schoolId, campusId)),
+          api.get(API_SECTION(schoolId, campusId)),
+          api.get(API_SUBJECT(schoolId, campusId)),
         ]);
 
         classesList = cRes.data?.data ?? [];
@@ -122,8 +122,9 @@
       try {
         const schoolId = user[0]?.school?._id;
         if (!schoolId) return;
-        const res = await axios.get(`http://202.143.127.181:3001/api/campus/getBySchool/${schoolId}`);
+        const res = await api.get(`/campus/getBySchool`);
         const campuses = res.data ?? [];
+        console.log("Loaded campuses for superadmin:", campuses);
         // populate top and modal campus dropdown
         fillSelect(campusDropdown, campuses, "name");
         fillSelect(modalCampusDropdown, campuses, "name");
@@ -137,12 +138,12 @@
       try {
         toggleGlobalSpinner(true);
         // Optionally apply campus filter server-side if available
-        const res = await axios.get(`${API_SUBJECT_ALLOT}`);
+        const res = await api.get(`${API_SUBJECT_ALLOT}/`);
         allotments = res.data?.data ?? res.data ?? [];
         originalAllotments = [...allotments];
         renderAllotmentTable();
       } catch (err) {
-        console.error("Failed to load allotments:", err);
+        console.error("Failed to load allotments:", err.response.data.error || err);
         showToast("Failed to load allotments", false);
       } finally {
         toggleGlobalSpinner(false);
@@ -211,10 +212,10 @@
       try {
         const editId = form.editId;
         if (editId) {
-          const res = await axios.put(`${API_SUBJECT_ALLOT}/${editId}`, payload);
+          const res = await api.put(`${API_SUBJECT_ALLOT}/${editId}`, payload);
           showToast(res.data?.message || "Allotment updated");
         } else {
-          const res = await axios.post(`${API_SUBJECT_ALLOT}`, payload);
+          const res = await api.post(`${API_SUBJECT_ALLOT}`, payload);
           showToast(res.data?.message || "Allotment created");
         }
         form.reset();
@@ -222,7 +223,7 @@
         modal.hide();
         await loadAllotments();
       } catch (err) {
-        console.error("Save allotment error:", err);
+        console.error("Save allotment error:", err.response.data.message || err.message  );
         showToast("Failed to save allotment", false);
       } finally {
         toggleFormLoading(false);
@@ -232,7 +233,7 @@
     window.editAllotment = async function(id) {
       try {
         toggleGlobalSpinner(true);
-        const res = await axios.get(`${API_SUBJECT_ALLOT}/${id}`);
+        const res = await api.get(`${API_SUBJECT_ALLOT}/${id}`);
         const allot = res.data?.data ?? res.data;
 
         // If superadmin, set campus in modal and reload dropdowns for that campus
@@ -268,7 +269,7 @@
       if (!confirm("Are you sure you want to delete this allotment?")) return;
       try {
         toggleGlobalSpinner(true);
-        const res = await axios.delete(`${API_SUBJECT_ALLOT}/${id}`);
+        const res = await api.delete(`${API_SUBJECT_ALLOT}/${id}`);
         showToast(res.data?.message || "Deleted successfully");
         await loadAllotments();
       } catch (err) {
@@ -289,8 +290,8 @@
       try {
         toggleGetTeacherLoading(true);
         // If your teacher endpoint requires school/campus in body, add them as earlier implementation did
-        const payload = { id: idVal };
-        const res = await axios.post(API_TEACHER, payload);
+        const payload = { staffCode: idVal };
+        const res = await api.post(API_TEACHER, payload);
         const teacher = res.data?.data ?? res.data;
         if (!teacher) {
           showToast("Teacher not found", false);
@@ -300,7 +301,7 @@
         teacherNameInput.value = `${teacher.name || teacher.teacherName || ''} ${teacher.fatherName || ''}`.trim();
         showToast("Teacher loaded");
       } catch (err) {
-        console.error("Failed to get teacher:", err);
+        console.error("Failed to get teacher:", err.message || err.response.data.message);
         showToast("Failed to get teacher", false);
       } finally {
         toggleGetTeacherLoading(false);
@@ -384,6 +385,7 @@
       }
 
       // display superadmin controls if needed
+      console.log(isSuperAdmin)
       if (isSuperAdmin) {
         campusSelectBoxTop.style.display = 'block';
         campusDropdownContainer.style.display = 'block';

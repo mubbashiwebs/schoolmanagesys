@@ -17,25 +17,8 @@
     let editingId = null;
     let originalCampusList = [];
     let campusList = [];
-    let schoolList = [];
 
-    // const sidebar = document.getElementById("sidebar");
-    // const allLinks = {
-    //   addcampus: { name: "Add Campus", file: "campusform.html", active: true },
-    //   addclass: { name: "Add Class", file: "classform.html", active: false },
-    //   addsection: { name: "Add Section", file: "section.html", active: false }
-    // };
 
-    // function renderSidebar() {
-    //   sidebar.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
-    //   if (isSuperAdmin) sidebar.innerHTML += `<a href="schoolform.html">Add School</a>`;
-    //   for (const key in allLinks) {
-    //     if (isSuperAdmin || user[0].allowedPages.includes(key)) {
-    //       sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active ? 'active' : ''}">${allLinks[key].name}</a>`;
-    //     }
-    //   }
-    //   sidebar.innerHTML += `<a href="#">Logout</a>`;
-    // }
 
     function showAlert(message, type = "success") {
       Swal.fire({
@@ -57,13 +40,13 @@
       try {
         let res;
         
-         res = await axios.get(`${backendUrl}/api/campus/getBySchool/${user[0].school._id}`);
+         res = await api.get(`/campus/getBySchool`);
         console.log(res.data)
         campusList = res.data;
         originalCampusList = [...campusList];
         renderTable();
       } catch (err) {
-        console.error("Error loading campuses:", err);
+       
       }
     }
 
@@ -106,17 +89,16 @@
       console.log(name,address,email,contact)
       if (!name || !address || !code || !email || !contact || !principalName) return showAlert("Please fill all fields", "error");
 
-      var schoolId = user[0].school._id;
       try {
         if (isEditing) {
-          const res = await axios.put(`${backendUrl}/api/campus/update/${editingId}`, { name, address, code, schoolId , contact,email,principalName });
+          const res = await api.put(`/campus/update/${editingId}`, { name, address, code,  contact,email,principalName });
           console.log(res)
           const index = campusList.findIndex(c => c._id === editingId);
           campusList[index] = res.data.campus;
           originalCampusList[index] = res.data.campus;
           showAlert("Campus updated successfully");
         } else {
-          const res = await axios.post(`${backendUrl}/api/campus/add`, { name, address, code, schoolId , contact,email,principalName , createdBy});
+          const res = await api.post(`/campus/add`, { name, address, code,  contact,email,principalName , createdBy});
           if (res.data.campus && res.data.campus._id) {
             console.log('reach')
             campusList.push(res.data.campus);
@@ -138,7 +120,7 @@
     window.deleteCampus = async function (id) {
       if (!confirm("Are you sure you want to delete this campus?")) return;
       try {
-        await axios.delete(`${backendUrl}/api/campus/delete/${id}`);
+        await api.delete(`/campus/delete/${id}`);
         campusList = campusList.filter(c => c._id !== id);
         originalCampusList = originalCampusList.filter(c => c._id !== id);
         showAlert("Campus deleted successfully");
@@ -160,7 +142,7 @@
       campusContactInput.value = campus.contact;  
       campusprincipalNameInput.value = campus.principalName;
       campusCodeInput.value = campus.code;
-      // if (isSuperAdmin) document.getElementById("schoolDropdown").value = campus.schoolId?._id || "";
+      
       document.querySelector("#addCampusModal .modal-title").innerText = "Update Campus";
       addButton.innerText = "Update Campus";
       modal.show();
@@ -173,7 +155,4 @@
       renderTable();
     });
 
-    // School dropdown filter for superadmin
-    
-
-    // renderSidebar();
+   

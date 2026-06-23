@@ -30,9 +30,9 @@
 
       async function loadSubjects() {
         const url = isSuperAdmin 
-          ? `http://localhost:3000/api/subject/getBySchool/${user[0].school._id}` 
-          : `http://localhost:3000/api/subject/getbyCampus/${user[0].school._id}/${user[0].campus._id}`;
-        const res = await axios.get(url);
+          ? `/subject/getBySchool` 
+          : `/subject/getbyCampus/${user[0].campus._id}`;
+        const res = await api.get(url);
         subjectList = res.data.data;
         filteredSubjects = [...subjectList];
         renderTable();
@@ -87,14 +87,13 @@
         const name = document.getElementById("subjectName").value.trim();
         const campusId = isSuperAdmin ? document.getElementById("campusDropdown").value : user[0].campus._id;
         if (!name || !campusId) return showToast("Please fill all fields", false);
-        const schoolId = user[0].school._id;
-    const createdBy = user[0]._id
+       
 
-        const body = { name, campusId, schoolId ,createdBy };
+        const body = { name, campusId};
 
         try {
           if (isEditing) {
-            const res = await axios.put(`http://localhost:3000/api/subject/update/${editingId}`, body);
+            const res = await api.put(`/subject/update/${editingId}`, body);
             const updated = res.data.data;
             // if (!updated || !updated._id) return showToast(res.data.message , false);
             const idx = subjectList.findIndex(c => c._id === editingId);
@@ -102,7 +101,7 @@
             filteredSubjects[idx] = updated;
             showToast(res.data.message || "Subject updated successfully");
           } else {
-            const res = await axios.post("http://localhost:3000/api/subject/add", body);
+            const res = await api.post("/subject/add", body);
             const added = res.data.data;
             if (!added || !added._id) return showToast(res.data.message || "Add failed", "bg-danger");
             subjectList.push(added);
@@ -151,7 +150,7 @@
   if (!result.isConfirmed) return;
   
         try {
-          var res =await axios.delete(`http://localhost:3000/api/subject/delete/${id}`);
+          var res =await api.delete(`/subject/delete/${id}`);
           subjectList = subjectList.filter(cls => cls._id !== id);
           filteredSubjects = [...subjectList];
           renderTable();

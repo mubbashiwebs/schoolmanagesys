@@ -223,9 +223,12 @@ const studentSchema = new mongoose.Schema({
 
       educationLevel:{
         type:String
+      },
+      feeStructure:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "FeeStructure",
       }
-
-});
+}, { timestamps: true });
 
 const Student = mongoose.model("Student", studentSchema);
 export default Student;

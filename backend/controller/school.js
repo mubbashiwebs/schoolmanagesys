@@ -1,10 +1,11 @@
-// import school from "../models/school.js";
+import jwt from "jsonwebtoken"
+import dotenv from "dotenv"
 import Campus from "../models/campus.js";
 import School from "../models/school.js";
 import User from "../models/user.js";
 import UserForReq from "../models/userforreq.js";
 import { sendSchoolStatusEmail } from "../utils/sendMail.js";
-
+dotenv.config()
 export const requestSchool = async (req, res) => {
   var { userId, name, address, contact , features, password , campus } = req.body;
 console.log(campus)
@@ -75,18 +76,17 @@ console.log(campus)
     school:newSchool._id,
     campus:newCampus._id
     
-
   }
 
 
   const newUser = new User(userData)
   await newUser.save()
 
-  
-
-
-
-
+  const token = jwt.sign({id:newUser._id,schoolId : newUser.school},process.env.JWT_SECRET,{expiresIn:"10m"})
+  res.cookie("accessToken", token ,{
+      httpOnly: true,
+      maxAge: 10 * 60 * 1000,
+  })
   res.json({ message: "Your are successfully registered." });
 
 };

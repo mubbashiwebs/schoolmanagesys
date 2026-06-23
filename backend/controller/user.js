@@ -1,4 +1,7 @@
 import User from "../models/user.js";
+import dotenv from "dotenv"
+import jwt from "jsonwebtoken";
+dotenv.config()
 export const addUser = async (req, res) => {
   console.log(req.body)
   try {
@@ -56,27 +59,81 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-export const loginUser = async (req,res)=>{
-    console.log(req.body)
-    try {
-        const user = await User.find({email:req.body.email}).populate('school').populate('campus', 'name');
-        if(user.length >0){
-            console.log(user)
-            if(user[0].password === req.body.password){
-                res.json({data:user,message:'Suceesfully login'})
-            }
-            else{
-                res.json({data:null, message:'incorrect password'})
-            }
-        }
-        else{
-                res.json({data:null, message:'incorrect credentials'})
-        }
-    } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+// export const loginUser = async (req,res)=>{
+//     console.log(req.body)
+//     try {
+//         const user = await User.find({email:req.body.email}).populate('school').populate('campus', 'name');
+//         if(user.length >0){
+//             console.log(user)
+//             if(user[0].password === req.body.password){
+//                 const token = jwt.sign({id:user._id,schoolId : user.school._id},process.env.JWT_SECRET,{expiresIn:"10m"})
+//                 res.cookie("accessToken", token ,{
+//                     httpOnly: true,
+//                     maxAge: 10 * 60 * 1000,
+//                 })
+               
+//                 res.json({data:user,message:'Suceesfully login'})
+//             }
+//             else{
+//                 res.json({data:null, message:'incorrect password'})
+//             }
+//         }
+//         else{
+//                 res.json({data:null, message:'incorrect credentials'})
+//         }
+//     } catch (error) {
+//     res.status(500).json({ message: 'Server error', error });
         
+//     }
+// }
+
+/* ================= LOGIN ================= */
+export let loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email }).populate('school').populate('campus', 'name');
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Invalid email" });
     }
-}
+
+    const match = user.password == password;
+    console.log(`Password matching : ${match}`);
+    
+    if (!match) {
+      return res.status(400).json({ success: false, message: "Invalid password" });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        schoolId: user.school?._id || null,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "10d" }
+    );
+
+// userController.js
+res.cookie("aToken", token, {
+  httpOnly: true,
+  secure: false,
+  sameSite: 'lax',
+  maxAge: 10 * 24 * 60 * 60 * 1000,
+  path: '/'
+  // domain: 'localhost' - ye line remove kar do
+});
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: [user], // array ki zarurat nahi
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 export const editUser = async (req,res)=>{
   try {
@@ -90,3 +147,13 @@ export const editUser = async (req,res)=>{
     res.status(500).json({message:error.message})
   }
 }
+
+export const getUser = async (req, res) => {  
+  try {
+    const user = req.user;
+    console.log('User data:', user)
+    res.status(200).json({ data: user });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};

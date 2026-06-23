@@ -1,23 +1,11 @@
     let isEditing = false;
-let editingId = null;
+    let editingId = null;
 
     const user = JSON.parse(localStorage.getItem("userData")) || [];
     const isSuperAdmin = user[0]?.designation === "supremeadmin";
     const adminTh = document.getElementById("adminth");
 
-    // const sidebar d-md-block d-none = document.getElementById("sidebar d-md-block d-none");
-    // const allLinks = {
-    //   addclass: { name: "Add Class", file: "classform.html" },
-    //   addsection: { name: "Add Section", file: "section.html" },
-    //   addcomputercourse: { name: "Add Computer Course", file: "compcourse.html" },
-    //   addenglangcourse: { name: "Add English lang Course", file: "englangcourse.html", active: true },
-    //   addstudent: { name: "Student Form", file: "student.html" },
-    //   studentlist: { name: "Student List", file: "studentlist.html" },
-    //   addteacher: { name: "Teacher Form", file: "teacher.html" },
-    //   teacherlist: { name: "Teacher List", file: "teacherlist.html" },
-    //   teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" },
-    //   adduser: { name: "Add User", file: "userform.html" }
-    // };
+
 
     function showToast(message, bg = 'bg-success') {
       const toast = document.getElementById("toastMessage");
@@ -28,64 +16,17 @@ let editingId = null;
       new bootstrap.Toast(toast).show();
     }
 
-    // function rendersidebar d-md-block d-none(user) {
-    //   sidebar d-md-block d-none.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
-    //   if (isSuperAdmin) sidebar d-md-block d-none.innerHTML += `<a href="campusform.html">Add campus</a>`;
-    //   for (const key in allLinks) {
-    //     const item = allLinks[key];
-    //     const allowed = isSuperAdmin || user[0].allowedPages.includes(key);
-    //     if (allowed) sidebar d-md-block d-none.innerHTML += `<a href="${item.file}" class="${item.active ? 'active' : ''}">${item.name}</a>`;
-    //     else if (item.active) window.location.href = 'Dashboard.html';
-    //   }
-    //   sidebar d-md-block d-none.innerHTML += `<a href="#">Logout</a>`;
-    // }
 
     if (user.length <= 0) window.location.href = 'Dashboard.html';
     else {
-      // rendersidebar d-md-block d-none(user);
-      let  courseList = [], filteredCourses = [];
-      // const campuseselectBox1 = document.getElementById("campuseselectBox1");
-      // const campuseselectBox2 = document.getElementById("campuseselectBox2");
+      
       const courseTableBody = document.querySelector("#courseTable tbody");
       const searchInput = document.getElementById("searchCourse");
       const form = document.getElementById("courseForm");
 
-    //   function rendercampusDropdown(selectBox, id) {
-    //     const label = document.createElement("label");
-    // label.textContent = "Select campus";
-    // label.setAttribute("for", "campusDropdown");
-    // label.className = "form-label";
-    //     const dropdown = document.createElement("select");
-    //     dropdown.className = "form-select";
-    //     dropdown.id = id;
-    //     const defaultOpt = document.createElement("option");
-    //     defaultOpt.value = "";
-    //     defaultOpt.textContent = "Select campus";
-    //     dropdown.appendChild(defaultOpt);
-    //     campusList.forEach(campus => {
-    //       const opt = document.createElement("option");
-    //       opt.value = campus._id;
-    //       opt.textContent = campus.name;
-    //       dropdown.appendChild(opt);
-    //     });
-    //     selectBox.innerHTML = "";
-    //     selectBox.appendChild(label);
-    //     selectBox.appendChild(dropdown);
-    //   }
-
-    //   async function loadcampuses() {
-    //     const res = await axios.get("${backendUrl}/api/campus/get");
-    //     campusList = res.data.data;
-    //     if (isSuperAdmin) {
-    //       rendercampusDropdown(campuseselectBox1, "campusDropdownFilter");
-    //       rendercampusDropdown(campuseselectBox2, "campusDropdownForm");
-    //       document.getElementById("adminth").style.display = "table-cell";
-    //     }
-    //   }
-
       async function loadCourses() {
-        const url = isSuperAdmin ? `${backendUrl}/api/english-courses/school/${user[0].school._id}` : `${backendUrl}/api/english-courses/getByCampus/${user[0].school._id}/${user[0].campus._id}`;
-        const res = await axios.get(url);
+        const url = isSuperAdmin ? `/english-courses/school` : `/english-courses/getByCampus/${user[0].campus._id}`;
+        const res = await api.get(url);
         courseList = res.data.data;
         filteredCourses = [...courseList];
         console.log(courseList)
@@ -138,16 +79,16 @@ let editingId = null;
   const name = document.getElementById("courseName").value.trim();
 
   const campusId = isSuperAdmin ? document.getElementById("campusDropdown").value : user[0].campus._id;
-    const createdBy = user[0]._id
+   
 
   if (!name  || !campusId ) return showToast("Please fill all fields", "bg-danger");
-        var schoolId = user[0].school._id;
-  const body = { name, campusId, schoolId , createdBy };
+        
+  const body = { name, campusId  };
 
   try {
     if (isEditing) {
       // 🔄 UPDATE
-      const res = await axios.put(`${backendUrl}/api/english-courses/update/${editingId}`, body);
+      const res = await api.put(`/english-courses/update/${editingId}`, body);
       const updated = res.data.data;
 
       if (!updated || !updated._id) return showToast(res.data.message || "Update failed", "bg-danger");
@@ -159,7 +100,7 @@ let editingId = null;
       showToast(res.data.message || "Course updated successfully");
     } else {
       // ➕ ADD
-      const res = await axios.post(`${backendUrl}/api/english-courses/add`, body);
+      const res = await api.post(`/english-courses/add`, body);
       const added = res.data.data;
 
       if (!added || !added._id) return showToast(res.data.message || "Add failed", "bg-danger");
@@ -183,26 +124,6 @@ let editingId = null;
     showToast(err.response?.data?.message || "Server error", "bg-danger");
   }
 });
-// async function fillBatchDropdown(campusId) {
-//     if (isSuperAdmin) {
-//         console.log(campusId)
-//         res = await axios.get(`${backendUrl}/api/batch/getByCampus/${user[0].school._id}/${campusId}`);
-//         var batchData = res.data.data;
-// const batchDropdown = document.getElementById("batchDropdown");
-//         batchDropdown.innerHTML = "";
-//         const defaultOpt = document.createElement("option");
-//         defaultOpt.value = "";
-//         defaultOpt.textContent = "Select Batch";
-//         batchDropdown.appendChild(defaultOpt);
-
-//         batchData.forEach(batch => {
-//             const opt = document.createElement("option");
-//             opt.value = batch._id;
-//             opt.textContent = batch.name;
-//             batchDropdown.appendChild(opt);
-//         });
-// }
-//     }
 
 
 
@@ -231,7 +152,7 @@ window.editCourse = async function (id) {
       window.deleteCourse = async (id) => {
         if (!confirm("Are you sure you want to delete this course?")) return;
         try {
-          await axios.delete(`${backendUrl}/api/english-courses/delete/${id}`);
+          await api.delete(`/english-courses/delete/${id}`);
           courseList = courseList.filter(cls => cls._id !== id);
           filteredCourses = [...courseList];
           renderTable();
@@ -251,6 +172,5 @@ document.getElementById("courseModal").addEventListener("hidden.bs.modal", close
   document.getElementById("courseModalLabel").textContent = "Add New campus";
 }
 
-      // loadcampuses();
       loadCourses();
     }

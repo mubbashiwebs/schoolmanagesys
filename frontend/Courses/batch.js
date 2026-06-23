@@ -37,15 +37,16 @@
     window.addEventListener("DOMContentLoaded", loadBatches);
 
     async function loadBatches() {
-      console.log(user[0].school._id)
+    
       try {
         let res;
         if (isSuperAdmin) {
           console.log('super')
-          res = await axios.get(`${backendUrl}/api/batch/all/${user[0].school._id}`);
+          res = await api.get(`/batch/all`);
+          console.log(res)
         } else {
           console.log('working')
-          res = await axios.get(`${backendUrl}/api/batch/getByCampus/${user[0].school._id}/${user[0].campus._id}`);
+          res = await api.get(`/batch/getByCampus/${user[0].campus._id}`);
         }
         batchList = res.data.data;
         originalBatchList = [...batchList];
@@ -64,11 +65,11 @@
           const row = document.createElement("tr");
           row.innerHTML = `
             <td>${i + 1}</td>
-            <td>${batch.name}</td>
+            <td>${batch?.name}</td>
             <td>${batch.timings}</td>
             <td>${batch.fee}</td>
             <td>${batch.courseType}</td>
-            <td>${batch.courseName.name}</td>
+            <td>${batch.courseName?.name || 'N/A'}</td>
             ${isSuperAdmin ? `<td>${batch.campusId?.name || 'N/A'}</td>` : ''}
             <td>
               <button class="btn btn-sm btn-info me-1" onclick="editBatch('${batch._id}')">✏️</button>
@@ -95,7 +96,7 @@ const result = await Swal.fire({
   if (!result.isConfirmed) return;
 
       try {
-        const res = await axios.delete(`${backendUrl}/api/batch/delete/${id}`);
+        const res = await api.delete(`/batch/delete/${id}`);
         batchList = batchList.filter(b => b._id !== id);
         originalBatchList = originalBatchList.filter(b => b._id !== id);
         showToast(res.data.message || "Deleted successfully");
@@ -122,7 +123,7 @@ const result = await Swal.fire({
     const createdBy = user[0]._id
 
       let campusId;
-      let schoolId = user[0]?.school?._id;
+
       if (isSuperAdmin) {
         const dropdown = document.getElementById("campusDropdown");
         campusId = dropdown.value;
@@ -151,17 +152,19 @@ const result = await Swal.fire({
 
       try {
         if (isEditing) {
-          const res = await axios.put(`${backendUrl}/api/batch/update/${editingId}`, {
-            name, timings, fee, courseType, courseName, campusId, schoolId
+          console.log(courseName)
+          const res = await api.put(`/batch/update/${editingId}`, {
+            name, timings, fee,   courseType, courseName, campusId
           });
           const { data, message } = res.data;
           const index = batchList.findIndex(s => s._id === editingId);
+          console.log(data)
           batchList[index] = data;
           originalBatchList[index] = data;
           showToast(message || "Batch updated successfully");
         } else {
-          const res = await axios.post(`${backendUrl}/api/batch/add`, {
-            name, timings, fee, courseType, courseName, campusId, schoolId , createdBy
+          const res = await api.post(`/batch/add`, {
+            name, timings, fee, courseType, courseName, campusId , createdBy
           });
           const { data, message } = res.data;
           console.log(data ,message)
@@ -181,7 +184,7 @@ const result = await Swal.fire({
 
         renderTable();
       } catch (err) {
-        console.error("Error adding batch:", err);
+        console.error("Error adding batch:", err.response?.data?.message || err.message);
         showToast(err.response?.data?.message || "Failed to add batch", false);
       }
     });
@@ -260,13 +263,13 @@ const result = await Swal.fire({
     }
 
     // API endpoints
-    const computerCourseApi = `${backendUrl}/api/course/getbyCampus/${user[0].school._id}/${user[0].campus?._id}`;
-    const englishCourseApi = `${backendUrl}/api/english-courses/getByCampus/${user[0].school._id}/${user[0].campus?._id}`;
+    const computerCourseApi = `/course/getbyCampus/${user[0].campus?._id}`;
+    const englishCourseApi = `/api/english-courses/getByCampus/${user[0].campus?._id}`;
 
     // Function to fill dropdown
     async function fillDropdown(apiUrl, dropdownId) {
       try {
-        const res = await axios.get(apiUrl);
+        const res = await api.get(apiUrl);
         const data = res.data.data; // backend se response
         console.log(data)
         const dropdown = document.getElementById(dropdownId);
@@ -307,8 +310,8 @@ const result = await Swal.fire({
     });
 
    async function handlefillDropDown(selectedCampus){
-       await fillDropdown(`${backendUrl}/api/course/getbyCampus/${user[0].school._id}/${selectedCampus}`, "computerCourse");
-       await fillDropdown(`${backendUrl}/api/english-courses/getbyCampus/${user[0].school._id}/${selectedCampus}`, "englishCourse");
+       await fillDropdown(`/course/getbyCampus/${selectedCampus}`, "computerCourse");
+       await fillDropdown(`/english-courses/getbyCampus/${selectedCampus}`, "englishCourse");
     }
 
    async function handleDropDownDisplay(selectedType){

@@ -1,7 +1,7 @@
-console.log(user)
+// console.log(user)
 
 const currentPage = window.location.pathname.toLowerCase();
-  console.log(currentPage)
+  // console.log(currentPage)
 const faLink = document.createElement("link");
 faLink.rel = "stylesheet";
 faLink.href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css";
@@ -245,7 +245,7 @@ function closeSidebar() {
 /* attach events for SB-1 behavior */
 hamb.addEventListener('click', ()=>{
   openSidebar()
-  console.log('working')
+  // console.log('working')
 }
 );
 
@@ -349,23 +349,23 @@ function renderSidebar(user) {
     isAllowed = true;
   } else {
     for (const key of user[0].allowedPages) {
-      // console.log(user[0])
-      // console.log(currentPage)
-      // console.log(allLinks[key].file.toLowerCase())
-      // console.log(allLinks[key] && allLinks[key].file.toLowerCase() === currentPage)
+      // // console.log(user[0])
+      // // console.log(currentPage)
+      // // console.log(allLinks[key].file.toLowerCase())
+      // // console.log(allLinks[key] && allLinks[key].file.toLowerCase() === currentPage)
       if (allLinks[key] && allLinks[key].file.toLowerCase() === currentPage) {
-        console.log(key)
-        console.log('123')
+        // console.log(key)
+        // console.log('123')
         isAllowed = true;
         break;
       }
     }
   }
-  console.log(isAllowed)
-  console.log(currentPage)
+  // console.log(isAllowed)
+  // console.log(currentPage)
   if (!isAllowed && currentPage !== "/dashboard.html") {
-    // console.log('reach')
-    window.location.href = "Dashboard.html";
+    // // console.log('reach')
+    // window.location.href = "/Dashboard.html";
   }
 }
 

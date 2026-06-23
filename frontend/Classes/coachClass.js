@@ -1,4 +1,4 @@
-// import { backendUrl } from "../global";
+
   const classNameInput = document.getElementById("className");
   const classFeeInput = document.getElementById("classFee");
   const tuitionFeeInput = document.getElementById("tuitionFee");
@@ -7,8 +7,7 @@
   const tableBody = document.querySelector("#classTable tbody");
   const classForm = document.getElementById('classForm')
   const adminTh = document.getElementById('adminth')
-  // const teacherIdInput = document.getElementById("teacherId");
-  //     const teacherName = document.getElementById("teachername");
+ 
   const user = JSON.parse(localStorage.getItem("userData")) || [];
 
   const modal = new bootstrap.Modal(document.getElementById("addClassModal"));
@@ -35,157 +34,26 @@ let editingId = null;
   const isSuperAdmin = user[0]?.designation === "supremeadmin";
   console.log(isSuperAdmin)
 
-  // var classTeacherId
-// const sidebar = document.getElementById("sidebar");
 
-// const allLinks = {
-//   // dashboard: { name: "Dashboard", file: "Dashboard.html" },
-//   addclass: { name: "Add Class", file: "classform.html", active:true },
-//   addsection: { name: "Add Section", file: "section.html", active:false },
-//   addcomputercourse: { name: "Add Computer Course", file: "compcourse.html", active:false },
-//   addenglangcourse: { name: "Add English lang Course", file: "englangcourse.html", active:false },
-
-//   addstudent: { name: "Student Form", file: "student.html", active:false },
-//   studentlist: { name: "Student List", file: "studentlist.html" , active:false},
-//   addteacher: { name: "Teacher Form", file: "teacher.html",  active:false},
-//   teacherlist: { name: "Teacher List", file: "teacherlist.html" , active:false},
-//   teacherSalary: { name: "Teacher Salary", file: "teacherSalary.html" , active:false},
-//   adduser: { name: "Add User", file: "userform.html" , active:false}
-
-
-
-// };
 if(user.length > 0 || !user == null){
-// function renderSidebar(user) {
-//   // console.log(user[0].allowPages)
-//   // Always show Dashboard and Logout
-//   sidebar.innerHTML = `<a class='active' href="Dashboard.html">Dashboard</a>`;
-//    if(isSuperAdmin){
-//   sidebar.innerHTML += `<a href="campusform.html">Add campus</a>`;
 
-//   }
-
-//   for (const key in allLinks) {
-//     console.log(key)
-//     if(isSuperAdmin){
-//       sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
-
-//     }
-    
-//    else {
-//    if (user[0].allowedPages.includes(key)) {
-//       sidebar.innerHTML += `<a href="${allLinks[key].file}" class="${allLinks[key].active?'active':''}">${allLinks[key].name}</a>`;
-//       if(allLinks[key].active){
-//         checkPermission(key)
-//       }
-//     }
-//      else{
-//         if(allLinks[key].active){
-//             window.location.href='Dashboard.html'
-//         }
-//       }
-//     }
-//   }
-
-//   sidebar.innerHTML += `<a href="#">Logout</a>`;
-// }
 const permissions = [{page: 'addclass',  permissions: ['read']},
 {page: 'addsection', permissions: ['read']}
 ]
 
-function checkPermission(currentPage){
-  console.log(currentPage)
-  const currentPagePerm= permissions.find(p=> p.page === currentPage)
-  console.log(currentPagePerm)
-  
-  // permissions.forEach(permission => {
-  //   if(permission.page== currentPage ){
-  //     if(permission.permissions.includes('read')){
-  //       console
-  //     }
-  //   }
-  // });
-}
-// 
-// renderSidebar(user);
+
   let originalClassList = []
   let classList = [];
-  // let campusList = [];
-  // var campusSelectBox1 = document.getElementById('campusSelectBox1')
-  // var campusSelectBox2 = document.getElementById('campusSelectBox2')
-  // // 🔽 Inject dropdown if superadmin
-  // if (isSuperAdmin) {
-  //   const campusDropdown = document.createElement("select");
-  //   campusDropdown.className = "form-select mb-3";
-  //   campusDropdown.id = "campusDropdown";
-  //   campusDropdown.required = true;
 
-  //   const label = document.createElement("label");
-  //   label.textContent = "Select campus";
-  //   label.setAttribute("for", "campusDropdown");
-  //   label.className = "form-label";
-
-  //   const campusDropdownfilter = document.createElement("select");
-  //   campusDropdownfilter.className = "form-select mb-3";
-  //   campusDropdownfilter.id = "campusDropdownfilter";
-  //   campusDropdownfilter.required = true;
-
-  //   const label2 = document.createElement("label");
-  //   label2.textContent = "Select campus";
-  //   label2.setAttribute("for", "campusDropdown");
-  //   label2.className = "form-label";
-
-  //   const form = document.getElementById("classForm");
-  //   campusSelectBox1.appendChild(label2)
-  //   campusSelectBox1.appendChild(campusDropdownfilter)
-
-  //   campusSelectBox2.appendChild(label)
-  //   campusSelectBox2.appendChild(campusDropdown)
-  //   // 🟢 Fetch and populate campuses dropdown
-  //   async function loadcampuses() {
-  //     try {
-  //       const res = await axios.get(`http://202.143.127.181:3001/api/campus/getBySchool/${user[0].school._id}`);
-  //       campusList = res.data;
-  //       console.log(campusList)
-  //              const option = document.createElement("option");
-  //         option.value = "";
-  //         option.textContent = 'Select campus';
-  //         campusDropdown.appendChild(option);
-  //       campusList.forEach(campus => {
-  //         const option = document.createElement("option");
-  //         option.value = campus._id;
-  //         option.textContent = campus.name;
-  //         campusDropdown.appendChild(option);
-  //       });
-
-  //         const option2 = document.createElement("option");
-  //         option2.value = "";
-  //         option2.textContent = 'Select campus';
-  //         campusDropdownfilter.appendChild(option2);
-  //       campusList.forEach(campus => {
-  //         const option2 = document.createElement("option");
-  //         option2.value = campus._id;
-  //         option2.textContent = campus.name;
-  //         campusDropdownfilter.appendChild(option2);
-  //       });
-  //     } catch (err) {
-  //       console.error("Error fetching campuses:", err);
-  //     }
-  //   }
-
-  //   loadcampuses();
-  // }
-
-  // 🔁 Load classes on page load
   window.addEventListener("DOMContentLoaded", loadClasses);
 
   async function loadClasses() {
     try {
       let res;
       if (isSuperAdmin) {
-        res = await axios.get(`${backendUrl}/api/coachingClass/school/${user[0].school._id}`);
+        res = await api.get(`/coachingClass/school`);
       } else {
-        res = await axios.get(`${backendUrl}/api/coachingClass/getByCampus/${user[0].school._id}/${user[0].campus._id}`);
+        res = await api.get(`/coachingClass/getByCampus/${user[0].campus._id}`);
       }
       classList = res?.data?.data || [];
       console.log(classList);
@@ -241,7 +109,7 @@ function checkPermission(currentPage){
   if (!result.isConfirmed) return;
 
     try {
-     var res = await axios.delete(`${backendUrl}/api/coachingClass/delete/${id}`);
+     var res = await api.delete(`/coachingClass/delete/${id}`);
       classList = classList.filter(cls => cls._id !== id);
 originalClassList = originalClassList.filter(cls => cls._id !== id);
     showToast(res.data.message || "Deleted successfully");
@@ -269,8 +137,8 @@ originalClassList = originalClassList.filter(cls => cls._id !== id);
     }
 
     let campusId;
-    let schoolId = user[0]?.school?._id;
-    const createdBy = user[0]._id
+  
+  
         if (isSuperAdmin) {
       const dropdown = document.getElementById("campusDropdown");
       campusId = dropdown.value;
@@ -284,8 +152,8 @@ originalClassList = originalClassList.filter(cls => cls._id !== id);
 
     try {
        if (isEditing) {
-      const res = await axios.put(`${backendUrl}/api/coachingClass/update/${editingId}`, {
-        name, fee,admissionFee,campusId , schoolId 
+      const res = await api.put(`/coachingClass/update/${editingId}`, {
+        name, fee,admissionFee,campusId 
       });
 
       const { data, message } = res.data;
@@ -296,8 +164,8 @@ originalClassList = originalClassList.filter(cls => cls._id !== id);
       showToast(message || "campus updated successfully");
 
     } else {
-      const res = await axios.post("${backendUrl}/api/coachingClass/add", {
-        name, fee,admissionFee,campusId , schoolId , createdBy
+      const res = await api.post("/coachingClass/add", {
+        name, fee,admissionFee,campusId  
       });
 
       const { data, message } = res.data;
@@ -405,31 +273,11 @@ function closeModal() {
   document.getElementById("addClassModalLabel").textContent = "Add New campus";
 }
 
-//  var teacher
-
-//     document.getElementById('getTeacher').addEventListener('click',async()=>{
-//       console.log(teacherIdInput)
-//         if(!teacherIdInput.value) return alert('enter teacher id')
-//       let schoolId;
-//       if (isSuperAdmin) {
-//         schoolId = document.getElementById("schoolDropdown").value;
-//         if (!schoolId) return alert("Select school first");
-//       } else {
-//         schoolId = user[0].school._id;
-//       }
-//       var campus = user[0].campus._id
-//       var res = await axios.post('http://202.143.127.181:3001/api/teacher/getById',{id:teacherIdInput.value,schoolId,campus})
-//       teacher = res.data
-//       teacherName.value = `${teacher.name}  ${teacher.fatherName} `
-//       classTeacherId= teacher._id
-
-        
-//     })
 
 }
 
 else{
-             window.location.href='Dashboard.html'
+             window.location.href='../user/login.html'
 
 }
 

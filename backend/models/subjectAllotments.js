@@ -25,6 +25,8 @@ const subjectAllotmentSchema = new mongoose.Schema({
     type: Boolean,
     default: false   // by default false hoga
   },
+    schoolId: {type: mongoose.Schema.Types.ObjectId, ref: 'school', required: true },
+      campusId: {type: mongoose.Schema.Types.ObjectId, ref: 'Campus', required: true },
    createdBy:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

@@ -577,7 +577,9 @@ export const editVoucher = async (req, res) => {
 
 
 export const generateVouchers = async (req, res) => {
+
   try {
+    console.log('reach to voucher')
     const payload = req.body;
     const { feeType, month, selectionType, studentId } = payload;
 console.log(payload , 'payload')
@@ -597,51 +599,6 @@ console.log(payload , 'payload')
     };
     if (payload.campusId) studentsQuery.campusId = payload.campusId;
     if (payload.schoolId) studentsQuery.schoolId = payload.schoolId;
-    // Filter according to feeType
-    // if (feeType === "school") {
-    //   if(selectionType === 'single' && !studentId){
-
-    //   studentsQuery[`grNumbers.${feeType}`] = Number(payload.grNo);
-
-    //     // console.log(studentsQuery)
-    //     Object.keys(studentsQuery).forEach(
-    //   (key) => studentsQuery[key] === null && delete studentsQuery[key]
-    // );
-    //     // studentsQuery.class = payload.class || null;
-
-    //     console.log(studentsQuery , 'studentsQuery')
-
-    //     const matchedStudent = await Student.find(studentsQuery);
-    //     console.log(matchedStudent , 'matchedStudent')
-    //     return res.json({ success: true, students: matchedStudent });
-    //   }
-    //   else if(selectionType === 'single' && studentId){
-    //     studentsQuery._id = studentId;
-    //   }
-    //   if(selectionType === 'class'){
-    //     studentsQuery.class = payload.class || null;
-    //   }
-    //   // if (payload.section) studentsQuery.section = payload.section || null;
-    //   if (payload.campusId) studentsQuery.campusId = payload.campusId;
-    //   if (payload.schoolId) studentsQuery.schoolId = payload.schoolId;
-
-    // } else if (feeType === "tuition") {
-    //   studentsQuery.coachingClass = payload.coachingClass || null;
-    //   if (payload.campusId) studentsQuery.campusId = payload.campusId;
-    //   if (payload.schoolId) studentsQuery.schoolId = payload.schoolId;
-
-    // } else if (feeType === "computer") {
-    //   studentsQuery.computerCourse = payload.courseId || null;
-    //   studentsQuery.computerCourseBatch = payload.batchId || null;
-    //   if (payload.campusId) studentsQuery.campusId = payload.campusId;
-    //   if (payload.schoolId) studentsQuery.schoolId = payload.schoolId;
-
-    // } else if (feeType === "english") {
-    //   studentsQuery.englishCourse = payload.engCourseId || null;
-    //   studentsQuery.engCourseBatch = payload.engBatchId || null;
-    //   if (payload.campusId) studentsQuery.campusId = payload.campusId;
-    //   if (payload.schoolId) studentsQuery.schoolId = payload.schoolId;
-    // }
 
     if (selectionType === 'single' && !studentId) {
       studentsQuery[`grNumbers.${feeType}`] = Number(payload.grNo);
@@ -706,111 +663,240 @@ console.log(payload , 'payload')
     if (!students.length)
       return res.status(404).json({ message: "No students found" });
 
-    const createdVouchers = [];
+    // const createdVouchers = [];
 
-    for (const st of students) {
+    // for (const st of students) {
 
-      // 2) Prevent duplicate for same month
-      const exists = await Voucher.findOne({
-        student: st._id,
-        feeType,
-        month
+    //   // 2) Prevent duplicate for same month
+    //   const exists = await Voucher.findOne({
+    //     student: st._id,
+    //     feeType,
+    //     month
 
-      });
+    //   });
 
-      if (exists) {
-        createdVouchers.push({
-          student: st._id,
-          skipped: true,
-          reason: "voucher exists"
-        });
-        continue;
-      }
+    //   if (exists) {
+    //     createdVouchers.push({
+    //       student: st._id,
+    //       skipped: true,
+    //       reason: "voucher exists"
+    //     });
+    //     continue;
+    //   }
 
-      // 3) Calculate previous dues
-      const { total: previousDuesTotal, detail: previousDuesDetail } =
-        await computePreviousDuesForStudent(st._id, feeType);
+    //   // 3) Calculate previous dues
+    //   const { total: previousDuesTotal, detail: previousDuesDetail } =
+    //     await computePreviousDuesForStudent(st._id, feeType);
 
-      // 4) Calculate current month breakdown
-      const monthlyFee = st.feeDetails?.[feeType]?.payableFee
-      const extras = Array.isArray(payload.extras) ? payload.extras.filter(extra => extra.name !== 'Late Fee') : [];
-      const latefee = Array.isArray(payload.extras) ? payload.extras.find(extra => extra.name === 'Late Fee') : 0;
-      const extrasTotal = extras.reduce((s, e) => s + Number(e.amount || 0), 0);
+    //   // 4) Calculate current month breakdown
+    //   const monthlyFee = st.feeDetails?.[feeType]?.payableFee
+    //   const extras = Array.isArray(payload.extras) ? payload.extras.filter(extra => extra.name !== 'Late Fee') : [];
+    //   const latefee = Array.isArray(payload.extras) ? payload.extras.find(extra => extra.name === 'Late Fee') : 0;
+    //   const extrasTotal = extras.reduce((s, e) => s + Number(e.amount || 0), 0);
 
-      const totalPayable = monthlyFee + extrasTotal + previousDuesTotal;
-      const lateFeeAmount = latefee ? Number(latefee.amount || 0) : 0;
-      const totalPayableWithLateFee = totalPayable + lateFeeAmount;
+    //   const totalPayable = monthlyFee + extrasTotal + previousDuesTotal;
+    //   const lateFeeAmount = latefee ? Number(latefee.amount || 0) : 0;
+    //   const totalPayableWithLateFee = totalPayable + lateFeeAmount;
 
-      // 5) Save voucher
-      const voucherData = {
-        student: st._id,
-        feeType,
-        month,
+    //   // 5) Save voucher
+    //   const voucherData = {
+    //     student: st._id,
+    //     feeType,
+    //     month,
 
-        class: null,
-        coachingClass: null,
-        computerCourse: null,
-        computerCourseBatch: null,
-        englishCourse: null,
-        engCourseBatch: null,
-        campus: st.campusId || null,
-        school: st.schoolId || null,
-        breakdown: {
-          monthlyFee: st.feeDetails?.[feeType]?.payableFee || monthlyFee,
-          extras,
-          previousDuesTotal,
-        },
-        previousDuesDetail,
-        totalPayable,
-        totalPayableWithLateFee,
-        issueDate: payload.issueDate,
-        dueDate: payload.dueDate,
-        expireDate: payload.expireDate,
-        status: totalPayable === 0 ? "Paid" : "Unpaid",
-        createdBy: payload.generatedBy || null,
-      };
+    //     class: null,
+    //     coachingClass: null,
+    //     computerCourse: null,
+    //     computerCourseBatch: null,
+    //     englishCourse: null,
+    //     engCourseBatch: null,
+    //     campus: st.campusId || null,
+    //     school: st.schoolId || null,
+    //     breakdown: {
+    //       monthlyFee: st.feeDetails?.[feeType]?.payableFee || monthlyFee,
+    //       extras,
+    //       previousDuesTotal,
+    //     },
+    //     previousDuesDetail,
+    //     totalPayable,
+    //     totalPayableWithLateFee,
+    //     issueDate: payload.issueDate,
+    //     dueDate: payload.dueDate,
+    //     expireDate: payload.expireDate,
+    //     status: totalPayable === 0 ? "Paid" : "Unpaid",
+    //     createdBy: payload.generatedBy || null,
+    //   };
 
-      // map fields based on feeType
-      if (feeType === "school") {
-        voucherData.class = st.class || null;
+    //   // map fields based on feeType
+    //   if (feeType === "school") {
+    //     voucherData.class = st.class || null;
 
-      } else if (feeType === "tuition") {
-        voucherData.coachingClass = st.coachingClass || null;
+    //   } else if (feeType === "tuition") {
+    //     voucherData.coachingClass = st.coachingClass || null;
 
-      } else if (feeType === "computer") {
-        voucherData.computerCourse = payload.courseId || st.computerCourse || null;
-        voucherData.computerCourseBatch = payload.batchId || st.computerCourseBatch || null;
+    //   } else if (feeType === "computer") {
+    //     voucherData.computerCourse = payload.courseId || st.computerCourse || null;
+    //     voucherData.computerCourseBatch = payload.batchId || st.computerCourseBatch || null;
 
-      } else if (feeType === "english") {
-        voucherData.englishCourse = payload.engCourseId || st.englishCourse || null;
-        voucherData.engCourseBatch = payload.engBatchId || st.engCourseBatch || null;
-      }
+    //   } else if (feeType === "english") {
+    //     voucherData.englishCourse = payload.engCourseId || st.englishCourse || null;
+    //     voucherData.engCourseBatch = payload.engBatchId || st.engCourseBatch || null;
+    //   }
 
-      voucherData.campus = st.campusId || null;
-      voucherData.school = st.schoolId || null;
+    //   voucherData.campus = st.campusId || null;
+    //   voucherData.school = st.schoolId || null;
 
-      let unique = false
-      let voucherNo
+    //   let unique = false
+    //   let voucherNo
 
-      const existingV = await Voucher.find({ feeType })
-      console.log('existingV', existingV.length)
+    //   const existingV = await Voucher.find({ feeType })
+    //   console.log('existingV', existingV.length)
 
-      voucherNo = Number((existingV.length + 1))
+    //   voucherNo = Number((existingV.length + 1))
 
-      console.log('completed')
-      voucherData.voucherNo = voucherNo
-      // finally create the voucher
-      const voucherDoc = await Voucher.create(voucherData);
+    //   console.log('completed')
+    //   voucherData.voucherNo = voucherNo
+    //   // finally create the voucher
+    //   const voucherDoc = await Voucher.create(voucherData);
 
-      createdVouchers.push({
-        student: st._id,
-        voucherId: voucherDoc._id,
-        voucherNo: voucherNo,
-        skipped: false
-      });
+    //   createdVouchers.push({
+    //     student: st._id,
+    //     voucherId: voucherDoc._id,
+    //     voucherNo: voucherNo,
+    //     skipped: false
+    //   });
+    // }
+
+    // 1️⃣ Existing vouchers check
+const studentIds = students.map(s => s._id);
+
+const existingVouchers = await Voucher.aggregate([
+  {
+    $match: {
+      student: { $in: studentIds },
+      feeType,
+      month
+    }
+  },
+  { $project: { student: 1 } }
+]);
+
+const existingStudentIds = new Set(
+  existingVouchers.map(v => v.student.toString())
+);
+
+// 2️⃣ Get last voucherNo
+const lastVoucher = await Voucher.aggregate([
+  { $match: { feeType } },
+  { $sort: { voucherNo: -1 } },
+  { $limit: 1 },
+  { $project: { voucherNo: 1 } }
+]);
+
+let nextVoucherNo = lastVoucher.length
+  ? lastVoucher[0].voucherNo + 1
+  : 1;
+
+// 3️⃣ Prepare documents array
+const vouchersToInsert = await Promise.all(
+  students.map(async (student) => {
+
+    if (existingStudentIds.has(student._id.toString())) {
+      return null; // skip duplicate
     }
 
-    return res.json({ success: true, created: createdVouchers });
+    const { total: previousDuesTotal, detail: previousDuesDetail } =
+      await computePreviousDuesForStudent(student._id, feeType);
+
+    const monthlyFee =
+      student.feeDetails?.[feeType]?.payableFee || 0;
+
+    const extras = Array.isArray(payload.extras)
+      ? payload.extras.filter(e => e.name !== "Late Fee")
+      : [];
+
+    const lateFeeObj = Array.isArray(payload.extras)
+      ? payload.extras.find(e => e.name === "Late Fee")
+      : null;
+
+    const extrasTotal = extras.reduce(
+      (sum, e) => sum + Number(e.amount || 0),
+      0
+    );
+
+    const lateFeeAmount = lateFeeObj
+      ? Number(lateFeeObj.amount || 0)
+      : 0;
+
+    const totalPayable =
+      monthlyFee + extrasTotal + previousDuesTotal;
+
+    const totalPayableWithLateFee =
+      totalPayable + lateFeeAmount;
+
+    const voucherData = {
+      student: student._id,
+      feeType,
+      month,
+      voucherNo: nextVoucherNo++,
+
+      campus: student.campusId || null,
+      school: student.schoolId || null,
+
+      breakdown: {
+        monthlyFee,
+        extras,
+        previousDuesTotal
+      },
+
+      previousDuesDetail,
+      totalPayable,
+      totalPayableWithLateFee,
+
+      issueDate: payload.issueDate,
+      dueDate: payload.dueDate,
+      expireDate: payload.expireDate,
+
+      status: totalPayable === 0 ? "Paid" : "Unpaid",
+      createdBy: payload.generatedBy || null
+    };
+
+    // feeType mapping
+    if (feeType === "school") {
+      voucherData.class = student.class || null;
+    } else if (feeType === "tuition") {
+      voucherData.coachingClass = student.coachingClass || null;
+    } else if (feeType === "computer") {
+      voucherData.computerCourse =
+        payload.courseId || student.computerCourse || null;
+
+      voucherData.computerCourseBatch =
+        payload.batchId || student.computerCourseBatch || null;
+
+    } else if (feeType === "english") {
+      voucherData.englishCourse =
+        payload.engCourseId || student.englishCourse || null;
+
+      voucherData.engCourseBatch =
+        payload.engBatchId || student.engCourseBatch || null;
+    }
+
+    return voucherData;
+  })
+);
+
+// 4️⃣ Remove skipped null values
+const filteredVouchers = vouchersToInsert.filter(v => v !== null);
+
+// 5️⃣ Insert in bulk
+let insertedDocs = [];
+
+if (filteredVouchers.length > 0) {
+  insertedDocs = await Voucher.insertMany(filteredVouchers);
+}
+
+console.log("Inserted vouchers:", insertedDocs.length);
+    return res.json({ success: true, created: insertedDocs.length,  studentsCount: students.length, message: `${insertedDocs.length} vouchers created successfully, ${students.length - insertedDocs.length} skipped due to existing vouchers` });
 
   } catch (err) {
     console.log(err);

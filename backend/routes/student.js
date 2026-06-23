@@ -12,9 +12,14 @@ import {
   getStdGr,
   getStudentSortedDataByCampus,
   getStudentsByClass,
-  migrateClass
+  getStudentsByClsAndSec,
+  migrateClass,
+  getStudentsByMasterId,
+  getStudentLedger
 } from "../controller/student.js";
 import upload from "../middleware/uploadExcel.js";
+
+import { checkAuth } from "../middleware/auth.js";
 // import { get } from "mongoose";
 
 const router = express.Router();
@@ -33,7 +38,9 @@ router.get('/getGrno/:schoolId/:campusId/:type/:class' , getStdGr)
 
 router.get("/getStdSortedByCampus/:schoolId/:campusId", getStudentSortedDataByCampus);
 router.get('/getByClass/:classId', getStudentsByClass)
+router.get('/getByClsAndSec/:classId/:sectionId', getStudentsByClsAndSec)
 router.post("/migrateClass", migrateClass);
 
-
+router.post('/getByMasterId/:masterId', checkAuth, getStudentsByMasterId)
+router.post('/student-ledger/:masterId',getStudentLedger)
 export default router;

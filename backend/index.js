@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import { connectDb } from './db/config.js'
 import schoolRouter from './routes/school.js'
 import userRouter from './routes/user.js'
@@ -20,14 +21,31 @@ import CoachingClassRouter from './routes/coachClass.js'
 import voucherRouter from './routes/voucher.js'
 import feeReceiptRouter from './routes/receipt.js'
 import generalRegisterRouter from './routes/generalregister.js'
+import feeStructureRouter from './routes/feeStructure.js'
+import receiptsRouter from './routes/receipts.js'
+import { checkAuth } from './middleware/auth.js'
 import dotenv from "dotenv";
+import Student from './models/student.js'
 dotenv.config();
 connectDb()
 
 const app = express()
+app.use(cors({
+  origin: [
+    "http://127.0.0.1:5501",
+    "http://localhost:5501",
+    "http://127.0.0.1:5500",
+    "http://localhost:5500"
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
-app.use(cors())
+
+app.use(cookieParser())
+
 const port = process.env.PORT || 3000;
 app.use('/api/school',schoolRouter)
 app.use('/api/user' , userRouter)
@@ -48,168 +66,48 @@ app.use('/api/subject-allotments', subjectAllotmentRouter);
 app.use('/api/voucher',voucherRouter);
 app.use('/api/receipt',feeReceiptRouter)
 app.use('/api/general-register' ,generalRegisterRouter)
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
-
-app.get("/config", (req, res) => {
-  res.json({
-    apiKey: process.env.API_KEY
-  });
+app.use('/api/fee-structure',  feeStructureRouter);
+app.use('/api/receipts', receiptsRouter);
+app.get('/', checkAuth,(req, res) => {
+   res.json(req.user)
 });
 
 
+app.put("/update-masterid", async (req, res) => {
+  try {
+    // 1️⃣ Fetch all students sorted by insertion order
+    const students = await Student.find({}).sort({ "grNumbers.school": 1 });
 
-// app.post('/generate', async (req, res) => {
-//   try {
-//     const payload = req.body;
-//     const { feeType, month, session: acadSession  } = payload;
+    if (!students.length) {
+      return res.status(404).json({ success: false, message: "No students found" });
+    }
 
-//     // 1) FILTER STUDENTS
-//   let studentsQuery = {
-//   class: null,
-//   section: null,
-//   coachingClass: null,
-//   computerCourse: null,
-//   computerCourseBatch: null,
-//   englishCourse: null,
-//   engCourseBatch: null,
-//   campusId: null,
-//   schoolId: null
-// };
+    // 2️⃣ Prepare bulk operations
+    const bulkOps = students.map((student, index) => ({
+      updateOne: {
+        filter: { _id: student._id },
+        update: { $set: { masterId: index + 1 } } // 1 se counting
+      }
+    }));
 
-// // Filter according to feeType
-// if (feeType === "school") {
-//   studentsQuery.class = payload.class || null;
-//   if (payload.section) studentsQuery.section = payload.section || null;
-//   if (payload.campusId) studentsQuery.campusId = payload.campusId;
-//   if (payload.schoolId) studentsQuery.schoolId = payload.schoolId;
+    // 3️⃣ Execute bulk write
+    await Student.bulkWrite(bulkOps);
 
-// } else if (feeType === "tuition") {
-//   studentsQuery.coachingClass = payload.coachingClass || null;
-//   if (payload.campusId) studentsQuery.campusId = payload.campusId;
-//   if (payload.schoolId) studentsQuery.schoolId = payload.schoolId;
+    return res.status(200).json({
+      success: true,
+      message: `MasterId updated for ${students[0].name} ${students[0].grNumbers.school} students`,
+    });
+  } catch (err) {
+    console.error("Bulk MasterId Update Error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while updating masterId",
+    });
+  }
+});
 
-// } else if (feeType === "computer") {
-//   studentsQuery.computerCourse = payload.courseId || null;
-//   studentsQuery.computerCourseBatch = payload.batchId || null;
-//   if (payload.campusId) studentsQuery.campusId = payload.campusId;
-//   if (payload.schoolId) studentsQuery.schoolId = payload.schoolId;
 
-// } else if (feeType === "english") {
-//   studentsQuery.englishCourse = payload.engCourseId || null;
-//   studentsQuery.engCourseBatch = payload.engBatchId || null;
-//   if (payload.campusId) studentsQuery.campusId = payload.campusId;
-//   if (payload.schoolId) studentsQuery.schoolId = payload.schoolId;
-// }
 
-// // Remove null fields before querying
-// Object.keys(studentsQuery).forEach(
-//   (key) => studentsQuery[key] === null && delete studentsQuery[key]
-// );
-
-// // finally get matching students
-// const students = await Student.find(studentsQuery);
-
-//     console.log(students)
-//     if (!students.length)
-//       return res.status(404).json({ message: "No students found" });
-
-//     const createdVouchers = [];
-
-//     for (const st of students) {
-
-//       // 2) Prevent duplicate for same month
-//       const exists = await Voucher.findOne({
-//         student: st._id,
-//         feeType,
-//         month,
-//         session: acadSession
-//       });
-
-//       if (exists) {
-//         createdVouchers.push({
-//           student: st._id,
-//           skipped: true,
-//           reason: "voucher exists"
-//         });
-//         continue;
-//       }
-
-//       // 3) Calculate previous dues
-//       const { total: previousDuesTotal, detail: previousDuesDetail } =
-//         await computePreviousDuesForStudent(st._id, feeType);
-
-//       // 4) Calculate current month breakdown
-//       const monthlyFee = Number(payload.monthlyFee || 0);
-//       const extras = Array.isArray(payload.extras) ? payload.extras : [];
-//       const extrasTotal = extras.reduce((s, e) => s + Number(e.amount || 0), 0);
-
-//       const totalPayable = monthlyFee + extrasTotal + previousDuesTotal;
-
-//       // 5) Save voucher
-//      const voucherData = {
-//   student: st._id,
-//   feeType,
-//   month,
-//   session: acadSession,
-//   class: null,
-//   coachingClass: null,
-//   computerCourse: null,
-//   computerCourseBatch: null,
-//   englishCourse: null,
-//   engCourseBatch: null,
-//   campus: st.campusId || null,
-//   school: st.schoolId || null,
-//   breakdown: {
-//     monthlyFee:st.feeDetails?.[feeType]?.payableFee || monthlyFee,
-//     extras,
-//     previousDuesTotal,
-//   },
-//   previousDuesDetail,
-//   totalPayable,
-//   issueDate: payload.issueDate,
-//   dueDate: payload.dueDate ,
-//   expireDate: payload.expireDate ,
-//   status: totalPayable === 0 ? "Paid" : "Unpaid",
-//   createdBy: payload.generatedBy || null,
-// };
-
-// // map fields based on feeType
-// if (feeType === "school") {
-//   voucherData.class = st.class || null;
-
-// } else if (feeType === "tuition") {
-//   voucherData.coachingClass = st.coachingClass || null;
-
-// } else if (feeType === "computer") {
-//   voucherData.computerCourse = payload.courseId || st.computerCourse || null;
-//   voucherData.computerCourseBatch = payload.batchId || st.computerCourseBatch || null;
-
-// } else if (feeType === "english") {
-//   voucherData.englishCourse = payload.engCourseId || st.englishCourse || null;
-//   voucherData.engCourseBatch = payload.engBatchId || st.engCourseBatch || null;
-// }
-
-// voucherData.campus = st.campusId || null;
-// voucherData.school = st.schoolId || null;
-// // finally create the voucher
-// const voucherDoc = await Voucher.create(voucherData);
-
-//       createdVouchers.push({
-//         student: st._id,
-//         voucherId: voucherDoc._id,
-//         skipped: false
-//       });
-//     }
-
-//     return res.json({ success: true, created: createdVouchers });
-
-//   } catch (err) {
-//     console.log(err);
-//     return res.status(500).json({ message: "Server error", error: err.message });
-//   }
-// });
 
 app.listen(port,()=>{
     console.log(`server is running on port ${port}`)

@@ -3,12 +3,12 @@ import EnglishCourse from "../models/englang.js";
 // Add English Course
 export const createEnglishCourse = async (req, res) => {
   try {
-    const { name,  schoolId, campusId  , createdBy} = req.body;
+    const { name, campusId } = req.body;
 
     // Check for duplicate
     const isEngCourseExist = await EnglishCourse.findOne({
       name,
-      schoolId,
+      schoolId: req.user.school,
       campusId,
       
     });
@@ -18,7 +18,7 @@ export const createEnglishCourse = async (req, res) => {
     }
 
     // Save new English course
-    const courseData = new EnglishCourse({ name, schoolId, campusId, createdBy });
+    const courseData = new EnglishCourse({ name, schoolId: req.user.school, campusId, createdBy: req.user._id });
     await courseData.save();
 
     // Fetch and populate new course
@@ -43,7 +43,7 @@ export const createEnglishCourse = async (req, res) => {
 // Get All English Courses
 export const getAllEnglishCoursesByCampus = async (req, res) => {
   try {
-    const courses = await EnglishCourse.find({schoolId: req.params.schoolId, campusId: req.params.campusId })
+    const courses = await EnglishCourse.find({schoolId: req.user.school, campusId: req.params.campusId })
       
 
     if (courses.length > 0) {
@@ -61,7 +61,7 @@ export const getAllEnglishCoursesByCampus = async (req, res) => {
 export const getEnglishCoursesBySchool = async (req, res) => {
   try {
     const courses = await EnglishCourse.find({
-      schoolId: req.params.schoolId,
+      schoolId: req.user.school,
     })
       .populate("schoolId", "name")
       .populate("campusId", "name")
@@ -94,28 +94,7 @@ export const getEnglishCourseById = async (req, res) => {
   }
 };
 
-// Update a course
-// export const updateEnglishCourse = async (req, res) => {
-//   try {
-//     const { name, fee, schoolId } = req.body;
-
-//     const updatedCourse = await EnglishCourse.findByIdAndUpdate(
-//       req.params.id,
-//       { name, fee, schoolId },
-//       { new: true }
-//     );
-
-//     if (!updatedCourse) {
-//       return res.status(404).json({ success: false, message: 'Course not found' });
-//     }
-
-//     res.status(200).json({ success: true, message: 'Course updated', course: updatedCourse });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: 'Failed to update course', error: error.message });
-//   }
-// };
-
-// Delete a course
+// Delete a course by ID
 export const deleteEnglishCourse = async (req, res) => {
   try {
     const deletedCourse = await EnglishCourse.findByIdAndDelete(req.params.id);
@@ -133,24 +112,25 @@ export const deleteEnglishCourse = async (req, res) => {
 // Update a course
 export const updateEnglishCourse = async (req, res) => {
   try {
-    const { name, fee, schoolId } = req.body;
+    const { name, campusId } = req.body;
 
     // Check if another course with the same name and schoolId exists (excluding current one)
     const existingCourse = await EnglishCourse.findOne({
       _id: { $ne: req.params.id },
       name,
-      schoolId
+      schoolId: req.user.school,
+      campusId
     });
 
     if (existingCourse) {
-      return res.json({ success: false, message: 'Course with this level name already exists in the selected school' });
+      return res.json({ success: false, message: 'Course with this level name already exists in the your campus' });
     }
-
+ 
     const updatedCourse = await EnglishCourse.findByIdAndUpdate(
-      req.params.id,
-      { name, fee, schoolId },
+     { _id: req.params.id , schoolId: req.user.school} ,
+      { name, campusId },
       { new: true }
-    ).populate('schoolId', 'name');
+    ).populate('schoolId', 'name').populate('campusId', 'name');
 
     if (!updatedCourse) {
       return res.status(404).json({ success: false, message: 'Course not found' });

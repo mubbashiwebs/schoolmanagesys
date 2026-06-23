@@ -39,7 +39,7 @@ const user = JSON.parse(localStorage.getItem("userData")) || [];
 const imageBox = document.getElementById("teacherImageBox");
 var campusId = user[0]?.campus?._id || null;
 const isSuperAdmin = user[0]?.designation === "supremeadmin";
-var schoolId = isSuperAdmin ? null : user[0].school._id;
+
 var isEdit = false
 
 var imageUrl
@@ -144,15 +144,13 @@ document.getElementById('admissionForm').addEventListener('submit', async functi
   data.campus = isSuperAdmin
     ? document.getElementById("campusDropdown")?.value
     : campusId;
-  data.schoolId = user[0]?.school?._id || schoolId;
-  const createdBy = user[0]._id
-  data.createdBy = createdBy
+ 
   try {
     if (isEdit) {
       submitBtn.textContent = 'updating...'
       // UPDATE STUDENT
-      const res = await axios.put(
-        `http://localhost:3000/api/teacher/update/${editingTeacherId}`,
+      const res = await api.put(
+        `/teacher/update/${editingTeacherId}`,
         data
       );
       alert(res.data.message || " Teacher updated successfully");
@@ -163,8 +161,8 @@ document.getElementById('admissionForm').addEventListener('submit', async functi
       submitBtn.textContent = 'submiting...'
 
       // ADD STUDENT
-      const res = await axios.post(
-        "http://localhost:3000/api/teacher/add",
+      const res = await api.post(
+        "/teacher/add",
         data
       );
       alert(res.data.message || "teacher added successfully");
@@ -182,7 +180,7 @@ document.getElementById('admissionForm').addEventListener('submit', async functi
   console.log('Submitted Data:', data);
 
 
-  // TODO: Send to backend using fetch or axios
+  // TODO: Send to backend using fetch or api
 });
 
 var queryParams = new URLSearchParams(window.location.search)
@@ -198,10 +196,10 @@ async function loadData() {
     if (isSuperAdmin) {
       console.log(campusDropdown)
       campusDropdown.value = teacherData.campus._id;
-      schoolId = teacherData.schoolId;
+     
       campusId = teacherData.campus._id;
     }
-    schoolId = teacherData.schoolId;
+  
 
     if (teacherData.imageUrl) {
       // imageBox.src = studentData.imageUrl;
@@ -357,7 +355,7 @@ async function loadCampuses() {
     campusDropdownField.appendChild(label)
     campusDropdownField.appendChild(campusDropdown)
     try {
-      const res = await axios.get(`http://localhost:3000/api/campus/getBySchool/${user[0].school._id}`);
+      const res = await api.get(`/campus/getBySchool`);
 
       campusList = res.data;
       campusDropdown.innerHTML = `<option value="">Select Campus</option>`;

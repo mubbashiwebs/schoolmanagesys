@@ -1,44 +1,44 @@
-const apiUrl = `${backendUrl}/api/general-register`;
+const user = JSON.parse(localStorage.getItem("userData")) || [];
+const isSuperAdmin = user[0]?.designation === "supremeadmin";
 
-  const user = JSON.parse(localStorage.getItem("userData")) || [];
-  const isSuperAdmin = user[0]?.designation === "supremeadmin";
-schoolId = user[0].school._id
-campusId = isSuperAdmin ? null : user[0].campus._id
+campusId = isSuperAdmin ? null : user[0]?.campus?._id
 let registers = [];
 let isEdit = false;
-let editingId
+let editingId;
 
 // ========== TOAST ===========
 const toast = new bootstrap.Toast(document.getElementById("toastMessage"));
 const toastBody = document.getElementById("toastBody");
 const toastElement = document.getElementById("toastMessage");
+
 function showToast(message, isSuccess = true) {
-  console.log('toast is working')
   toastBody.textContent = message;
   toastElement.classList.remove("bg-success", "bg-danger");
   toastElement.classList.add(isSuccess ? "bg-success" : "bg-danger");
   toast.show();
 }
 
-
 // ========== LOAD REGISTERS ===========
 async function loadRegisters() {
   try {
-    
-    const res = await axios.get(`${apiUrl}/${isSuperAdmin ? `all?schoolId=${schoolId}` : `getByCampus?schoolId=${schoolId}&campusId=${campusId}` }`)
-    console.log(res)
-    registers = res.data.data || [];
-     
-    if(!res.data.success){
-        showToast(res.data.message,false)
+    const res = await api.get(
+      `/general-register/${isSuperAdmin ? `all` : `getByCampus?campusId=${campusId}`}`
+    );
+
+    console.log(res.data);
+
+    if (res.data?.success) {
+      registers = res.data.data || [];
+    } else {
+      registers = [];
+      showToast(res.data.message || "No data found", false);
     }
 
   } catch (error) {
-    console.log(error)
-    showToast(error.response?.data.message || error.message , false);
+    showToast(error.response?.data?.message || error.message, false);
   }
-    renderTable();
 
+  renderTable();
 }
 
 // ========== RENDER TABLE ==============
@@ -47,106 +47,94 @@ function renderTable() {
   tbody.innerHTML = "";
 
   const search = document.getElementById("searchInput").value.toLowerCase();
-    
 
+  const filtered = registers.filter(item =>
+    item.registerName?.toLowerCase().includes(search)
+  );
 
-const filtered = registers.filter(item =>
-  item.registerName.toLowerCase().includes(search)
-);
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" class="text-center text-muted">No record available</td>
+      </tr>
+    `;
+    return;
+  }
 
-console.log(filtered)
-
-// Agar koi record nahi mila
-if (filtered.length === 0) {
-  tbody.innerHTML = `
-    <tr>
-      <td colspan="4" class="text-center text-muted">No record available</td>
-    </tr>
-  `;
-  return; 
-}
-
-// Agar records mil gaye
-filtered.forEach((item, index) => {
-  tbody.innerHTML += `
-    <tr>
-      <td>${index + 1}</td>
-      <td>${item.registerName}</td>
-      <td>${item.campusId.name}</td>
-      <td>
-            <button class="btn btn-success btn-sm" onclick="editRegister('${item._id}')">
-          Edit
-        </button>
-
-        <button class="btn btn-danger btn-sm" onclick="deleteRegister('${item._id}')">
-          🗑 Delete
-        </button>
-      </td>
-    </tr>
-  `;
-});
-
+  filtered.forEach((item, index) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${item.registerName}</td>
+        <td>${item.campusId?.name || "-"}</td>
+        <td>
+          <button class="btn btn-success btn-sm" onclick="editRegister('${item._id}')">
+            Edit
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRegister('${item._id}')">
+            🗑 Delete
+          </button>
+        </td>
+      </tr>
+    `;
+  });
 }
 
 // ========== SAVE REGISTER ===========
 document.getElementById("saveBtn").addEventListener("click", async () => {
-    
-     campusId;
-     schoolId = user[0]?.school?._id;
-    const createdBy = user[0]._id
-        if (isSuperAdmin) {
-      const dropdown = document.getElementById("campusDropdown");
-      console.log(dropdown)
-      campusId = dropdown?.value;
-      console.log(campusId)
-      if (!campusId) {
-        alert("Please select a campus");
-        return
-      }
-    } else {
-      campusId = user[0].campus._id;
+
+  campusId;
+  schoolId = user[0]?.school?._id;
+  const createdBy = user[0]?._id;
+
+  if (isSuperAdmin) {
+    const dropdown = document.getElementById("campusDropdown");
+    campusId = dropdown?.value;
+
+    if (!campusId) {
+      showToast("Please select a campus", false);
+      return;
     }
+  } else {
+    campusId = user[0]?.campus?._id;
+  }
 
   const registerName = document.getElementById("registerName").value.trim();
-    console.log(registerName)
-  if (!registerName) return showToast("Register name is required!");
+  if (!registerName) return showToast("Register name is required!", false);
 
   try {
+    let res;
+
     if (isEdit) {
-        var res =await axios.put(`${apiUrl}/update/${editingId}`, {
+      res = await api.put(`/general-register/update/${editingId}`, {
         schoolId,
         campusId,
         registerName
       });
-      console.log(res.data)
-      showToast(res.data.message);
-
-      
     } else {
-      var res =await axios.post(`${apiUrl}/add`, {
+      res = await api.post(`/general-register/add`, {
         schoolId,
         campusId,
         registerName
       });
-      console.log(res.data.message)
-      showToast(res.data.message);
     }
 
-    document.getElementById("registerName").value = "";
-    isEdit = false;
+    showToast(res.data.message, res.data.success);
 
-    // console.log(res.data)
-    if(res.data.success){
-    registers.push(res.data.data)
-    bootstrap.Modal.getInstance(document.getElementById("addRegisterModal")).hide();
+    if (res.data.success) {
+      document.getElementById("registerName").value = "";
+      bootstrap.Modal.getInstance(
+        document.getElementById("addRegisterModal")
+      ).hide();
 
+      isEdit = false;
+      editingId = null;
+
+      loadRegisters(); // 🔥 duplicate push bug fix
     }
-    renderTable()
-    // loadRegisters();
 
   } catch (error) {
-    console.log(error)
-    showToast(error.response?.data.message || error.message);
+    showToast(error.response?.data?.message || error.message, false);
   }
 });
 
@@ -155,12 +143,11 @@ async function deleteRegister(id) {
   if (!confirm("Delete this register?")) return;
 
   try {
-    await axios.delete(`${apiUrl}/delete/${id}`);
-    showToast("Deleted");
+    const res = await api.delete(`/general-register/delete/${id}`);
+    showToast(res.data.message || "Deleted", true);
     loadRegisters();
-
   } catch (error) {
-    showToast("Error deleting");
+    showToast(error.response?.data?.message || "Error deleting", false);
   }
 }
 
@@ -168,19 +155,24 @@ async function deleteRegister(id) {
 document.getElementById("searchInput").addEventListener("keyup", renderTable);
 
 loadRegisters();
+
+// ========== EDIT REGISTER ===========
 const editRegister = (id) => {
   isEdit = true;
   editingId = id;
-  const currentRegister = registers.find(reg => reg._id == id)
+
+  const currentRegister = registers.find(reg => reg._id == id);
+  if (!currentRegister) return;
 
   const modalElement = document.getElementById("addRegisterModal");
   const modalInstance = new bootstrap.Modal(modalElement);
   modalInstance.show();
-    document.getElementById("registerName").value = currentRegister.registerName;
-      if (isSuperAdmin) {
-      const dropdown = document.getElementById("campusDropdown")
-      dropdown.value = currentRegister.campusId._id
-      console.log(dropdown)
-      campusId = currentRegister.campusId._id;
-      }
+
+  document.getElementById("registerName").value = currentRegister.registerName;
+
+  if (isSuperAdmin) {
+    const dropdown = document.getElementById("campusDropdown");
+    dropdown.value = currentRegister.campusId?._id;
+    campusId = currentRegister.campusId?._id;
+  }
 };

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Ledger</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-6 bg-gray-100">
+
+  <div class="max-w-6xl mx-auto bg-white p-6 rounded shadow">
+
+    <h2 class="text-2xl font-bold mb-4">Student Ledger</h2>
+
+    <input type="text" id="studentId" placeholder="Enter Student ID"
+      class="border p-2 rounded mb-4 w-64">
+
+    <button onclick="loadLedger()"
+      class="bg-blue-600 text-white px-4 py-2 rounded">
+      Load
+    </button>
+
+    <div class="overflow-x-auto mt-6">
+      <table class="w-full border border-gray-300 text-sm">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="border p-2">Date</th>
+            <th class="border p-2">Dues</th>
+            <th class="border p-2">D-Type</th>
+            <th class="border p-2">Receivings</th>
+            <th class="border p-2">Receiving Type</th>
+            <th class="border p-2">Balance</th>
+
+          </tr>
+        </thead>
+        <tbody id="ledgerTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+async function loadLedger() {
+
+  const masterId = document.getElementById("studentId").value;
+  const table = document.getElementById("ledgerTable");
+
+  if (!masterId) {
+    alert("Please enter Student ID");
+    return;
+  }
+
+  table.innerHTML = `
+    <tr>
+      <td colspan="6" class="text-center p-4">Loading...</td>
+    </tr>
+  `;
+
+  try {
+
+    const res = await axios.post(
+      `http://localhost:3000/api/student/student-ledger/${masterId}`
+    );
+
+    const data = res.data;
+    console.log("Ledger Data:", data);
+
+    table.innerHTML = "";
+
+    if (data.length === 0) {
+      table.innerHTML = `
+        <tr>
+          <td colspan="6" class="text-center p-4 text-gray-500">
+            No Record Found
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    data.forEach(item => {
+
+      const row = `
+        <tr class="hover:bg-gray-50">
+          <td class="border p-2">
+            ${item.date ? new Date(item.date).toLocaleDateString() : ""}
+          </td>
+          <td class="border p-2 text-blue-600">
+            ${item.dues ? item.dues : ""}
+          </td>
+          <td class="border p-2">
+            ${item.dType || ""}
+          </td>
+         
+          <td class="border p-2 text-green-600">
+            ${item.receivings ? item.receivings : ""}
+          </td>
+          <td class="border p-2">
+            ${item.receivingType || ""}
+          </td>
+           <td class="border p-2 text-red-600 font-semibold">
+            ${item.balance}
+          </td>
+        </tr>
+      `;
+
+      table.innerHTML += row;
+    });
+
+    const totalDues = data.reduce((sum, item) => sum + (item.dues || 0), 0);
+    const totalReceivings = data.reduce((sum, item) => sum + (item.receivings || 0), 0);
+    const finalBalance = totalDues - totalReceivings;
+    const summaryRow = `
+      <tr class="bg-gray-100 font-bold">
+        <td colspan="1" class="border p-2 text-right">Total:</td>
+        <td class="border p-2 text-blue-600">${totalDues}</td>
+        <td class="border p-2"></td>
+        <td class="border p-2 text-green-600">${totalReceivings}</td>
+        <td class="border p-2"></td>
+
+        <td class="border p-2 text-red-600 font-semibold">${finalBalance}</td>
+      </tr>
+    `;
+    table.innerHTML += summaryRow;
+
+  } catch (error) {
+
+    console.error("Ledger Error:", error.response?.data?.message || error.message);
+
+    table.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center p-4 text-red-600">
+          Failed to load ledger. Please try again.
+        </td>
+      </tr>
+    `;
+
+    alert(
+      error.response?.data?.message || error.message ||
+      "Server Error! Please check backend."
+    );
+  }
+}
+</script>
+
+</body>
+</html>

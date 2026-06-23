@@ -1,26 +1,10 @@
 import Receipt from "../models/receipt.js";
-import Voucher from "../models/voucher.js";
 import Student from "../models/student.js";
 
-// ✅ Add new receipt
+/* ================= CREATE RECEIPT ================= */
 export const createReceipt = async (req, res) => {
   try {
-    const { voucher, student, amount, totalPayable,paymentMethod, balanceAfterPayment ,note, month ,feeType,session,createdBy ,school,campus } = req.body;
-
-    if (!voucher || !student || !amount) {
-      return res.status(400).json({ message: "Voucher, student, and amount are required" });
-    }
-
-    var receiptNo
-    
-    const existingR = await Receipt.find({feeType})
-    // console.log('existingV',existingV.length)
-    
-        receiptNo = (existingR.length + 1).toString().padStart(3,'0')
-
-    // Save receipt
-    const newReceipt = await Receipt.create({
-        receiptNo,
+    const {
       voucher,
       student,
       amount,
@@ -30,70 +14,124 @@ export const createReceipt = async (req, res) => {
       note,
       month,
       feeType,
-      school,
-        campus,
       session,
-      createdBy,
+      campusId
+    } = req.body;
+
+    if (!voucher || !student || !amount || !feeType || !month || !session || !campusId) {
+      return res.status(400).json({
+        success: false,
+        message: "Required fields missing"
+      });
+    }
+
+    const schoolId = req.user.school;
+
+    // 🔢 Generate receipt number (feeType wise)
+    const count = await Receipt.countDocuments({ feeType, school: schoolId, campus: campusId });
+    const receiptNo = String(count + 1).padStart(3, "0");
+
+    const newReceipt = await Receipt.create({
+      receiptNo,
+      voucher,
+      student,
+      amount,
+      totalPayable,
+      paymentMethod,
+      balanceAfterPayment,
+      note,
+      month,
+      feeType,
+      session,
+      school: schoolId,
+      campus: campusId,
+      createdBy: req.user._id
     });
+
     const receipt = await Receipt.findById(newReceipt._id)
-    .populate("voucher")
-    .populate("student", "name fatherName grNumbers class section")
-    .populate("createdBy", "username email")
-    .populate("school", "name")
-    .populate("campus", "name contact");
-    res.status(201).json({ success: true, receipt: receipt, message: "Receipt created successfully" });
-  } catch (err) {
-    console.error("Error creating receipt:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+      .populate("voucher")
+      .populate("student", "name fatherName grNumbers class section")
+      .populate("createdBy", "username email")
+      .populate("school", "name")
+      .populate("campus", "name contact");
+
+    res.status(201).json({
+      success: true,
+      message: "Receipt created successfully",
+      receipt
+    });
+  } catch (error) {
+    console.error("Create Receipt Error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// ✅ Get all receipts (with filters)
+/* ================= GET RECEIPTS ================= */
 export const getReceipts = async (req, res) => {
   try {
-    const { studentId, voucherId, month, feeType } = req.query;
+    const { studentId, voucherId, month, feeType, campusId } = req.query;
 
-    let query = {};
+    const filter = {
+      school: req.user.school
+    };
 
-    if (studentId) query.student = studentId;
-    if (voucherId) query.voucher = voucherId;
+    if (campusId) filter.campus = campusId;
+    if (studentId) filter.student = studentId;
+    if (voucherId) filter.voucher = voucherId;
+    if (month) filter.month = month;
+    if (feeType) filter.feeType = feeType;
 
-    // Filter by feeType or month (join through voucher)
-    if (feeType || month) {
-      query = {
-        ...query,
-        ...(feeType && { feeType }),
-        ...(month && { month }),
-      };
-    }
-
-    const receipts = await Receipt.find(query)
+    const receipts = await Receipt.find(filter)
       .populate("voucher")
-      .populate("student", "name fatherName grNumber class section")
+      .populate("student", "name fatherName grNumbers class section")
       .populate("createdBy", "username email")
       .sort({ createdAt: -1 });
 
-    res.json({ success: true, receipts });
-  } catch (err) {
-    console.error("Error fetching receipts:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({
+      success: true,
+      receipts
+    });
+  } catch (error) {
+    console.error("Get Receipts Error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// ✅ Get single receipt
+/* ================= GET SINGLE RECEIPT ================= */
 export const getReceiptById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const receipt = await Receipt.findById(id)
+    const receipt = await Receipt.findOne({
+      _id: req.params.id,
+      school: req.user.school
+    })
       .populate("voucher")
-      .populate("student")
-      .populate("createdBy", "username email");
+      .populate("student", "name fatherName grNumbers class section")
+      .populate("createdBy", "username email")
+      .populate("school", "name")
+      .populate("campus", "name contact");
 
-    if (!receipt) return res.status(404).json({ message: "Receipt not found" });
+    if (!receipt) {
+      return res.status(404).json({
+        success: false,
+        message: "Receipt not found"
+      });
+    }
 
-    res.json({ success: true, receipt });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({
+      success: true,
+      receipt
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
@@ -111,76 +149,94 @@ export const updateReceipt = async (req, res) => {
   }
 };
 
-// ✅ Delete receipt
+/* ================= DELETE RECEIPT ================= */
 export const deleteReceipt = async (req, res) => {
   try {
-    const { id } = req.params;
-    const deleted = await Receipt.findByIdAndDelete(id);
+    const deleted = await Receipt.findOneAndDelete({
+      _id: req.params.id,
+      school: req.user.school
+    });
 
-    if (!deleted) return res.status(404).json({ message: "Receipt not found" });
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: "Receipt not found"
+      });
+    }
 
-    res.json({ success: true, message: "Receipt deleted" });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Server error" });
-  }
+    res.status(200).json({
+      success: true,
+      message: "Receipt deleted successfully"
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+ }
 };
 
 
-// controllers/receiptController.js
-
+/* ================= GET RECEIPT BY GR NUMBER ================= */
 export const getReceiptForStudent = async (req, res) => {
   try {
-    const { stdGrno, feeType, month, session, school, campus } = req.body;
+    const { stdGrno, feeType, month, session, campusId } = req.body;
 
-    // Validation check
-    if (!stdGrno || !feeType || !month || !session || !school || !campus) {
-      return res.status(400).json({ message: "Missing required fields." });
+    if (!stdGrno || !feeType || !month || !session || !campusId) {
+      return res.status(400).json({
+        success: false,
+        message: "Required fields missing"
+      });
     }
 
-    // 1️⃣ Student find by GR number + school + campus
+    const schoolId = req.user.school;
+
     const student = await Student.findOne({
       [`grNumbers.${feeType}`]: stdGrno,
-      schoolId: school,
-      campusId: campus,
+      schoolId,
+      campusId
     });
 
     if (!student) {
-      return res.status(404).json({ message: "Student not found." });
+      return res.status(404).json({
+        success: false,
+        message: "Student not found"
+      });
     }
 
-    // 2️⃣ Receipt find by student id + other filters
     const receipt = await Receipt.findOne({
       student: student._id,
       feeType,
       month,
       session,
-      school,
-      campus,
+      school: schoolId,
+      campus: campusId
     })
-      .populate("student", "name fatherName class section grNumbers") // optional
-      .populate('voucher')
+      .populate("student", "name fatherName class section grNumbers")
+      .populate("voucher")
       .populate("school", "name")
-      .populate("campus", "name contact")
-      .lean();
+      .populate("campus", "name contact");
 
     if (!receipt) {
-      return res.status(404).json({ message: "Receipt not found." });
+      return res.status(404).json({
+        success: false,
+        message: "Receipt not found"
+      });
     }
 
-    // 3️⃣ Return response
     res.status(200).json({
       success: true,
-      data: receipt,
+      data: receipt
     });
   } catch (error) {
-    console.error("Error fetching receipt:", error);
+    console.error("Get Receipt Error:", error);
     res.status(500).json({
       success: false,
-      message: "Internal Server Error",
-      error: error.message,
+      message: error.message
     });
   }
 };
+
 
 
 

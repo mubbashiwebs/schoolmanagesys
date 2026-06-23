@@ -14,7 +14,12 @@ const generalRegisterSchema = new mongoose.Schema({
   registerName: {
     type: String,
     required: true,
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   }
+
 }, { timestamps: true });
 
 const GeneralRegister = mongoose.model("GeneralRegister", generalRegisterSchema);

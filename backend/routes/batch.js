@@ -8,29 +8,27 @@ import {
   deleteBatch,
   updateBatch,
 } from "../controller/batch.js";
-
+import { checkAuth } from "../middleware/auth.js";
 const router = express.Router();
 
 // Add Batch
-router.post("/add", addBatch);
+router.post("/add",checkAuth, addBatch);
 
 // Get All Batches by School
-router.get("/all/:schoolId", getAllBatches);
+router.get("/all",checkAuth,getAllBatches);
 
 // Get All Batches by Campus
-router.get("/getByCampus/:schoolId/:campusId", getAllBatchesByCampus);
+router.get("/getByCampus/:campusId", checkAuth, getAllBatchesByCampus);
 
 // Get All Computer Batches by Campus
-router.get("/getAllComputerBatchesByCampus/:schoolId/:campusId", getAllComputerBatchesByCampus);
+router.get("/getAllComputerBatchesByCampus/:campusId", checkAuth, getAllComputerBatchesByCampus);
 
 // Get All English Batches by Campus
-router.get("/getAllEnglishBatchesByCampus/:schoolId/:campusId", getAllEnglishBatchesByCampus);
-
-
+router.get("/getAllEnglishBatchesByCampus/:campusId", checkAuth, getAllEnglishBatchesByCampus);
 // Delete Batch
-router.delete("/delete/:id", deleteBatch);
+router.delete("/delete/:id", checkAuth, deleteBatch);
 
 // Update Batch
-router.put("/update/:id", updateBatch);
+router.put("/update/:id", checkAuth, updateBatch);
 
 export default router;

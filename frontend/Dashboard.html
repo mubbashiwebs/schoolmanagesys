@@ -200,7 +200,7 @@
     
     const user = JSON.parse(localStorage.getItem("userData")) || [];
     const isSuperAdmin = user[0]?.designation === "supremeadmin";
-    if(!user[0]){
+    if(!user){
       window.location.href='/user/login.html'
     }
   </script>

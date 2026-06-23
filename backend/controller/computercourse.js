@@ -4,8 +4,10 @@ import Course from "../models/computercourse.js";
 
 // Add Course
 export const addCourse = async (req, res) => {
+
   try {
-    // Check if course already exists
+    req.body.schoolId = req.user.school;
+    req.body.createdBy = req.user._id;
     const isCourseExist = await Course.findOne({
       schoolId: req.body.schoolId,
       name: req.body.name,
@@ -39,7 +41,7 @@ export const addCourse = async (req, res) => {
 // Get Courses by School (Admin)
 export const getCoursesBySchool = async (req, res) => {
   try {
-    const courses = await Course.find({ schoolId: req.params.schoolId })
+    const courses = await Course.find({ schoolId: req.user.school })
       .populate("schoolId", "name")
       .populate("campusId", "name")
 
@@ -57,7 +59,7 @@ export const getCoursesBySchool = async (req, res) => {
 // Get All Courses
 export const getAllCoursesByCampus = async (req, res) => {
   try {
-    const courses = await Course.find({ schoolId: req.params.schoolId, campusId: req.params.campusId })
+    const courses = await Course.find({ schoolId: req.user.school, campusId: req.params.campusId })
    
     if (courses.length > 0) {
       res.json({ data: courses, message: "Successfully Found" });
@@ -84,18 +86,21 @@ export const deleteCourse = async (req, res) => {
 export const updateCourse = async (req, res) => {
   try {
     const courseId = req.params.id;
-    const { name, schoolId } = req.body;
+    const { name, campusId } = req.body;
 
-    // Check if another course with the same name and schoolId exists
+    // Check if another course with the same name and campusId exists
     const existingCourse = await Course.findOne({
       _id: { $ne: courseId }, // exclude the current course
       name,
-      schoolId
+      campusId,
+      schoolId: req.user.school
     });
 
     if (existingCourse) {
-      return res.json({ data: [], message: "Course with this name already exists in the selected school" });
+      return res.json({ data: [], message: "Course with this name already exists in the your campus" });
     }
+
+    delete req.body.schoolId;
 
     const updatedCourse = await Course.findByIdAndUpdate(
       courseId,

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Receipt Management | Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+    .input-field { transition: all 0.2s ease-in-out; border: 1px solid #e2e8f0; }
+    .input-field:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); outline: none; }
+    #campusSelectBox1 label {display: none !important;}
+    #campusSelectBox1 select { padding: 10px 14px; border-radius: 8px !important; border: 1px solid #ccc !important; font-size: 14px; background-color: white;  }
+    #getStudentBtn { background-color: #6366f1; color: white; padding: 10px 16px; border-radius: 8px; font-size: 14px; transition: background-color 0.2s ease-in-out; }
+    #getStudentBtn:hover { background-color: #4f46e5; }
+    #campusSelectBox2 label {display: none !important;}
+    #campusSelectBox2 select { padding: 10px 14px; border-radius: 8px !important; border: 1px solid #ccc !important; font-size: 14px; background-color: white;  }
+  </style>
+</head>
+<body class="text-slate-800">
+
+  <div class="max-w-6xl mx-auto p-4 md:p-8 space-y-8">
+    
+   
+
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-50 bg-white">
+        <h2 class="font-semibold text-slate-700">Create New Receipt</h2>
+      </div>
+      
+      <div id="receiptForm" class="p-6 grid md:grid-cols-3 gap-5">
+        <div class="md:col-span-3 space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+          <div class="flex flex-col md:flex-row md:items-center gap-4">
+            <input type="text" id="masterIdInput" placeholder="Enter Student ID (e.g. STU-001)" required
+              class="input-field rounded-xl p-3  bg-white" />
+                      <div class="col-md-3 col-6  " id="campusSelectBox1">
+            </div>
+            <div>
+            <button type="button" class="" onclick="getStudentByMasterId()" id="getStudentBtn">Search Student</button>
+            </div>
+            <div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs" id="result">
+              <div class="bg-white p-2 rounded-lg border border-slate-100">
+                <p class="text-slate-400 uppercase tracking-wider font-bold">Name</p>
+                <p id="studentName" class="text-slate-700 font-medium">John Doe</p>
+              </div>
+              <div class="bg-white p-2 rounded-lg border border-slate-100">
+                <p class="text-slate-400 uppercase tracking-wider font-bold">Father</p>
+                <p id="studentFather" class="text-slate-700 font-medium">Mr. Doe</p>
+              </div>
+              <div class="bg-white p-2 rounded-lg border border-slate-100">
+                <p class="text-slate-400 uppercase tracking-wider font-bold">Class</p>
+                <p id="studentClass" class="text-slate-700 font-medium">10-A</p>
+              </div>
+              <div class="bg-white p-2 rounded-lg border border-slate-100">
+                <p class="text-slate-400 uppercase tracking-wider font-bold">GR #</p>
+                <p id="studentGR" class="text-slate-700 font-medium">12345</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-sm font-medium text-slate-600 ml-1">Amount</label>
+          <input type="number" id="amount" placeholder="0.00" required
+            class="input-field rounded-xl p-3 w-full" />
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-sm font-medium text-slate-600 ml-1">Date</label>
+          <input type="date" id="date" required
+            class="input-field rounded-xl p-3 w-full" />
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-sm font-medium text-slate-600 ml-1">Payment Method</label>
+          <select id="paymentMethod" class="input-field rounded-xl p-3 w-full bg-white">
+            <option value="Cash">💵 Cash</option>
+            <option value="Bank">🏦 Bank</option>
+            <option value="Online">📱 Online</option>
+            <option value="Cheque">✍️ Cheque</option>
+          </select>
+        </div>
+
+        <div class="md:col-span-2 space-y-1">
+         <label class="text-sm font-medium text-slate-600 ml-1">Receipt Type</label>
+          <select id="receiptType" class="input-field rounded-xl p-3 w-full bg-white">
+            <option value="Admission">🎓 Admission</option>
+            <option value="Monthly">📅 Monthly</option>
+            <option value="Annual">🏆 Annual</option>
+            <option value="Balance">⚖️ Balance</option>
+            <option value="Other">📎 Other</option>
+          </select>
+        </div>
+
+        <div class="flex items-end">
+          <button onclick="formSubmitHandler()" type="submit"
+            class="w-full bg-indigo-600 text-white font-semibold rounded-xl p-3 hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-md shadow-indigo-100">
+            Generate Receipt
+          </button>
+        </div>
+      </div>
+    </div>
+<div class="mb-4 flex flex-col md:flex-row md:items-center gap-3">
+
+  <!-- Search Input -->
+  <div class="flex-1">
+    <input 
+      type="text" 
+      id="receiptSearchInput"
+      placeholder="Search by Student Name / Master ID / GR Number"
+      class="w-full px-4 py-2 border border-slate-300 rounded-lg 
+             focus:outline-none focus:ring-2 focus:ring-indigo-400"
+    />
+  </div>
+
+  <!-- Campus Select -->
+  <div id="campusSelectBox2" class="w-full md:w-64"></div>
+
+</div>
+
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse" id="receiptTable">
+          <thead>
+            <tr class="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-widest border-b border-slate-100">
+              <th class="px-6 py-4 font-bold">ID</th>
+              <th class="px-6 py-4 font-bold">Student Details</th>
+              <th class="px-6 py-4 font-bold">Class-Sec</th>
+              <th class="px-6 py-4 font-bold">Receipt Type</th>
+              <th class="px-6 py-4 font-bold">Amount</th>
+              <th class="px-6 py-4 font-bold">Method</th>
+              <th class="px-6 py-4 font-bold">Date</th>
+              <th class="px-6 py-4 font-bold text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-50 text-sm" id="receiptsTableBody">
+            </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- <script>
+    // JavaScript logic remains largely same, just updated render function for new UI
+    const API_URL = "/api/receipts";
+    const form = document.getElementById("receiptForm");
+    const tableBody = document.querySelector("#receiptTable tbody");
+
+    async function fetchReceipts() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        renderReceipts(data.data);
+      } catch (err) {
+        console.error("API Error:", err);
+        // Fallback for demo
+        renderReceipts([]); 
+      }
+    }
+
+    function renderReceipts(receipts) {
+      tableBody.innerHTML = "";
+      receipts.forEach(r => {
+        const row = document.createElement("tr");
+        row.className = "hover:bg-slate-50/80 transition-colors group";
+
+        row.innerHTML = `
+          <td class="px-6 py-4 font-mono text-xs text-slate-400">#${r.receiptNumber || '000'}</td>
+          <td class="px-6 py-4">
+            <div class="font-semibold text-slate-700">${r.student?.name || 'John Doe'}</div>
+            <div class="text-xs text-slate-400">Class: ${r.student?.class || '10-A'} | GR: ${r.student?.grNumber || '12345'}</div>
+          </td>
+          <td class="px-6 py-4 font-bold text-slate-900">Rs. ${r.amount}</td>
+          <td class="px-6 py-4">
+            <span class="px-3 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-600 border border-indigo-100">
+              ${r.paymentMethod}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-slate-500">${new Date(r.date).toLocaleDateString()}</td>
+          <td class="px-6 py-4 text-right">
+            <button onclick="deleteReceipt('${r._id}')"
+              class="opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Reuse your existing EventListeners for form submit and delete
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const receiptData = {
+        student: document.getElementById("student").value,
+        amount: document.getElementById("amount").value,
+        date: document.getElementById("date").value,
+        paymentMethod: document.getElementById("paymentMethod").value,
+        remarks: document.getElementById("remarks").value,
+      };
+
+      try {
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(receiptData),
+        });
+        form.reset();
+        fetchReceipts();
+      } catch (err) { console.error(err); }
+    });
+
+    async function deleteReceipt(id) {
+      if(!confirm("Are you sure?")) return;
+      try {
+        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        fetchReceipts();
+      } catch (err) { console.error(err); }
+    }
+
+    fetchReceipts();
+  </script> -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="../global.js"></script>
+ 
+  <script src="receipts.js"></script>
+<script src="../dropdown.js"></script>
+
+</body>
+</html>
